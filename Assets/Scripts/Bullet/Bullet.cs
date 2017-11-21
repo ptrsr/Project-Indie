@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -15,15 +14,27 @@ public class Bullet : MonoBehaviour
     private Vector3
         _nextBounceDir;
 
-	void Start ()
+    #if UNITY_EDITOR
+    private List<Vector3> _bounces;
+    #endif
+
+    void Start ()
     {
         RB.velocity = transform.forward * _speed;
         RB.useGravity = false;
-	}
+        RB.constraints = RigidbodyConstraints.FreezePositionY;
+
+        #if UNITY_EDITOR 
+        // track spawn position
+        _bounces = new List<Vector3>();
+        _bounces.Add(transform.position);
+        _bounces.Add(transform.position);
+        #endif
+    }
 
     private void FixedUpdate()
     {
-        TrackBounce();
+        UpdateBounce();
         // keep track of velocity for collision
         _velocity = RB.velocity.magnitude;
 
@@ -33,8 +44,12 @@ public class Bullet : MonoBehaviour
     }
 
     // check for new bounce direction
-    private void TrackBounce()
+    private void UpdateBounce()
     {
+        #if UNITY_EDITOR
+        _bounces[_bounces.Count - 1] = transform.position;
+        #endif
+
         Vector3 bounceDir = GetNextBounceDir();
 
         if (bounceDir != new Vector3())
@@ -47,7 +62,12 @@ public class Bullet : MonoBehaviour
         RaycastHit hit;
 
         if (Physics.Raycast(ray, out hit, _velocity))
-            return Vector3.Reflect(transform.forward, hit.normal).normalized;
+        {
+            Vector3 reflection = Vector3.Reflect(transform.forward, hit.normal).normalized;
+            reflection.y = 0; // bullet never moves on Y direction
+
+            return reflection.normalized;
+        }
         else
             return new Vector3();
     }
@@ -59,8 +79,30 @@ public class Bullet : MonoBehaviour
         RB.angularVelocity = new Vector3();
 
         // for corners
-        TrackBounce();
+        UpdateBounce();
+
+        #if UNITY_EDITOR
+        // track bounce
+        _bounces.Add(transform.position);
+        #endif
     }
+
+    #if UNITY_EDITOR
+    private void OnApplicationQuit()
+    {
+        ServiceLocator.Locate<BulletTracker>().AddTrajectory(_bounces);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (!Application.isPlaying)
+            return;
+
+        for (int i = 0; i < _bounces.Count - 1; i++)
+            Gizmos.DrawLine(_bounces[i], _bounces[i + 1]);
+    }
+    #endif
+
 
     private Rigidbody _rb;
     private Rigidbody RB
@@ -73,17 +115,4 @@ public class Bullet : MonoBehaviour
             return _rb;
         }
     }
-
-    private SphereCollider _col;
-    private SphereCollider COL
-    {
-        get
-        {
-            if (_col == null)
-                _col = GetComponent<SphereCollider>();
-
-            return _col;
-        }
-    }
-
 }
