@@ -8,8 +8,14 @@ public class PlayerController : MonoBehaviour {
 	private Transform aim;
 
 	[Header ("Values")]
-	[SerializeField] private float moveSpeed = 200.0f;
+	[SerializeField] private float moveSpeed = 400.0f;
 	[SerializeField] private float rotationSpeed = 5.0f;
+
+	[Header ("Prefabs")]
+	[SerializeField] private GameObject bullet;
+
+	[Header ("GameObjects")]
+	[SerializeField] private Transform activeBullets;
 
 	void Start ()
 	{
@@ -21,12 +27,13 @@ public class PlayerController : MonoBehaviour {
 	{
 		Move ();
 		Aim ();
+		UpdateShooting ();
 	}
 
 	void Move ()
 	{
-		float x = Input.GetAxis ("Horizontal");
-		float y = Input.GetAxis ("Vertical");
+		float x = Input.GetAxis ("HorizontalMoveP1");
+		float y = Input.GetAxis ("VerticalMoveP1");
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -44,8 +51,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Aim ()
 	{
-		float x = Input.GetAxis ("Horizontal2");
-		float y = Input.GetAxis ("Vertical2");
+		float x = Input.GetAxis ("HorizontalAimP1");
+		float y = Input.GetAxis ("VerticalAimP1");
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -53,5 +60,11 @@ public class PlayerController : MonoBehaviour {
 			Quaternion rotation = Quaternion.Slerp (aim.rotation, Quaternion.AngleAxis (90.0f - angle, Vector3.up), Time.deltaTime * rotationSpeed * 2);
 			aim.rotation = rotation;
 		}
+	}
+
+	void UpdateShooting ()
+	{
+		if (Input.GetButtonDown ("Fire1"))
+			Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 	}
 }
