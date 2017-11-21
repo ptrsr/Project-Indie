@@ -26,8 +26,13 @@ public class Bullet : MonoBehaviour
         TrackBounce();
         // keep track of velocity for collision
         _velocity = RB.velocity.magnitude;
+
+        // reset
+        if (Input.GetKey(KeyCode.R))
+            Destroy(gameObject);
     }
 
+    // check for new bounce direction
     private void TrackBounce()
     {
         Vector3 bounceDir = GetNextBounceDir();
@@ -52,6 +57,8 @@ public class Bullet : MonoBehaviour
         transform.forward = _nextBounceDir;
         RB.velocity = _nextBounceDir * _velocity;
         RB.angularVelocity = new Vector3();
+
+        // for corners
         TrackBounce();
     }
 
