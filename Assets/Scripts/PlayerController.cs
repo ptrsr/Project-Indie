@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour {
 
 	private Rigidbody rb;
 	private Transform aim;
+	private Transform activeBullets;
 
 	[Header ("Values")]
 	[SerializeField] private float moveSpeed = 400.0f;
@@ -14,13 +15,11 @@ public class PlayerController : MonoBehaviour {
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
 
-	[Header ("GameObjects")]
-	[SerializeField] private Transform activeBullets;
-
 	void Start ()
 	{
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0);
+		activeBullets = GameObject.Find ("ActiveBullets").transform;
 	}
 
 	void FixedUpdate ()
@@ -32,8 +31,18 @@ public class PlayerController : MonoBehaviour {
 
 	void Move ()
 	{
-		float x = Input.GetAxis ("HorizontalMoveP1");
-		float y = Input.GetAxis ("VerticalMoveP1");
+		float x, y;
+
+		if (Input.GetJoystickNames ().Length <= 1)
+		{
+			x = Input.GetAxis ("HorizontalMovePC");
+			y = Input.GetAxis ("VerticalMovePC");
+		}
+		else
+		{
+			x = Input.GetAxis ("HorizontalMoveP" + name);
+			y = Input.GetAxis ("VerticalMoveP" + name);
+		}
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -51,8 +60,18 @@ public class PlayerController : MonoBehaviour {
 
 	void Aim ()
 	{
-		float x = Input.GetAxis ("HorizontalAimP1");
-		float y = Input.GetAxis ("VerticalAimP1");
+		float x, y;
+
+		if (Input.GetJoystickNames ().Length <= 1)
+		{
+			x = Input.GetAxis ("HorizontalAimPC");
+			y = Input.GetAxis ("VerticalAimPC");
+		}
+		else
+		{
+			x = Input.GetAxis ("HorizontalAimP" + name);
+			y = Input.GetAxis ("VerticalAimP" + name);
+		}
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -64,7 +83,11 @@ public class PlayerController : MonoBehaviour {
 
 	void UpdateShooting ()
 	{
-		if (Input.GetButtonDown ("Fire1"))
+		if (Input.GetButtonDown ("FireP" + name) || Input.GetJoystickNames ().Length <= 1 && Input.GetButtonDown ("FirePC"))
+		{
 			Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+
+			print ("Player " + name + " Shoots");
+		}
 	}
 }
