@@ -8,11 +8,8 @@ public class Bullet : MonoBehaviour
     private float
         _speed;
 
-    private float
-        _velocity;
-
     private Vector3
-        _nextBounceDir;
+        _velocity;
 
     #if UNITY_EDITOR
     private List<Vector3> _bounces;
@@ -34,9 +31,12 @@ public class Bullet : MonoBehaviour
 
     private void FixedUpdate()
     {
-        UpdateBounce();
         // keep track of velocity for collision
-        _velocity = RB.velocity.magnitude;
+        _velocity = RB.velocity;
+
+        #if UNITY_EDITOR
+        _bounces[_bounces.Count - 1] = transform.position;
+        #endif
 
         // reset
         if (Input.GetKey(KeyCode.R))
@@ -44,46 +44,33 @@ public class Bullet : MonoBehaviour
     }
 
     // check for new bounce direction
-    private void UpdateBounce()
-    {
-        #if UNITY_EDITOR
-        _bounces[_bounces.Count - 1] = transform.position;
-        #endif
-
-        Vector3 bounceDir = GetNextBounceDir();
-
-        if (bounceDir != new Vector3())
-            _nextBounceDir = bounceDir;
-    }
-
-    private Vector3 GetNextBounceDir()
-    {
-        Ray ray = new Ray(transform.position, transform.forward);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, _velocity))
-        {
-            Vector3 reflection = Vector3.Reflect(transform.forward, hit.normal).normalized;
-            reflection.y = 0; // bullet never moves on Y direction
-
-            return reflection.normalized;
-        }
-        else
-            return new Vector3();
-    }
 
     private void OnCollisionEnter(Collision collision)
     {
-        transform.forward = _nextBounceDir;
-        RB.velocity = _nextBounceDir * _velocity;
-        RB.angularVelocity = new Vector3();
+        float seperation = collision.contacts[0].separation;
 
-        // for corners
-        UpdateBounce();
+
+        if (seperation != 0)
+        {
+            Collider other = collision.collider;
+
+            float distance = Vector3.Distance(other.ClosestPoint(transform.position), transform.position) - 0.5f;
+            float dot = Vector3.Dot(-_velocity.normalized, collision.contacts[0].normal);
+
+            if (dot != 0)
+                transform.position += _velocity.normalized * distance * (1 / dot);
+        }
+
+        Vector3 nextBounceDir = Vector3.Reflect(_velocity.normalized, collision.contacts[0].normal).normalized;
+        transform.forward = nextBounceDir;
+        RB.velocity = nextBounceDir * _velocity.magnitude;
+        _velocity = RB.velocity;
+
+        RB.angularVelocity = new Vector3();
 
         #if UNITY_EDITOR
         // track bounce
-        _bounces.Add(transform.position);
+        _bounces.Add(collision.contacts[0].point);
         #endif
     }
 

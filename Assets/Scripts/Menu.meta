@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Scripts/Menu.meta
 guid: 9a21f99a8be0d0248b7a0794183f34ca
 folderAsset: yes
 timeCreated: 1511275635
+=======
+guid: 1995462f75f9ba44eb495a0b1c59b7ff
+folderAsset: yes
+timeCreated: 1511257123
+>>>>>>> a17bafe9a5dbeeb81d99d88ca42dee17d065824e:Assets/Models.meta
 licenseType: Free
 DefaultImporter:
   externalObjects: {}

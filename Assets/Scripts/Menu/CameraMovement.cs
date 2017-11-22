@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class CameraMovement : MonoBehaviour
 {
     #region Points
@@ -25,12 +26,15 @@ public class CameraMovement : MonoBehaviour
 
     private void Awake()
     {
-        ServiceLocator.Provide(this);
         StateMachine.change += CameraChange;
     }
 
+    private void OnEnable()
+    {
+        ServiceLocator.Provide(this);
+    }
 
-    private void CameraChange(State newState)
+    public void CameraChange(State newState)
     {
         _lastPoint = _currentPoint;
 
@@ -52,10 +56,19 @@ public class CameraMovement : MonoBehaviour
                 CurrentPoint = _points.menuPoint;
                 break;
         }
+
+        if (!Application.isPlaying)
+        {
+            transform.position = _currentPoint.transform.position;
+            transform.rotation = _currentPoint.transform.rotation;
+        }
     }
 
     private void Update()
     {
+        if (!Application.isPlaying)
+            return;
+
         float speed;
 
         if (_lastPoint != null)
