@@ -18,8 +18,8 @@ public enum Command
 
 public class StateMachine
 {
-    public delegate void Change();
-    public event Change change;
+    public delegate void Change(State state);
+    public static event Change change;
 
     class StateTransition
     {
@@ -70,7 +70,10 @@ public class StateMachine
         State NextState;
 
         if (!transitions.TryGetValue(transition, out NextState))
+        {
             Debug.LogWarning("Invalid Transition: " + CurrentState + " -> " + command);
+            return CurrentState;
+        }
         return NextState;
     }
 
@@ -79,7 +82,7 @@ public class StateMachine
         State nextState = GetNext(command);
 
         if (nextState != CurrentState)
-            change();
+            change(nextState);
 
         CurrentState = nextState;
         return CurrentState;

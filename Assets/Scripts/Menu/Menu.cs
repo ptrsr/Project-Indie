@@ -6,31 +6,19 @@ public class Menu : MonoBehaviour
 {
     private StateMachine _sm = new StateMachine(State.Menu);
 
-    [SerializeField]
-    private CameraPoint
-        _menuPoint,
-        _lobbyPoint,
-        _settingsPoint,
-        _gamePoint;
-
-    private Transform
-        _camera;
-
     private void Awake()
     {
         ServiceLocator.Provide(this);
-        _camera = Camera.main.transform;
     }
 
-    void Start ()
+    private void Update()
     {
-		
-	}
-	
-	void Update ()
-    {
-		
-	}
+        if (Input.GetKeyDown(KeyCode.E))
+            _sm.MoveNext(Command.Continue);
+
+        if (Input.GetKeyDown(KeyCode.Q))
+            _sm.MoveNext(Command.Exit);
+    }
 
     public State CurrentState
     {
