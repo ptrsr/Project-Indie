@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public enum State
 {
-    Menu,
+    Main,
     Lobby,
     Settings,
     Game
@@ -50,17 +50,18 @@ public class StateMachine
     public StateMachine(State startState)
     {
         CurrentState = startState;
+        change(startState);
 
         transitions = new Dictionary<StateTransition, State> 
         {
-            { new StateTransition(State.Menu, Command.Continue), State.Lobby },
+            { new StateTransition(State.Main, Command.Continue), State.Lobby },
             { new StateTransition(State.Lobby, Command.Continue), State.Settings },
             { new StateTransition(State.Settings, Command.Continue), State.Game },
 
 
             { new StateTransition(State.Game, Command.Exit), State.Lobby },
             { new StateTransition(State.Settings, Command.Exit), State.Lobby },
-            { new StateTransition(State.Lobby, Command.Exit), State.Menu },
+            { new StateTransition(State.Lobby, Command.Exit), State.Main },
         };
     }
 

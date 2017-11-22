@@ -10,7 +10,7 @@ public class CameraMovement : MonoBehaviour
     struct Points
     {
         public CameraPoint
-            menuPoint,
+            mainPoint,
             lobbyPoint,
             settingsPoint,
             gamePoint;
@@ -19,9 +19,9 @@ public class CameraMovement : MonoBehaviour
     private Points _points = new Points();
     #endregion
 
-    [SerializeField]
-    private CameraPoint _currentPoint;
-    private CameraPoint _lastPoint;
+    private CameraPoint 
+        _currentPoint,
+        _lastPoint;
 
 
     private void Awake()
@@ -40,8 +40,8 @@ public class CameraMovement : MonoBehaviour
 
         switch (newState)
         {
-            case State.Game:
-                CurrentPoint = _points.gamePoint;
+            case State.Main:
+                CurrentPoint = _points.mainPoint;
                 break;
 
             case State.Lobby:
@@ -52,8 +52,8 @@ public class CameraMovement : MonoBehaviour
                 CurrentPoint = _points.settingsPoint;
                 break;
 
-            case State.Menu:
-                CurrentPoint = _points.menuPoint;
+            case State.Game:
+                CurrentPoint = _points.gamePoint;
                 break;
         }
 

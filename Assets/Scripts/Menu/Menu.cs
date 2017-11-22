@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+[RequireComponent(typeof(CustomInputHandler))]
 public class Menu : EventSystem
 {
     [SerializeField]
@@ -10,17 +11,30 @@ public class Menu : EventSystem
 
     private StateMachine _sm;
 
-    [SerializeField]
     private CustomInputHandler _handler;
 
     private GameObject _lastSelectedObject;
 
+    [SerializeField]
+    private SubMenu
+        _main,
+        _lobby,
+        _settings;
+
+    private SubMenu _currentMenu;
+
     protected override void Awake()
     {
         base.Awake();
-
-        _sm = new StateMachine(_startState);
+        _handler = GetComponent<CustomInputHandler>();
         ServiceLocator.Provide(this);
+    }
+
+    protected override void Start()
+    {
+        base.Start();
+        StateMachine.change += ChangeMenu;
+        _sm = new StateMachine(_startState);
     }
 
     protected override void Update()
@@ -34,31 +48,9 @@ public class Menu : EventSystem
             _sm.MoveNext(Command.Exit);
     }
 
-    //public void Hover(GameObject obj)
-    //{
-    //    print(obj.name);
-    //    EventTrigger trigger;
-    //    _system.
-    //    trigger.on
-    //}
-
     private void OnGUI()
     {
-        if (currentSelectedGameObject != null)
-            _lastSelectedObject = currentSelectedGameObject;
-
-        List<RaycastResult> results = new List<RaycastResult>();
-        RaycastAll(_handler.GetLastPointerEventDataPublic(), results);
-
-        if (results.Count != 0 && results[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>().gameObject != currentSelectedGameObject)
-            SetSelectedGameObject(null);
-        else
-            SetSelectedGameObject(_lastSelectedObject);
-    }
-
-    public void SendCommand(int command)
-    {
-        _sm.MoveNext((Command)command);
+        CheckMenu();
     }
 
     protected override void OnValidate()
@@ -69,6 +61,56 @@ public class Menu : EventSystem
 
         if (camMovement != null)
             camMovement.CameraChange(_startState);
+    }
+
+    private void CheckMenu()
+    {
+        if (currentSelectedGameObject != null)
+            _lastSelectedObject = currentSelectedGameObject;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        RaycastAll(_handler.GetLastPointerEventDataPublic(), results);
+
+        if (results.Count != 0)
+        {
+            var button = results[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>();
+
+            if (button != null && button.gameObject != currentSelectedGameObject)
+            {
+                SetSelectedGameObject(null);
+                return;
+            }
+        }
+        SetSelectedGameObject(_lastSelectedObject);
+    }
+
+    private void ChangeMenu(State newState)
+    {
+        if (_currentMenu != null)
+            _currentMenu.DisableMenu();
+
+        switch(newState)
+        {
+            case State.Main:
+                _currentMenu = _main;
+                break;
+
+            case State.Lobby:
+                _currentMenu = _lobby;
+                break;
+
+            case State.Settings:
+                _currentMenu = _settings;
+                break;
+        }
+
+        if (_currentMenu != null)
+            SetSelectedGameObject(_currentMenu.EnableMenu());
+    }
+
+    public void SendCommand(int command)
+    {
+        _sm.MoveNext((Command)command);
     }
 
     public State CurrentState

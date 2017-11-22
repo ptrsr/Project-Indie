@@ -43,12 +43,9 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
     }
 
-    // check for new bounce direction
-
     private void OnCollisionEnter(Collision collision)
     {
         float seperation = collision.contacts[0].separation;
-
 
         if (seperation != 0)
         {
