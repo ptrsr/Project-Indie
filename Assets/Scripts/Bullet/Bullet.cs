@@ -11,6 +11,8 @@ public class Bullet : MonoBehaviour
     private Vector3
         _velocity;
 
+    private List<Collision> _collisions;
+
     #if UNITY_EDITOR
     private List<Vector3> _bounces;
     #endif
@@ -21,7 +23,9 @@ public class Bullet : MonoBehaviour
         RB.useGravity = false;
         RB.constraints = RigidbodyConstraints.FreezePositionY;
 
-        #if UNITY_EDITOR 
+        _collisions = new List<Collision>();
+
+        #if UNITY_EDITOR
         // track spawn position
         _bounces = new List<Vector3>();
         _bounces.Add(transform.position);
@@ -31,6 +35,8 @@ public class Bullet : MonoBehaviour
 
     private void FixedUpdate()
     {
+        ResolveCollisions();
+
         // keep track of velocity for collision
         _velocity = RB.velocity;
 
@@ -43,22 +49,33 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject);
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void ResolveCollisions()
     {
-        float seperation = collision.contacts[0].separation;
+        if (_collisions.Count == 0)
+            return;
 
-        if (seperation != 0)
+        for (int i = 0; i < _collisions.Count; i++)
+            for (int j = _collisions.Count - 1; j > i; j--)
+                if (_collisions[i].contacts[0].normal == _collisions[j].contacts[0].normal)
+                    _collisions.RemoveAt(j);
+
+        Vector3 normal = new Vector3();
+
+        for (int i = 0; i < _collisions.Count; i++)
         {
-            Collider other = collision.collider;
+            Collision collision = _collisions[i];
+            ContactPoint point = collision.contacts[0];
 
-            float distance = Vector3.Distance(other.ClosestPoint(transform.position), transform.position) - 0.5f;
-            float dot = Vector3.Dot(-_velocity.normalized, collision.contacts[0].normal);
+            Vector3 newNormal = point.normal;
+            newNormal.y = 0;
+            newNormal.Normalize();
 
-            if (dot != 0)
-                transform.position += _velocity.normalized * distance * (1 / dot);
+            normal += newNormal;
         }
+        normal.Normalize();
 
-        Vector3 nextBounceDir = Vector3.Reflect(_velocity.normalized, collision.contacts[0].normal).normalized;
+        Vector3 nextBounceDir = Vector3.Reflect(_velocity.normalized, normal).normalized;
+
         transform.forward = nextBounceDir;
         RB.velocity = nextBounceDir * _velocity.magnitude;
         _velocity = RB.velocity;
@@ -67,8 +84,15 @@ public class Bullet : MonoBehaviour
 
         #if UNITY_EDITOR
         // track bounce
-        _bounces.Add(collision.contacts[0].point);
+        _bounces.Add(transform.position);
         #endif
+
+        _collisions.Clear();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        _collisions.Add(collision);
     }
 
     #if UNITY_EDITOR
