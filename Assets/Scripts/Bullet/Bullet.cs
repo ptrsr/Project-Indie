@@ -4,8 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Bullet : MonoBehaviour
 {
-    [SerializeField]
-    private float
+    public float
         _speed;
 
     private Vector3
@@ -21,7 +20,7 @@ public class Bullet : MonoBehaviour
         RB.useGravity = false;
         RB.constraints = RigidbodyConstraints.FreezePositionY;
 
-        #if UNITY_EDITOR 
+        #if UNITY_EDITOR
         // track spawn position
         _bounces = new List<Vector3>();
         _bounces.Add(transform.position);
@@ -53,6 +52,25 @@ public class Bullet : MonoBehaviour
         if (seperation != 0)
         {
             Collider other = collision.collider;
+
+			if (other.tag == "Player")
+			{
+				PlayerController player = other.GetComponent <PlayerController> ();
+				
+				if (player.CanParry (transform.position))
+				{
+					print ("Player " + player.name + " dodged a bullet!");
+
+					transform.rotation = Quaternion.Euler (new Vector3 (0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
+
+					player.ReflectBullet ();
+				}
+				else
+					player.Die ();
+
+				Destroy (gameObject);
+				return;
+			}
 
             float distance = Vector3.Distance(other.ClosestPoint(transform.position), transform.position) - 0.5f;
             float dot = Vector3.Dot(-_velocity.normalized, collision.contacts[0].normal);
