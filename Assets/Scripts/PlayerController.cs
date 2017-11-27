@@ -6,6 +6,8 @@ using Players;
 
 public class PlayerController : MonoBehaviour {
 
+	public Player playerNumber;
+
 	private Rigidbody rb;
 	[HideInInspector] public Transform aim;
 	private Transform activeBullets;
@@ -34,13 +36,13 @@ public class PlayerController : MonoBehaviour {
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
 
+	[Header ("Textures/Materials")]
+	[SerializeField] private Texture blue;
+	[SerializeField] private Texture red, green, yellow;
+	[SerializeField] private Material player1Mat, player2Mat, player3Mat, player4Mat;
+
 	void Start ()
 	{
-		#if UNITY_EDITOR
-		if (name == "Player")
-			name = "1";
-		#endif
-
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0).GetChild (0);
 		if (GameObject.Find ("ActiveBullest") != null)
@@ -61,20 +63,60 @@ public class PlayerController : MonoBehaviour {
 		UpdateAbilities ();
 	}
 
-    
-
 	void FixedUpdate ()
 	{
 		Move ();
 		Aim ();
 	}
 
+	public void AssignColor ()
+	{
+		Renderer renderer = transform.GetChild (0).GetChild (0).GetComponent <Renderer> ();
+
+		print ("yo: " + (int)playerNumber);
+
+		foreach (Renderer rend in renderer.GetComponentsInChildren <Renderer> ())
+		{
+			switch ((int) playerNumber)
+			{
+			case 0:
+				rend.material = player1Mat;
+				break;
+			case 1:
+				rend.material = player2Mat;
+				break;
+			case 2:
+				rend.material = player3Mat;
+				break;
+			case 3:
+				rend.material = player4Mat;
+				break;
+			}
+		}
+
+		switch ((int) playerNumber)
+		{
+		case 0:
+			renderer.sharedMaterial.mainTexture = blue;
+			break;
+		case 1:
+			renderer.sharedMaterial.mainTexture = red;
+			break;
+		case 2:
+			renderer.sharedMaterial.mainTexture = green;
+			break;
+		case 3:
+			renderer.sharedMaterial.mainTexture = yellow;
+			break;
+		}
+	}
+
 	void Move ()
 	{
 		float x, y;
 
-		x = Input.GetAxis ("HorizontalMoveP" + name);
-		y = Input.GetAxis ("VerticalMoveP" + name);
+		x = InputHandler.GetAxis (playerNumber, InputType.Move, Axis.Hor);
+		y = InputHandler.GetAxis (playerNumber, InputType.Move, Axis.Ver);
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -101,8 +143,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		float x, y;
 
-		x = Input.GetAxis ("HorizontalAimP" + name);
-		y = Input.GetAxis ("VerticalAimP" + name);
+		x = InputHandler.GetAxis (playerNumber, InputType.Aim, Axis.Hor);
+		y = InputHandler.GetAxis (playerNumber, InputType.Aim, Axis.Ver);
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -114,10 +156,10 @@ public class PlayerController : MonoBehaviour {
 
 	void UpdateAbilities ()
 	{
-		if (Input.GetButtonDown ("FireP" + name))
+		if (InputHandler.GetButtonDown (playerNumber, Players.Button.Fire))
 			Shoot ();
 
-		if (Input.GetButtonDown ("ParryP" + name))
+		if (InputHandler.GetButtonDown (playerNumber, Players.Button.Parry))
 			Parry ();
 
 		UpdateCooldown ();

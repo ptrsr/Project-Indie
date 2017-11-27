@@ -70,8 +70,8 @@ public class InputHandler : StandaloneInputModule
 
     private void Update()
     {
-//        RegisterPlayers();
-//        CheckReadyUp();
+        RegisterPlayers();
+        CheckReadyUp();
     }
 
     public PointerEventData GetLastPointerEventDataPublic()
@@ -92,26 +92,45 @@ public class InputHandler : StandaloneInputModule
             _players[i] = CheckPlayer();
 
             if (i == 0)
-                SetPlayer(Player.P1);
+				SetPlayer(_players[0]);
         }
     }
 
     private void CheckReadyUp()
     {
+		if (ready == null)
+			return;
+
         for (int i = 0; i < _players.Length; i++)
         {
             if (_players[i] == Player.none)
-                return;
+				continue;
 
-            if (Input.GetButton(_players[i].ToString() + "Submit"))
-                ready(_players[i]);
+			if (Input.GetButtonDown (_players [i].ToString () + "Submit")) {
+				print (_players [i].ToString ());
+				ready ((Player)i);
+			}
         }
     }
     private Player CheckPlayer()
     {
-        for (int i = 1; i < 3; i++)
+        for (int i = 1; i < 6; i++)
         {
             string player = ((Player)i).ToString();
+
+			bool skip = false;
+
+			for (int l = 0; l < _players.Length; l++) 
+			{
+				if ((int)_players[l] == i)
+				{
+					skip = true;
+					break;
+				}
+			}
+
+			if (skip)
+				continue;
 
             for (int j = 0; j < 2; j++)
             {
@@ -183,7 +202,11 @@ public class InputHandler : StandaloneInputModule
     {
         string playerName = player.ToString();
 
+		print (playerName);
+
         horizontalAxis = playerName + "HorMove";
         verticalAxis = playerName + "VerMove";
+		submitButton = playerName + "Submit";
+		//cancelButton = playerName + "Cancel";
     }
 }

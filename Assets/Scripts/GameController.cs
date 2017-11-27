@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour {
 	private Transform players;
 
 	[HideInInspector] public int playerAmount;
-	[HideInInspector] public bool gameStarted;
+	[HideInInspector] public bool gameStarted, gameFinished;
 
 	public Dictionary <string, int> victories;
 
@@ -39,6 +39,7 @@ public class GameController : MonoBehaviour {
 	{
 		InitializeCooldownBars ();
 		gameStarted = true;
+		gameFinished = false;
 		StartCoroutine (StartCountdown (waitTime));
 	}
 
@@ -98,6 +99,7 @@ public class GameController : MonoBehaviour {
 		if (players.childCount == 1)
 		{
 			gameStarted = false;
+			gameFinished = true;
 
 			foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 				Destroy (bullet);
