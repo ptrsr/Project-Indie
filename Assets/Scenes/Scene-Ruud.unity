@@ -1250,7 +1250,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 593126819}
-  - component: {fileID: 593126817}
   m_Layer: 0
   m_Name: '------SETTINGS------'
   m_TagString: Untagged
@@ -1258,17 +1257,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &593126817
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 593126816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ea7cc273ba838a44828d67bba97b659, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &593126819
 Transform:
   m_ObjectHideFlags: 0
@@ -1831,7 +1819,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalAxis: 
   m_VerticalAxis: 
-  m_SubmitButton: SubmitP1
+  m_SubmitButton: P1Submit
   m_CancelButton: Cancel
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
