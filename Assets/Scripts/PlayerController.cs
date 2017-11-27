@@ -126,13 +126,19 @@ public class PlayerController : MonoBehaviour {
 			return;
 
 		bodyAnim.SetInteger ("playerClip", 1);
+		Invoke ("Idle", globalCooldown);
 
-		Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 
 		curGlobalCooldown = 0;
 		curCooldown -= cooldown;
 
 		print ("Player " + name + " Shoots");
+	}
+
+	void Idle ()
+	{
+		bodyAnim.SetInteger ("playerClip", 0);
 	}
 
 	public void ReflectBullet ()
@@ -182,6 +188,7 @@ public class PlayerController : MonoBehaviour {
 		curShieldCooldown = 0.0f;
 		parrying = true;
 		bodyAnim.SetInteger ("playerClip", 2);
+		Invoke ("Idle", shieldCooldown);
 	}
 
 	public bool CanParry (Vector3 bulletPosition)

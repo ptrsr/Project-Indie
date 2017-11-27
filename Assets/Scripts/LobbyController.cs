@@ -19,10 +19,11 @@ public class LobbyController : MonoBehaviour {
 	[SerializeField] private GameObject readyText;
 	[SerializeField] private Transform startPositions;
 
-	[Header ("Textures")]
+	[Header ("Textures/Materials")]
 
 	[SerializeField] private Texture blue;
 	[SerializeField] private Texture red, green, yellow;
+	[SerializeField] private Material player1Mat, player2Mat, player3Mat, player4Mat;
 
 	private GameController gameController;
 
@@ -100,22 +101,48 @@ public class LobbyController : MonoBehaviour {
 					PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 					playerController.enabled = false;
 
+					//Colors
 					int randomNumber = Random.Range (0, playerColors.Count);
 					playerController.playerColor = playerColors [randomNumber];
 					playerColors.Remove (playerColors [randomNumber]);
 
-					Renderer bodyRenderer = playerController.transform.GetChild (0).GetChild (0).GetComponent <Renderer> ();
-					if (playerController.playerColor == Color.blue)
-						bodyRenderer.sharedMaterial.mainTexture = blue;
-					else if (playerController.playerColor == Color.red)
-						bodyRenderer.sharedMaterial.mainTexture = red;
-					else if (playerController.playerColor == Color.green)
-						bodyRenderer.sharedMaterial.mainTexture = green;
-					else if (playerController.playerColor == Color.yellow)
-						bodyRenderer.sharedMaterial.mainTexture = yellow;
+					AssignColors (playerController, i);
 				}
 			}
 		}
+	}
+
+	void AssignColors (PlayerController playerController, int playerNumber)
+	{
+		Renderer bodyRenderer = playerController.transform.GetChild (0).GetChild (0).GetComponent <Renderer> ();
+
+		foreach (Renderer mat in bodyRenderer.GetComponentsInChildren <Renderer> ())
+		{
+			switch (playerNumber)
+			{
+			case 1:
+				mat.material = player1Mat;
+				break;
+			case 2:
+				mat.material = player2Mat;
+				break;
+			case 3:
+				mat.material = player3Mat;
+				break;
+			case 4:
+				mat.material = player4Mat;
+				break;
+			}
+		}
+
+		if (playerController.playerColor == Color.blue)
+			bodyRenderer.sharedMaterial.mainTexture = blue;
+		else if (playerController.playerColor == Color.red)
+			bodyRenderer.sharedMaterial.mainTexture = red;
+		else if (playerController.playerColor == Color.green)
+			bodyRenderer.sharedMaterial.mainTexture = green;
+		else if (playerController.playerColor == Color.yellow)
+			bodyRenderer.sharedMaterial.mainTexture = yellow;
 	}
 
 	void BecomeReady ()
@@ -190,6 +217,11 @@ public class LobbyController : MonoBehaviour {
 
 		gameController.SetupGame (players);
 
+		//Colors
+		playerColors.Clear ();
+		for (int i = 0; i < players.childCount; i++)
+			playerColors.Add (players.GetChild (i).GetComponent <PlayerController> ().playerColor);
+
 		yield return new WaitForSeconds (1.0f);
 
 		selectingPlayers = false;
@@ -215,7 +247,12 @@ public class LobbyController : MonoBehaviour {
 		{
 			GameObject newPlayer = Instantiate (player, startPositions.GetChild (i - 1).position, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
 			newPlayer.name = i.ToString ();
-			newPlayer.GetComponent <PlayerController> ().enabled = false;
+
+			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
+			playerController.playerColor = playerColors [i - 1];
+			playerController.enabled = false;
+
+			AssignColors (playerController, i);
 		}
 
 		gameController.Restart ();

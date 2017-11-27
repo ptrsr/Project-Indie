@@ -1358,6 +1358,10 @@ MonoBehaviour:
   red: {fileID: 2800000, guid: 05c28a0e4f285324fb02dff83b86b1ef, type: 3}
   green: {fileID: 2800000, guid: e0137c29104e4bf45a78fd273be36158, type: 3}
   yellow: {fileID: 2800000, guid: da9b9ccd1310a03458b09cb7b4fcef18, type: 3}
+  player1Mat: {fileID: 2100000, guid: 16eb2121ac360054395a8236011919c0, type: 2}
+  player2Mat: {fileID: 2100000, guid: 868f3bf96b007934a848c059968d7093, type: 2}
+  player3Mat: {fileID: 2100000, guid: e28bc8a22dcb25042a7fba0a2275a814, type: 2}
+  player4Mat: {fileID: 2100000, guid: 53593640959cff04eb01eace4023800b, type: 2}
 --- !u!1 &1324682998
 GameObject:
   m_ObjectHideFlags: 0

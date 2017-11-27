@@ -103,24 +103,36 @@ public class GameController : MonoBehaviour {
 				Destroy (bullet);
 
 			Transform player = players.GetChild (0);
-			player.GetComponent <PlayerController> ().enabled = false;
+			PlayerController playerController = player.GetComponent <PlayerController> ();
+			playerController.enabled = false;
 
 			victories [player.name]++;
 
-			winText.text = "..." + " player wins this round!";
-			winText.gameObject.SetActive (true);
-			print ("Player " + player.name + " has " + victories [player.name] + " wins!");
+			string playerColorName = "";
 
-			CheckForTotalVictory (player.name);
+			if (playerController.playerColor == Color.blue)
+				playerColorName = "Blue";
+			else if (playerController.playerColor == Color.red)
+				playerColorName = "Red";
+			else if (playerController.playerColor == Color.green)
+				playerColorName = "Green";
+			else if (playerController.playerColor == Color.yellow)
+				playerColorName = "Yellow";
+
+			winText.text = playerColorName + " player wins this round!";
+			winText.gameObject.SetActive (true);
+			print (playerColorName + " player has " + victories [player.name] + " wins!");
+
+			CheckForTotalVictory (player, playerColorName);
 		}
 	}
 
-	void CheckForTotalVictory (string playerName)
+	void CheckForTotalVictory (Transform player, string playerColor)
 	{
-		if (victories [playerName] == Modifiers.pointsToVictory)
+		if (victories [player.name] == Modifiers.pointsToVictory)
 		{
 			victories = null;
-			print ("Player " + playerName + " wins the set!");
+			print (playerColor + " player wins the set!");
 		}
 	}
 
