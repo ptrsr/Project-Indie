@@ -11,16 +11,21 @@ public class PlayerController : MonoBehaviour {
 	private Transform activeBullets;
 	[HideInInspector] public Image cooldownBar;
 	private Animator anim;
+	private Animator bodyAnim;
+
+	public Color playerColor;
 
 	[Header ("Values")]
-	[SerializeField] private float moveSpeed = 400.0f;
-	[SerializeField] private float rotationSpeed = 5.0f;
+	[SerializeField] private float moveSpeed = 600.0f;
+	[SerializeField] private float rotationSpeed = 10.0f;
 	[SerializeField] private int clipSize = 5;
 	[SerializeField] private float cooldown = 3.0f;
+	[SerializeField] private float globalCooldown = 0.3f;
 	[SerializeField] private float shieldCooldown = 0.5f;
 	[SerializeField] private float shieldDuration = 0.25f;
-	[SerializeField] private float maxShieldAngle = 75.0f;
+	[SerializeField] private float maxShieldAngle = 60.0f;
 
+	private float curGlobalCooldown;
 	private float curCooldown;
 	private float curShieldCooldown;
 
@@ -37,15 +42,18 @@ public class PlayerController : MonoBehaviour {
 		#endif
 
 		rb = GetComponent <Rigidbody> ();
-		aim = transform.GetChild (0);
+		aim = transform.GetChild (0).GetChild (0);
 		if (GameObject.Find ("ActiveBullest") != null)
 			activeBullets = GameObject.Find ("ActiveBullets").transform;
 
 		anim = GetComponent <Animator> ();
+		bodyAnim = transform.GetChild (0).GetComponent <Animator> ();
 		anim.speed = 8;
 		anim.SetBool ("Moving", false);
 
 		curShieldCooldown = shieldCooldown;
+
+		bodyAnim.SetInteger ("playerClip", 0);
 	}
 
 	void Update ()
@@ -65,16 +73,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		float x, y;
 
-		if (Input.GetJoystickNames ().Length <= 1)
-		{
-			x = Input.GetAxis ("HorizontalMovePC");
-			y = Input.GetAxis ("VerticalMovePC");
-		}
-		else
-		{
-			x = Input.GetAxis ("HorizontalMoveP" + name);
-			y = Input.GetAxis ("VerticalMoveP" + name);
-		}
+		x = Input.GetAxis ("HorizontalMoveP" + name);
+		y = Input.GetAxis ("VerticalMoveP" + name);
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -86,12 +86,14 @@ public class PlayerController : MonoBehaviour {
 
 			rb.AddForce ((transform.forward * Time.deltaTime * moveSpeed) - rb.velocity, ForceMode.VelocityChange);
 
-			anim.SetBool ("Moving", true);
+			if (!anim.GetBool ("Moving"))
+				anim.SetBool ("Moving", true);
 		}
 		else
 		{
 			rb.velocity = new Vector3 (0.0f, 0.0f, 0.0f);
-			anim.SetBool ("Moving", false);
+			if (anim.GetBool ("Moving"))
+				anim.SetBool ("Moving", false);
 		}
 	}
 
@@ -99,16 +101,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		float x, y;
 
-		if (Input.GetJoystickNames ().Length <= 1)
-		{
-			x = Input.GetAxis ("HorizontalAimPC");
-			y = Input.GetAxis ("VerticalAimPC");
-		}
-		else
-		{
-			x = Input.GetAxis ("HorizontalAimP" + name);
-			y = Input.GetAxis ("VerticalAimP" + name);
-		}
+		x = Input.GetAxis ("HorizontalAimP" + name);
+		y = Input.GetAxis ("VerticalAimP" + name);
 
 		if (x != 0.0f || y != 0.0f)
 		{
@@ -120,10 +114,10 @@ public class PlayerController : MonoBehaviour {
 
 	void UpdateAbilities ()
 	{
-		if (Input.GetButtonDown ("FireP" + name) || Input.GetJoystickNames ().Length <= 1 && Input.GetButtonDown ("FirePC"))
+		if (Input.GetButtonDown ("FireP" + name))
 			Shoot ();
 
-		if (Input.GetButtonDown ("ParryP" + name) || Input.GetJoystickNames ().Length <= 1 && Input.GetButtonDown ("ParryPC"))
+		if (Input.GetButtonDown ("ParryP" + name))
 			Parry ();
 
 		UpdateCooldown ();
@@ -131,20 +125,40 @@ public class PlayerController : MonoBehaviour {
 
 	void Shoot ()
 	{
-		if (curCooldown < cooldown)
+		if (curCooldown < cooldown || curGlobalCooldown < globalCooldown)
 			return;
-		
-		Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 
+		bodyAnim.SetInteger ("playerClip", 1);
+		Invoke ("Idle", globalCooldown);
+
+		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+
+		curGlobalCooldown = 0;
 		curCooldown -= cooldown;
 
 		print ("Player " + name + " Shoots");
 	}
 
+	void Idle ()
+	{
+		bodyAnim.SetInteger ("playerClip", 0);
+	}
+
 	public void ReflectBullet ()
 	{
-		GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
-		newBullet.GetComponent <Bullet> ()._speed *= 2;
+		if (Modifiers.multiplyingBullets)
+		{
+			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
+			newBullet.GetComponent <Bullet> ()._speed *= 2;
+
+			GameObject newBullet2 = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
+			newBullet2.GetComponent <Bullet> ()._speed *= 2;
+		}
+		else
+		{
+			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+			newBullet.GetComponent <Bullet> ()._speed *= 2;
+		}
 	}
 
 	void UpdateCooldown ()
@@ -155,6 +169,10 @@ public class PlayerController : MonoBehaviour {
 
 		if (cooldownBar != null)
 			cooldownBar.fillAmount = curCooldown / (cooldown * clipSize);
+
+		//Shoot global cooldown
+		if (curGlobalCooldown < globalCooldown)
+			curGlobalCooldown += Time.deltaTime;
 
 		//Shield cooldown
 		if (curShieldCooldown < shieldCooldown)
@@ -172,6 +190,8 @@ public class PlayerController : MonoBehaviour {
 		
 		curShieldCooldown = 0.0f;
 		parrying = true;
+		bodyAnim.SetInteger ("playerClip", 2);
+		Invoke ("Idle", shieldCooldown);
 	}
 
 	public bool CanParry (Vector3 bulletPosition)
@@ -180,7 +200,7 @@ public class PlayerController : MonoBehaviour {
 
 		float angle = Vector3.Angle (aim.forward, dir);
 
-		Debug.Log ("Angle: " + angle / 2);
+		print ("Angle: " + angle / 2);
 
 		if (angle >= maxShieldAngle && parrying)
 			return true;
