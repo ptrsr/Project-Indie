@@ -11,45 +11,95 @@ namespace Players
         P1,
         P2
     }
-}
 
-public class InputManager : MonoBehaviour
-{
-
-    private enum Aim
+    public enum Axis
     {
         Hor,
         Ver
     }
 
-    private enum InputType
+    public enum Button
+    {
+        Fire,
+        Parry
+    }
+
+    public enum InputType
     {
         Move,
         Aim
     }
+}
 
-    private Player _player1 = Player.none;
+public class InputManager : MonoBehaviour
+{
+    public delegate void Ready(Player player);
+    public static event Ready ready;
+
+    static private InputManager _instance = null;
+
+    private Player[] _players = new Player[4];
+
+    private void Awake()
+    {
+        if (_instance != null)
+        {
+            Destroy(this);
+            return;
+        }
+
+        _instance = this;
+    }
+
+    private void Start()
+    {
+        for (int i = 0; i < _players.Length; i++)
+            _players[i] = Player.none;
+    }
 
     private void Update()
     {
-        if (_player1 == Player.none && Input.GetAxis("AllAxises") != 0)
+        RegisterPlayers();
+        CheckReadyUp();
+    }
+
+    private void RegisterPlayers()
+    {
+        if (Input.GetAxis("AllAxises") == 0)
+            return;
+
+        for (int i = 0; i < _players.Length; i++)
         {
-            _player1 = CheckPlayer();
-            ServiceLocator.Locate<CustomInputHandler>().SetPlayer(_player1);
+            if (_players[i] != Player.none)
+                continue;
+
+            _players[i] = CheckPlayer();
+
+            if (i == 0)
+                ServiceLocator.Locate<CustomInputHandler>().SetPlayer(Player.P1);
         }
     }
 
+    private void CheckReadyUp()
+    {
+        for (int i = 0; i < _players.Length; i++)
+        {
+            if (_players[i] == Player.none)
+                return;
+
+            if (Input.GetButton(_players[i].ToString() + "Fire"))
+                ready(_players[i]);
+        }
+    }
     private Player CheckPlayer()
     {
-        List<string> _axises = new List<string>();
-
         for (int i = 1; i < 3; i++)
         {
             string player = ((Player)i).ToString();
 
             for (int j = 0; j < 2; j++)
             {
-                string aim = ((Aim)j).ToString();
+                string aim = ((Axis)j).ToString();
 
                 for (int k = 0; k < 2; k++)
                 {
@@ -60,5 +110,56 @@ public class InputManager : MonoBehaviour
             }
         }
         return Player.none;
+    }
+
+    static public float GetAxis(Player player, InputType inputType, Axis axis)
+    {
+        Player controller = _instance._players[(int)player];
+
+        if (controller == Player.none)
+        {
+            Debug.LogWarning("Trying to get axis from unregistered player!");
+            return 0;
+        }
+        return Input.GetAxis(controller.ToString() + axis.ToString() + inputType.ToString());
+    }
+
+    static public bool GetButton(Player player, Button button)
+    {
+        Player controller = _instance._players[(int)player];
+
+        if (controller == Player.none)
+        {
+            Debug.LogWarning("Trying to get button from unregistered player!");
+            return false;
+        }
+
+        return Input.GetButton(controller.ToString() + button.ToString());
+    }
+
+    static public bool GetButtonDown(Player player, Button button)
+    {
+        Player controller = _instance._players[(int)player];
+
+        if (controller == Player.none)
+        {
+            Debug.LogWarning("Trying to get button from unregistered player!");
+            return false;
+        }
+
+        return Input.GetButtonDown(controller.ToString() + button.ToString());
+    }
+
+    static public bool GetButtonUp(Player player, Button button)
+    {
+        Player controller = _instance._players[(int)player];
+
+        if (controller == Player.none)
+        {
+            Debug.LogWarning("Trying to get button from unregistered player!");
+            return false;
+        }
+
+        return Input.GetButtonUp(controller.ToString() + button.ToString());
     }
 }
