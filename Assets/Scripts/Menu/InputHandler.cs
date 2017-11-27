@@ -70,8 +70,8 @@ public class InputHandler : StandaloneInputModule
 
     private void Update()
     {
-        RegisterPlayers();
-        CheckReadyUp();
+//        RegisterPlayers();
+//        CheckReadyUp();
     }
 
     public PointerEventData GetLastPointerEventDataPublic()
