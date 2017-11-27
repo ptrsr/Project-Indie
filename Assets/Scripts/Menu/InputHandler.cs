@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using Players;
 
 namespace Players
@@ -9,7 +10,10 @@ namespace Players
     {
         none,
         P1,
-        P2
+        P2,
+        P3,
+        P4,
+        P5
     }
 
     public enum Axis
@@ -27,21 +31,24 @@ namespace Players
     public enum InputType
     {
         Move,
-        Aim
+        Aim,
+        Submit
     }
 }
 
-public class InputManager : MonoBehaviour
+public class InputHandler : StandaloneInputModule
 {
     public delegate void Ready(Player player);
     public static event Ready ready;
 
-    static private InputManager _instance = null;
+    static private InputHandler _instance = null;
 
     private Player[] _players = new Player[4];
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (_instance != null)
         {
             Destroy(this);
@@ -49,10 +56,14 @@ public class InputManager : MonoBehaviour
         }
 
         _instance = this;
+
+        ServiceLocator.Provide(this);
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+
         for (int i = 0; i < _players.Length; i++)
             _players[i] = Player.none;
     }
@@ -61,6 +72,11 @@ public class InputManager : MonoBehaviour
     {
         RegisterPlayers();
         CheckReadyUp();
+    }
+
+    public PointerEventData GetLastPointerEventDataPublic()
+    {
+        return GetLastPointerEventData(-1);
     }
 
     private void RegisterPlayers()
@@ -76,7 +92,7 @@ public class InputManager : MonoBehaviour
             _players[i] = CheckPlayer();
 
             if (i == 0)
-                ServiceLocator.Locate<CustomInputHandler>().SetPlayer(Player.P1);
+                SetPlayer(Player.P1);
         }
     }
 
@@ -87,7 +103,7 @@ public class InputManager : MonoBehaviour
             if (_players[i] == Player.none)
                 return;
 
-            if (Input.GetButton(_players[i].ToString() + "Fire"))
+            if (Input.GetButton(_players[i].ToString() + "Submit"))
                 ready(_players[i]);
         }
     }
@@ -161,5 +177,13 @@ public class InputManager : MonoBehaviour
         }
 
         return Input.GetButtonUp(controller.ToString() + button.ToString());
+    }
+
+    public void SetPlayer(Player player)
+    {
+        string playerName = player.ToString();
+
+        horizontalAxis = playerName + "HorMove";
+        verticalAxis = playerName + "VerMove";
     }
 }
