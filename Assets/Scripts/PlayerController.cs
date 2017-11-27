@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Players;
 
 public class PlayerController : MonoBehaviour {
 
@@ -59,6 +60,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		UpdateAbilities ();
 	}
+
+    
 
 	void FixedUpdate ()
 	{
