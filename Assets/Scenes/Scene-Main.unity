@@ -1043,7 +1043,7 @@ MonoBehaviour:
   m_HorizontalAxis: P1HorMove
   m_VerticalAxis: P1VerMove
   m_SubmitButton: P1Submit
-  m_CancelButton: Cancel
+  m_CancelButton: P1Parry
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
@@ -1063,7 +1063,7 @@ MonoBehaviour:
   m_DragThreshold: 5
   _startState: 0
   _main: {fileID: 368676903}
-  _lobby: {fileID: 1211538497}
+  _lobby: {fileID: 1211538498}
   _settings: {fileID: 0}
 --- !u!1 &831399902
 GameObject:
@@ -1291,7 +1291,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1211538495}
   - component: {fileID: 1211538496}
-  - component: {fileID: 1211538497}
   - component: {fileID: 1211538498}
   m_Layer: 0
   m_Name: Lobby
@@ -1327,18 +1326,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _departSpeed: 0.4
   _arriveSpeed: 4
---- !u!114 &1211538497
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1211538494}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a1e0bb4383b16241806b2d528cb06b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _firstSelected: {fileID: 0}
 --- !u!114 &1211538498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1350,18 +1337,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffdc13400c3f04e42864f6c7dfc02acc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1206634264190598, guid: 91b01577fc6fc2846898a85dcdf21d53, type: 2}
+  _firstSelected: {fileID: 0}
+  playerPrefab: {fileID: 1206634264190598, guid: 91b01577fc6fc2846898a85dcdf21d53,
+    type: 2}
   players: {fileID: 1757376310}
   readyText: {fileID: 1991523172}
   startPositions: {fileID: 1568589799}
-  blue: {fileID: 2800000, guid: 345b28410b38a844ca224b51039aa3c2, type: 3}
-  red: {fileID: 2800000, guid: 05c28a0e4f285324fb02dff83b86b1ef, type: 3}
-  green: {fileID: 2800000, guid: e0137c29104e4bf45a78fd273be36158, type: 3}
-  yellow: {fileID: 2800000, guid: da9b9ccd1310a03458b09cb7b4fcef18, type: 3}
-  player1Mat: {fileID: 2100000, guid: 16eb2121ac360054395a8236011919c0, type: 2}
-  player2Mat: {fileID: 2100000, guid: 868f3bf96b007934a848c059968d7093, type: 2}
-  player3Mat: {fileID: 2100000, guid: e28bc8a22dcb25042a7fba0a2275a814, type: 2}
-  player4Mat: {fileID: 2100000, guid: 53593640959cff04eb01eace4023800b, type: 2}
 --- !u!1 &1324682998
 GameObject:
   m_ObjectHideFlags: 0
@@ -1533,6 +1514,7 @@ MonoBehaviour:
   winText: {fileID: 1324683001}
   playerAmount: 0
   gameStarted: 0
+  gameFinished: 0
 --- !u!1 &1389838476
 GameObject:
   m_ObjectHideFlags: 0
