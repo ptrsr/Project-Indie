@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-[RequireComponent(typeof(CustomInputHandler))]
+[RequireComponent(typeof(InputHandler))]
 public class Menu : EventSystem
 {
     [SerializeField]
@@ -11,7 +11,7 @@ public class Menu : EventSystem
 
     private StateMachine _sm;
 
-    private CustomInputHandler _handler;
+    private InputHandler _handler;
 
     private GameObject _lastSelectedObject;
 
@@ -26,7 +26,7 @@ public class Menu : EventSystem
     protected override void Awake()
     {
         base.Awake();
-        _handler = GetComponent<CustomInputHandler>();
+        _handler = GetComponent<InputHandler>();
         ServiceLocator.Provide(this);
     }
 

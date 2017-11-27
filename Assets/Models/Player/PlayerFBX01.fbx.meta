@@ -1,0 +1,165 @@
+fileFormatVersion: 2
+guid: ac183491947d6f7408745299ad846c25
+timeCreated: 1511775213
+licenseType: Free
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: Body
+    100002: Head
+    100004: L_Arm
+    100006: L_Elbow
+    100008: L_Fingers
+    100010: L_GunPivot
+    100012: L_Shoulder
+    100014: L_Wrist
+    100016: //RootNode
+    100018: R_Arm
+    100020: R_Elbow
+    100022: R_Fingers
+    100024: R_GunPivot
+    100026: R_Shoulder
+    100028: R_Wrist
+    400000: Body
+    400002: Head
+    400004: L_Arm
+    400006: L_Elbow
+    400008: L_Fingers
+    400010: L_GunPivot
+    400012: L_Shoulder
+    400014: L_Wrist
+    400016: //RootNode
+    400018: R_Arm
+    400020: R_Elbow
+    400022: R_Fingers
+    400024: R_GunPivot
+    400026: R_Shoulder
+    400028: R_Wrist
+    2300000: Body
+    2300002: Head
+    2300004: L_Arm
+    2300006: L_Elbow
+    2300008: L_Fingers
+    2300010: L_GunPivot
+    2300012: L_Shoulder
+    2300014: L_Wrist
+    2300016: //RootNode
+    2300018: R_Arm
+    2300020: R_Elbow
+    2300022: R_Fingers
+    2300024: R_GunPivot
+    2300026: R_Shoulder
+    2300028: R_Wrist
+    3300000: Body
+    3300002: Head
+    3300004: L_Arm
+    3300006: L_Elbow
+    3300008: L_Fingers
+    3300010: L_GunPivot
+    3300012: L_Shoulder
+    3300014: L_Wrist
+    3300016: //RootNode
+    3300018: R_Arm
+    3300020: R_Elbow
+    3300022: R_Fingers
+    3300024: R_GunPivot
+    3300026: R_Shoulder
+    3300028: R_Wrist
+    4300000: BodyPivot
+    4300002: Body
+    4300004: Head
+    4300006: L_Arm
+    4300008: L_Shoulder
+    4300010: L_Elbow
+    4300012: L_Wrist
+    4300014: L_GunPivot
+    4300016: L_Fingers
+    4300018: R_Arm
+    4300020: R_Shoulder
+    4300022: R_Elbow
+    4300024: R_Wrist
+    4300026: R_Fingers
+    4300028: R_GunPivot
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lambert2
+    second: {fileID: 2100000, guid: b1e33e2f940de9b438ce9ed132efd401, type: 2}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 0
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
