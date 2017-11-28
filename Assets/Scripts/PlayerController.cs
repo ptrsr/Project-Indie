@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour {
 		if (GameObject.Find ("ActiveBullest") != null)
 			activeBullets = GameObject.Find ("ActiveBullets").transform;
 
-		anim = GetComponent <Animator> ();
+		anim = transform.GetChild (1).GetComponent <Animator> ();
 		bodyAnim = transform.GetChild (0).GetComponent <Animator> ();
 		anim.speed = 8;
 		anim.SetBool ("Moving", false);
@@ -72,8 +72,6 @@ public class PlayerController : MonoBehaviour {
 	public void AssignColor ()
 	{
 		Renderer renderer = transform.GetChild (0).GetChild (0).GetComponent <Renderer> ();
-
-		print ("yo: " + (int)playerNumber);
 
 		foreach (Renderer rend in renderer.GetComponentsInChildren <Renderer> ())
 		{

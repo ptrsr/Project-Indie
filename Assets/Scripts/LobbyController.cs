@@ -16,7 +16,7 @@ public class LobbyController : SubMenu {
 	private bool selectingPlayers = false;
 
 	private Dictionary <Player, Status> playerStatus;
-	private List <Color> playerColors;
+	private List <Player> joinedPlayers;
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject playerPrefab;
@@ -54,14 +54,8 @@ public class LobbyController : SubMenu {
 
 	void Update ()
 	{
-		if (selectingPlayers)
-			PlayerSelection ();
-		
-		if (!selectingPlayers && !gameController.gameStarted && gameController.gameFinished) //&& playerOne != 0)
-		{
-			if (InputHandler.GetButtonDown (Player.P1, Players.Button.Fire)) //Submit
-				RestartGame ();
-		}
+		if (!selectingPlayers && !gameController.gameStarted && gameController.gameFinished)
+			RestartGame ();
 	}
 
 	void Debug ()
@@ -70,11 +64,6 @@ public class LobbyController : SubMenu {
 
 		for (int i = 0; i < Input.GetJoystickNames ().Length; i++)
 			print (Input.GetJoystickNames () [i]);
-	}
-
-	void PlayerSelection ()
-	{
-		ReadyCheck ();
 	}
 
 	void ProcessInput (Player player)
@@ -109,9 +98,13 @@ public class LobbyController : SubMenu {
 	{
 		playerStatus [player] = Status.ready;
 
-		//players.GetChild (i - 1).GetChild (0).GetComponent <Animator> ().SetInteger ("playerClip", 3);
+		for (int i = 0; i < players.childCount; i++)
+		{
+			if (players.GetChild (i).name == ((int) player).ToString ())
+				players.GetChild (i).GetChild (0).GetComponent <Animator> ().SetInteger ("playerClip", 3);
+		}
 
-		if (ReadyCheck ())
+		if (ReadyCheck () && selectingPlayers)
 			StartCoroutine (StartGame ());
 	}
 
@@ -158,13 +151,12 @@ public class LobbyController : SubMenu {
 		gameController.SetupGame (players);
 
 		//Colors
-		playerColors.Clear ();
 		for (int i = 0; i < players.childCount; i++)
-			playerColors.Add (players.GetChild (i).GetComponent <PlayerController> ().playerColor);
-
-		yield return new WaitForSeconds (1.0f);
+			players.GetChild (i).GetComponent <PlayerController> ().AssignColor ();
 
 		selectingPlayers = false;
+
+		yield return new WaitForSeconds (1.0f);
 
 		for (int i = 0; i < players.childCount; i++)
 		{
@@ -183,12 +175,14 @@ public class LobbyController : SubMenu {
 				Destroy (players.GetChild (i).gameObject);
 		}
 
-		for (int i = 1; i < gameController.playerAmount + 1; i++)
+		for (int i = 0; i < gameController.playerAmount; i++)
 		{
-			GameObject newPlayer = Instantiate (playerPrefab, startPositions.GetChild (i - 1).position, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
-			newPlayer.name = i.ToString ();
+			GameObject newPlayer = Instantiate (playerPrefab, startPositions.GetChild (i ).position, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+			newPlayer.name = (playerStatus.Keys.ElementAt (i).ToString ());
 
 			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
+			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
+			playerController.AssignColor ();
 			playerController.enabled = false;
 		}
 
@@ -203,14 +197,14 @@ public class LobbyController : SubMenu {
 		if (status)
 		{
 			playerStatus = new Dictionary <Player, Status> ();
-			playerColors = new List <Color> {Color.blue, Color.red, Color.green, Color.yellow};
+			joinedPlayers = new List <Player> ();
 			Invoke ("ActivateLobbyFunctionality", 0.1f);
 		}
 		else
 		{
 			selectingPlayers = false;
 			playerStatus = null;
-			playerColors = null;
+			joinedPlayers = null;
 		}
 	}
 
