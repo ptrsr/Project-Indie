@@ -202,8 +202,6 @@ public class InputHandler : StandaloneInputModule
     {
         string playerName = player.ToString();
 
-		print (playerName);
-
         horizontalAxis = playerName + "HorMove";
         verticalAxis = playerName + "VerMove";
 		submitButton = playerName + "Submit";

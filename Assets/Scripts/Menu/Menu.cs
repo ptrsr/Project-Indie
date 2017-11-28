@@ -103,9 +103,21 @@ public class Menu : EventSystem
                 _currentMenu = _settings;
                 break;
         }
-
         if (_currentMenu != null)
             SetSelectedGameObject(_currentMenu.EnableMenu());
+    }
+
+    public void Test(GameObject obj)
+    {
+        print(true);
+        UnityEngine.UI.Button button;
+        StartCoroutine(Select(obj));
+    }
+
+    IEnumerator Select(GameObject obj)
+    {
+        yield return new WaitForSecondsRealtime(0.1f);
+        SetSelectedGameObject(obj);
     }
 
     public void SendCommand(int command)

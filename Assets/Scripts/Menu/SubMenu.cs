@@ -7,7 +7,7 @@ public class SubMenu : MonoBehaviour
     [SerializeField]
     private GameObject _firstSelected;
 
-    private void Start()
+    private void Awake()
     {
         DisableMenu();
     }
