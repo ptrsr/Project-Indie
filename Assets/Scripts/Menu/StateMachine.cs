@@ -55,7 +55,7 @@ public class StateMachine
         transitions = new Dictionary<StateTransition, State> 
         {
             { new StateTransition(State.Main, Command.Continue), State.Lobby },
-            { new StateTransition(State.Lobby, Command.Continue), State.Settings },
+			{ new StateTransition(State.Lobby, Command.Continue), State.Game }, //Using Game temporarily
             { new StateTransition(State.Settings, Command.Continue), State.Game },
 
 

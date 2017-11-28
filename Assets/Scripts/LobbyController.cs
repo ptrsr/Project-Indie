@@ -2,44 +2,66 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Players;
+using System.Linq;
 
-public class LobbyController : MonoBehaviour {
+public class LobbyController : SubMenu {
+
+	private enum Status
+	{
+		joined,
+		ready
+	}
 
 	private bool selectingPlayers = false;
 
-	//Public for debugging
-	public string [] joysticks;
-	//public Dictionary <string, string> yo;
-	public int [] joysticksNumber;
-	public int playerOne;
+	private Dictionary <Player, Status> playerStatus;
+	private List <Color> playerColors;
 
 	[Header ("Prefabs")]
-	[SerializeField] private GameObject player;
+	[SerializeField] private GameObject playerPrefab;
 
 	[Header ("Game Objects")]
-	[SerializeField] private Button playButton;
-	[SerializeField] private GameObject playerSelection;
-	[SerializeField] private GameObject players;
+	[SerializeField] private Transform players;
+	[SerializeField] private GameObject readyText;
+	[SerializeField] private Transform startPositions;
 
-	[Header ("Colors")]
-	[SerializeField] private Color playerJoined;
-	[SerializeField] private Color playerReady;
+	private GameController gameController;
 
 	void Start ()
 	{
-		playButton.Select ();
-		
-		joysticks = null;
+		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
 
 		#if UNITY_EDITOR
 		Debug ();
 		#endif
 	}
 
+	public override GameObject EnableMenu ()
+	{
+		InputHandler.ready += ProcessInput;
+		Input.ResetInputAxes ();
+
+		return base.EnableMenu ();
+	}
+
+	public override void DisableMenu ()
+	{
+		InputHandler.ready -= ProcessInput;
+
+		base.DisableMenu ();
+	}
+
 	void Update ()
 	{
 		if (selectingPlayers)
 			PlayerSelection ();
+		
+		if (!selectingPlayers && !gameController.gameStarted && gameController.gameFinished) //&& playerOne != 0)
+		{
+			if (InputHandler.GetButtonDown (Player.P1, Players.Button.Fire)) //Submit
+				RestartGame ();
+		}
 	}
 
 	void Debug ()
@@ -50,128 +72,150 @@ public class LobbyController : MonoBehaviour {
 			print (Input.GetJoystickNames () [i]);
 	}
 
-	public void ActivatePlayerSelection ()
+	void PlayerSelection ()
 	{
-		if (playerSelection.activeInHierarchy)
+		ReadyCheck ();
+	}
+
+	void ProcessInput (Player player)
+	{
+		if (playerStatus.ContainsKey (player))
+			BecomeReady (player);
+		else
+			JoinLobby (player);
+	}
+
+	void JoinLobby (Player player)
+	{
+		playerStatus.Add (player, Status.joined);
+
+		print ((int) player + " joined");
+
+		Vector3 spawnPosition;
+		if (players.childCount > 0)
+			spawnPosition = players.GetChild (players.childCount - 1).position + new Vector3 (5.0f, 0.0f, 0.0f);
+		else
+			spawnPosition = new Vector3 (-14.0f, 2.2f, 5.9f);
+
+		GameObject newPlayer = Instantiate (playerPrefab, spawnPosition, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+		newPlayer.name = ((int) player).ToString ();
+		PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
+		playerController.playerNumber = player;
+		playerController.AssignColor ();
+		playerController.enabled = false;
+	}
+
+	void BecomeReady (Player player)
+	{
+		playerStatus [player] = Status.ready;
+
+		//players.GetChild (i - 1).GetChild (0).GetComponent <Animator> ().SetInteger ("playerClip", 3);
+
+		if (ReadyCheck ())
+			StartCoroutine (StartGame ());
+	}
+
+	bool ReadyCheck ()
+	{
+//		if (playerStatus.Count < 2)
+//			return false;
+		
+		for (int i = 0; i < playerStatus.Count; i++)
 		{
-			playerSelection.SetActive (false);
-			selectingPlayers = false;
-			joysticks = null;
-			joysticksNumber = null;
+			if (playerStatus.Values.ElementAt (i) != Status.ready)
+				return false;
+		}
+
+		return true;
+	}
+
+	//True if it's ready, false if it's not
+	void FinishLobby (bool status)
+	{
+		if (status)
+		{
+			if (!readyText.activeInHierarchy)
+			{
+				print ("Game is ready to start");
+
+				readyText.SetActive (true);
+			}
+
+			//if (Input.GetButtonDown ("P" + playerOne + "Submit"))
+			//	StartCoroutine (StartGame ());
 		}
 		else
 		{
-			playerSelection.SetActive (true);
-			Invoke ("InitializePlayerSelection", 0.1f);
-			joysticks = new string [4];
-			joysticksNumber = new int [4];
+			if (readyText.activeInHierarchy)
+				readyText.SetActive (false);
 		}
 	}
 
-	void InitializePlayerSelection ()
+	IEnumerator StartGame ()
+	{
+		transform.root.GetComponent <Menu> ().SendCommand (0);
+
+		gameController.SetupGame (players);
+
+		//Colors
+		playerColors.Clear ();
+		for (int i = 0; i < players.childCount; i++)
+			playerColors.Add (players.GetChild (i).GetComponent <PlayerController> ().playerColor);
+
+		yield return new WaitForSeconds (1.0f);
+
+		selectingPlayers = false;
+
+		for (int i = 0; i < players.childCount; i++)
+		{
+			Transform tempPlayer = players.GetChild (i);
+			tempPlayer.position = startPositions.GetChild (i).position;
+		}
+	}
+
+	void RestartGame ()
+	{
+		int childCount = players.childCount;
+
+		if (childCount > 0)
+		{
+			for (int i = 0; i < childCount; i++)
+				Destroy (players.GetChild (i).gameObject);
+		}
+
+		for (int i = 1; i < gameController.playerAmount + 1; i++)
+		{
+			GameObject newPlayer = Instantiate (playerPrefab, startPositions.GetChild (i - 1).position, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+			newPlayer.name = i.ToString ();
+
+			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
+			playerController.enabled = false;
+		}
+
+		gameController.Restart ();
+
+		gameController.InitializeGame (0.0f);
+	}
+
+	//True when starting lobby and false when exiting
+	public void ResetLobby (bool status)
+	{
+		if (status)
+		{
+			playerStatus = new Dictionary <Player, Status> ();
+			playerColors = new List <Color> {Color.blue, Color.red, Color.green, Color.yellow};
+			Invoke ("ActivateLobbyFunctionality", 0.1f);
+		}
+		else
+		{
+			selectingPlayers = false;
+			playerStatus = null;
+			playerColors = null;
+		}
+	}
+
+	void ActivateLobbyFunctionality ()
 	{
 		selectingPlayers = true;
-	}
-
-	void PlayerSelection ()
-	{
-		for (int i = 1; i < 5; i++)
-		{
-			if (Input.GetButtonDown ("SubmitP" + i))
-			{
-				print (i);
-
-				for (int j = 0; j < playerSelection.transform.childCount; j++)
-				{
-					Transform playerPanel = playerSelection.transform.GetChild (j);
-
-					if (playerPanel.GetChild (0).gameObject.activeInHierarchy && joysticks [i - 1] == null)
-					{
-						playerPanel.GetChild (0).gameObject.SetActive (false);
-						playerPanel.GetChild (1).gameObject.SetActive (true);
-
-						playerPanel.GetComponent <Image> ().color = playerJoined;
-
-						joysticks [i - 1] = "Joined";
-						joysticksNumber [i - 1] = j;
-
-						if (j == 0)
-							playerOne = i;
-
-						break;
-					}
-					else if (playerPanel.GetChild (1).gameObject.activeInHierarchy && joysticks [i - 1] == "Joined" && joysticksNumber [i - 1] == j)
-					{
-						playerPanel.GetChild (1).gameObject.SetActive (false);
-						playerPanel.GetChild (2).gameObject.SetActive (true);
-
-						playerPanel.GetComponent <Image> ().color = playerReady;
-
-						joysticks [i - 1] = "Ready";
-
-						ReadyCheck ();
-
-						break;
-					}
-				}
-			}
-		}
-	}
-
-	void ReadyCheck ()
-	{
-		if (joysticks [0] == "Ready" || joysticks [1] == "Ready" || joysticks [3] == "Ready" || joysticks [4] == "Ready")
-		{
-			int joinedPlayers = 0;
-			int readyPlayers = 0;
-
-			foreach (string status in joysticks)
-			{
-				if (status == "Joined")
-					joinedPlayers++;
-
-				if (status == "Ready")
-					readyPlayers++;
-			}
-
-			if (readyPlayers >= 1 && joinedPlayers == 0)
-				StartGame (readyPlayers);
-		}
-	}
-
-	void StartGame (int playerAmount)
-	{
-		selectingPlayers = false;
-		playerSelection.transform.parent.gameObject.SetActive (false);
-
-		SpawnPlayers (playerAmount);
-		GetComponent <GameController> ().InitializeGame ();
-	}
-
-	void SpawnPlayers (int playerAmount)
-	{
-		for (int i = 0; i < playerAmount; i++)
-		{
-			GameObject newPlayer = Instantiate (player, players.transform.GetChild (i).position, Quaternion.identity, players.transform);
-			newPlayer.name = (joysticksNumber [i] + 1).ToString ();
-		}
-
-		for (int i = 0; i < 4; i++)
-			Destroy (players.transform.GetChild (i).gameObject);
-	}
-
-	public void ExitGame ()
-	{
-		Application.Quit ();
-	}
-
-	public void ResetLobby ()
-	{
-		joysticks = null;
-		joysticksNumber = null;
-		playerOne = 0;
-
-		for (int i = 0; i < playerSelection.transform.childCount; i++)
-			playerSelection.transform.GetChild (i).GetComponent <Image> ().color = Color.white;
 	}
 }
