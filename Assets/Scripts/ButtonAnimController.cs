@@ -20,12 +20,24 @@ public class ButtonAnimController : MonoBehaviour {
     }
     public void ButtonSelected()
     {
-        gameObject.GetComponent<Animation>().Play("ButtonSelected");
+        if (gameObject.tag == "LargeButton")
+        {
+            gameObject.GetComponent<Animation>().Play("ButtonSelected");
+        }
+        else if (gameObject.tag == "SmallButton")
+        {
+            gameObject.GetComponent<Animation>().Play("SmallButtonSelected");
+        }
     }
     public void ButtonReturn()
     {
-        gameObject.GetComponent<Animation>().Play("ButtonReturn");
+        if (gameObject.tag == "LargeButton")
+        {
+            gameObject.GetComponent<Animation>().Play("ButtonReturn");
+        }
+        else if (gameObject.tag == "SmallButton")
+        {
+            gameObject.GetComponent<Animation>().Play("SmallButtonReturn");
+        }
     }
-
-
 }
