@@ -11,11 +11,12 @@ public class PlayerController : MonoBehaviour {
 	private Rigidbody rb;
 	[HideInInspector] public Transform aim;
 	private Transform activeBullets;
-	[HideInInspector] public Image cooldownBar;
+	private Image cooldownBar;
+	private Image outerCooldownBar;
 	private Animator anim;
-	private Animator bodyAnim;
+	[HideInInspector] public Animator bodyAnim;
 
-	public Color playerColor;
+	[HideInInspector] public string playerColor;
 
 	[Header ("Values")]
 	[SerializeField] private float moveSpeed = 600.0f;
@@ -29,9 +30,13 @@ public class PlayerController : MonoBehaviour {
 
 	private float curGlobalCooldown;
 	private float curCooldown;
+	private int curAmmo;
+
 	private float curShieldCooldown;
 
 	private bool parrying = false;
+	private bool fallingThroughFloor = false;
+	private bool dead = false;
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
@@ -41,15 +46,21 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Texture red, green, yellow;
 	[SerializeField] private Material player1Mat, player2Mat, player3Mat, player4Mat;
 
+	void Awake ()
+	{
+		cooldownBar = transform.GetChild (2).GetChild (0).GetComponent <Image> ();
+		outerCooldownBar = cooldownBar.transform.GetChild (0).GetComponent <Image> ();
+		anim = transform.GetChild (1).GetComponent <Animator> ();
+		bodyAnim = transform.GetChild (0).GetComponent <Animator> ();
+	}
+
 	void Start ()
 	{
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0).GetChild (0);
-		if (GameObject.Find ("ActiveBullest") != null)
+		if (GameObject.Find ("ActiveBullets") != null)
 			activeBullets = GameObject.Find ("ActiveBullets").transform;
 
-		anim = transform.GetChild (1).GetComponent <Animator> ();
-		bodyAnim = transform.GetChild (0).GetComponent <Animator> ();
 		anim.speed = 8;
 		anim.SetBool ("Moving", false);
 
@@ -60,11 +71,18 @@ public class PlayerController : MonoBehaviour {
 
 	void Update ()
 	{
-		UpdateAbilities ();
+		if (!dead)
+			UpdateAbilities ();
+
+		if (fallingThroughFloor)
+			FallThroughFloor ();
 	}
 
 	void FixedUpdate ()
 	{
+		if (dead)
+			return;
+		
 		Move ();
 		Aim ();
 	}
@@ -77,16 +95,16 @@ public class PlayerController : MonoBehaviour {
 		{
 			switch ((int) playerNumber)
 			{
-			case 0:
+			case 1:
 				rend.material = player1Mat;
 				break;
-			case 1:
+			case 2:
 				rend.material = player2Mat;
 				break;
-			case 2:
+			case 23:
 				rend.material = player3Mat;
 				break;
-			case 3:
+			case 4:
 				rend.material = player4Mat;
 				break;
 			}
@@ -94,17 +112,25 @@ public class PlayerController : MonoBehaviour {
 
 		switch ((int) playerNumber)
 		{
-		case 0:
-			renderer.sharedMaterial.mainTexture = blue;
-			break;
 		case 1:
-			renderer.sharedMaterial.mainTexture = red;
+			renderer.sharedMaterial.mainTexture = blue;
+			outerCooldownBar.color = Color.blue;
+			playerColor = "Blue";
 			break;
 		case 2:
-			renderer.sharedMaterial.mainTexture = green;
+			renderer.sharedMaterial.mainTexture = red;
+			outerCooldownBar.color = Color.red;
+			playerColor = "Red";
 			break;
 		case 3:
+			renderer.sharedMaterial.mainTexture = green;
+			outerCooldownBar.color = Color.green;
+			playerColor = "Green";
+			break;
+		case 4:
 			renderer.sharedMaterial.mainTexture = yellow;
+			outerCooldownBar.color = Color.yellow;
+			playerColor = "Yellow";
 			break;
 		}
 	}
@@ -165,7 +191,7 @@ public class PlayerController : MonoBehaviour {
 
 	void Shoot ()
 	{
-		if (curCooldown < cooldown || curGlobalCooldown < globalCooldown)
+		if (curAmmo == 0 || curGlobalCooldown < globalCooldown)
 			return;
 
 		bodyAnim.SetInteger ("playerClip", 1);
@@ -173,8 +199,9 @@ public class PlayerController : MonoBehaviour {
 
 		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 
-		curGlobalCooldown = 0;
-		curCooldown -= cooldown;
+		curGlobalCooldown = 0.0f;
+		curCooldown = 0.0f;
+		curAmmo--;
 
 		print ("Player " + name + " Shoots");
 	}
@@ -204,11 +231,28 @@ public class PlayerController : MonoBehaviour {
 	void UpdateCooldown ()
 	{
 		//Shoot cooldown
-		if (curCooldown < cooldown * clipSize)
+		if (curAmmo != clipSize)
+		{
 			curCooldown += Time.deltaTime;
 
+			if (curCooldown >= cooldown)
+			{
+				curAmmo++;
+				if (curAmmo != clipSize)
+					curCooldown = 0.0f;
+			}
+		}
+
+		//Inner cooldown circle
 		if (cooldownBar != null)
-			cooldownBar.fillAmount = curCooldown / (cooldown * clipSize);
+		{
+			cooldownBar.fillAmount = curCooldown / cooldown;
+			cooldownBar.transform.parent.rotation = Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f));
+		}
+
+		//Outer cooldown circle
+		if (outerCooldownBar != null)
+			outerCooldownBar.fillAmount = curAmmo * 0.11f;
 
 		//Shoot global cooldown
 		if (curGlobalCooldown < globalCooldown)
@@ -250,9 +294,29 @@ public class PlayerController : MonoBehaviour {
 
 	public void Die ()
 	{
-		if (cooldownBar != null)
-			Destroy (cooldownBar.gameObject);
+		dead = true;
+
+		Destroy (GetComponent <Rigidbody> ());
+
+		if (anim.GetBool ("Moving"))
+			anim.SetBool ("Moving", false);
 		
-		Destroy (gameObject);
+		bodyAnim.SetInteger ("playerClip", 4);
+
+		GetComponent <BoxCollider> ().enabled = false;
+
+		Invoke ("ActivateFallingThroughFloor", 2.0f);
+
+		Destroy (gameObject, 4.25f);
+	}
+
+	void ActivateFallingThroughFloor ()
+	{
+		fallingThroughFloor = true;
+	}
+
+	void FallThroughFloor ()
+	{
+		transform.position -= new Vector3 (0.0f, 2.0f, 0.0f) * Time.deltaTime;
 	}
 }
