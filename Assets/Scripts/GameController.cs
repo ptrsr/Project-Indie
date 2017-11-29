@@ -128,42 +128,66 @@ public class GameController : MonoBehaviour {
 	{
 		if (playerAmount == 1)
 			return;
-		
-		if (players.childCount == 1)
+
+		int alivePlayers = 0;
+		for (int i = 0; i < players.childCount; i++)
 		{
-			gameStarted = false;
+			if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
+				alivePlayers++;
+		}
 
-			foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
-				Destroy (bullet);
-
-			Transform player = players.GetChild (0);
-			PlayerController playerController = player.GetComponent <PlayerController> ();
-			playerController.enabled = false;
-
-			victories [player.name]++;
-
-			string playerColorName = playerController.playerColor;
-
-			if (CheckForTotalVictory (player))
+		if (alivePlayers == 1)
+		{
+			for (int i = 0; i < players.childCount; i++)
 			{
-				victories = null;
-				winText.text = playerColorName + " player wins the set!";
-				winText.gameObject.SetActive (true);
-				gameFinished = true;
+				//Destroy the cooldown circles
+				Destroy (players.GetChild (i).GetChild (2).gameObject);
 
-				Invoke ("LockText", 1.0f);
-
-				print (playerColorName + " player wins the set!");
+				if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
+					StartCoroutine (Victory (players.GetChild (i)));
 			}
-			else
-			{
-				winText.text = playerColorName + " player wins this round!";
-				winText.gameObject.SetActive (true);
+		}
+	}
 
-				print (playerColorName + " player has " + victories [player.name] + " wins!");
+	IEnumerator Victory (Transform player)
+	{
+		gameStarted = false;
 
-				lobbyController.NewRound ();
-			}
+		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
+			Destroy (bullet);
+
+		PlayerController playerController = player.GetComponent <PlayerController> ();
+		playerController.enabled = false;
+		playerController.bodyAnim.SetInteger ("playerClip", 3);
+		playerController.anim.SetBool ("Moving", false);
+
+		Destroy (player.GetComponent <Rigidbody> ());
+
+		victories [player.name]++;
+
+		string playerColorName = playerController.playerColor;
+
+		yield return new WaitForSeconds (2.5f);
+
+		if (CheckForTotalVictory (player))
+		{
+			victories = null;
+			winText.text = playerColorName + " player wins the set!";
+			winText.gameObject.SetActive (true);
+			gameFinished = true;
+
+			Invoke ("LockText", 1.0f);
+
+			print (playerColorName + " player wins the set!");
+		}
+		else
+		{
+			winText.text = playerColorName + " player wins this round!";
+			winText.gameObject.SetActive (true);
+
+			print (playerColorName + " player has " + victories [player.name] + " wins!");
+
+			lobbyController.NewRound ();
 		}
 	}
 

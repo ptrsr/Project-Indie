@@ -75,7 +75,7 @@ public class LobbyController : SubMenu {
 	{
 		print (player);
 
-		if (!gameController.gameStarted)
+		if (!gameController.gameStarted && selectingPlayers)
 		{
 			if (playerStatus.ContainsKey (player))
 				BecomeReady (player);
@@ -143,7 +143,7 @@ public class LobbyController : SubMenu {
 
 		playerStatus.Add (player, Status.joined);
 
-		print ((int) player + " joined");
+		print (player + " joined");
 
 		GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
 		newPlayer.name = ((int) player).ToString ();
@@ -158,7 +158,7 @@ public class LobbyController : SubMenu {
 	void SetPlayersPosition ()
 	{
 		for (int i = 0; i < players.childCount; i++)
-			players.GetChild (i).position = new Vector3 (-14.0f + (i * 5), 2.2f, 5.9f);
+			players.GetChild (i).position = new Vector3 (4.8f + (i * 5), 0.9f, 14.0f);
 	}
 
 	void BecomeReady (Player player)
@@ -167,7 +167,7 @@ public class LobbyController : SubMenu {
 
 		for (int i = 0; i < players.childCount; i++)
 		{
-			if (players.GetChild (i).name == ((int) player).ToString ())
+			if (players.GetChild (i).name == ((int)player).ToString ())
 				players.GetChild (i).GetChild (0).GetComponent <Animator> ().SetInteger ("playerClip", 3);
 		}
 
@@ -214,6 +214,7 @@ public class LobbyController : SubMenu {
 	IEnumerator StartGame ()
 	{
 		gameCanvas.SetActive (true);
+		lobbyCanvas.SetActive (false);
 		mainCanvas.SetActive (false);
 		Invoke ("DeactivateLobbyCanvas", 1.0f);
 		transform.root.GetComponent <Menu> ().SendCommand (0);
@@ -234,6 +235,8 @@ public class LobbyController : SubMenu {
 			{
 				Transform tempPlayer = players.GetChild (i);
 				tempPlayer.position = startPositions.GetChild (i).position;
+
+				players.GetChild (i).GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
 			}
 		}
 	}

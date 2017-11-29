@@ -1554,7 +1554,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1206634264190598}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.51, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 4832221373832426}
@@ -4940,6 +4940,7 @@ MonoBehaviour:
   shieldCooldown: 0.5
   shieldDuration: 0.25
   maxShieldAngle: 60
+  dead: 0
   bullet: {fileID: 1060196065007666, guid: b04151479d6041b4eadbabab83bd5248, type: 2}
   blue: {fileID: 2800000, guid: 345b28410b38a844ca224b51039aa3c2, type: 3}
   red: {fileID: 2800000, guid: 05c28a0e4f285324fb02dff83b86b1ef, type: 3}

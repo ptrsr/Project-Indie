@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour {
 	private Transform activeBullets;
 	private Image cooldownBar;
 	private Image outerCooldownBar;
-	private Animator anim;
+	[HideInInspector] public Animator anim;
 	[HideInInspector] public Animator bodyAnim;
 
 	[HideInInspector] public string playerColor;
@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour {
 
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
-	private bool dead = false;
+	[HideInInspector] public bool dead = false;
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
@@ -180,7 +180,7 @@ public class PlayerController : MonoBehaviour {
 
 	void UpdateAbilities ()
 	{
-		if (InputHandler.GetButtonDown (playerNumber, Players.Button.Fire))
+		if (InputHandler.GetButton (playerNumber, Players.Button.Fire))
 			Shoot ();
 
 		if (InputHandler.GetButtonDown (playerNumber, Players.Button.Parry))
