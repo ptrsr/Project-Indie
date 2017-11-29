@@ -12,7 +12,8 @@ public class Bullet : MonoBehaviour
 
     private List<Collision> _collisions;
 
-	private bool canCollide = false;
+    [SerializeField]
+	private bool _canCollide = false;
 
     #if UNITY_EDITOR
     private List<Vector3> _bounces;
@@ -114,13 +115,14 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-		if (canCollide)
-			_collisions.Add(collision);
+        if (_canCollide)
+            _collisions.Add(collision);
+
     }
 
 	private void OnCollisionExit (Collision collision)
 	{
-		canCollide = true;
+		_canCollide = true;
 	}
 
     #if UNITY_EDITOR
