@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="ParameterPreset" id="{49c9a049-970e-4370-8ac3-ff1293435bea}">
+        <property name="name">
+            <value>MainTheme</value>
+        </property>
+        <relationship name="folder">
+            <destination>{09ac2c82-ea3c-4280-b911-45a986f3737b}</destination>
+        </relationship>
+        <relationship name="parameter">
+            <destination>{db87f748-6c3b-4f87-b66f-af5f5d0c5ff7}</destination>
+        </relationship>
+    </object>
+    <object class="GameParameter" id="{db87f748-6c3b-4f87-b66f-af5f5d0c5ff7}">
+        <property name="initialValue">
+            <value>0</value>
+        </property>
+        <property name="seekSpeedDescending">
+            <value>0.50000005960464478</value>
+        </property>
+    </object>
+</objects>
