@@ -19,6 +19,10 @@ public class ArrowButton : CustomButton
     protected override void Start()
     {
         _system = EventSystem.current;
+
+        Selectable[] selectables = GetComponentsInChildren<Selectable>();
+        _leftArrow = selectables[1].gameObject;
+        _rightArrow = selectables[2].gameObject;
     }
 
     public override void OnDeselect(BaseEventData eventData)
@@ -26,7 +30,7 @@ public class ArrowButton : CustomButton
         StartCoroutine(CheckArrows(eventData));
     }
 
-    public virtual void ArrowKey(int side) { }
+    public virtual void ArrowKey(int side) { print("nay"); }
 
     IEnumerator CheckArrows(BaseEventData eventData)
     {
@@ -55,6 +59,7 @@ public class ArrowButton : CustomButton
             {
                 if (!Input.GetMouseButton(0))
                     ArrowKey(selected == _leftArrow ? 1 : -1);
+
                 pressed = true;
             }
 
