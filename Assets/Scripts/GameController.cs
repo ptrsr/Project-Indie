@@ -12,6 +12,7 @@ public class GameController : MonoBehaviour {
 	[SerializeField] private GameObject pausePanel;
 	[SerializeField] private GameObject activeBullets;
 	[SerializeField] private GameObject musicManager;
+	[SerializeField] private Transform scorePanel;
 
 	private Transform players;
 
@@ -43,6 +44,12 @@ public class GameController : MonoBehaviour {
 		
 		winText.gameObject.SetActive (false);
 		winText.GetComponent <Animator> ().enabled = true;
+
+		for (int i = 0; i < playerAmount; i++)
+		{
+			PlayerController playerController = players.GetChild (i).GetComponent <PlayerController> ();
+			scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: 0";
+		}
 
 		InitializeGame (1.0f);
 	}
@@ -109,6 +116,7 @@ public class GameController : MonoBehaviour {
 			{
 				lobbyController.enabled = true;
 				ServiceLocator.Locate <Menu> ().SendCommand (1);
+				lobbyController.settingsCanvas.SetActive (false);
 			}
 		}
 	}
@@ -120,7 +128,7 @@ public class GameController : MonoBehaviour {
 		{
 			Time.timeScale = 0;
 			pausePanel.SetActive (true);
-			pausePanel.transform.GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
+			pausePanel.transform.GetChild (1).GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
 
 			if (players.GetChild (0).GetComponent <PlayerController> ().enabled)
 				canActivatePlayerController = true;
@@ -189,6 +197,7 @@ public class GameController : MonoBehaviour {
 		Destroy (player.GetComponent <Rigidbody> ());
 
 		victories [player.name]++;
+		scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: " + victories [player.name];
 
 		string playerColorName = playerController.playerColor;
 
@@ -247,6 +256,9 @@ public class GameController : MonoBehaviour {
 		lobbyController.RemoveAllPlayers ();
 
 		transform.root.GetComponent <Menu> ().SendCommand (1);
+
+		for (int i = 0; i < 4; i++)
+			scorePanel.GetChild (i).GetComponent <Text> ().text = "";
 	}
 
 	public void BackToLobby ()

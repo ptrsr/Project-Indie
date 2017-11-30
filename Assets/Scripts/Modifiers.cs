@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Modifiers : MonoBehaviour {
 
-	public static int pointsToVictory = 2;
+	public static int pointsToVictory = 3;
 	public static int lives = 1;
 	public static int clipSize = 3;
 

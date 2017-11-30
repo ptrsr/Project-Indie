@@ -27,6 +27,7 @@ public class LobbyController : SubMenu {
 	[SerializeField] private GameObject gameCanvas;
 	[SerializeField] private GameObject lobbyCanvas;
 	[SerializeField] private GameObject mainCanvas;
+	public GameObject settingsCanvas;
 	[SerializeField] private GameObject exitConfirmPanel;
 
 	private GameController gameController;
@@ -49,6 +50,7 @@ public class LobbyController : SubMenu {
 
 		if (InputHandler.GetButtonDown (Player.P1, Players.Button.Settings) && selectingPlayers)
 		{
+			settingsCanvas.SetActive (true);
 			ServiceLocator.Locate <Menu> ().SendCommand (2);
 			Invoke ("DisableThis", 0.01f);
 		}
@@ -169,7 +171,7 @@ public class LobbyController : SubMenu {
 	void SetPlayersPosition ()
 	{
 		for (int i = 0; i < players.childCount; i++)
-			players.GetChild (i).position = new Vector3 (4.8f + (i * 5), 0.9f, 14.0f);
+			players.GetChild (i).position = new Vector3 (10.8f + (i * 5), 0.9f, 14.0f);
 	}
 
 	void BecomeReady (Player player)
