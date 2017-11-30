@@ -5,9 +5,7 @@ using FMODUnity;
 public class MusicChanger : MonoBehaviour {
 
     //Changing these floats from 0 to 1 will play their corresponding tracks in FMOD
-    //Remember to deactivate other tracks
-    //PlayMain needs to be activated to skip from intro/outro to MT,A1,A2 and A3 
-    public float m_MT, m_A1, m_A2, m_A3, m_O; //MainTheme, ActionLevel1, ActionLevel2, ActionLevel3, Outro
+    public float m_MT, m_A1, m_A2, m_A3, m_O, m_Menu, m_Pause; //MainTheme, ActionLevel1, ActionLevel2, ActionLevel3, Outro, Menu Music, Pause;
 
     FMODUnity.StudioEventEmitter emitter;
     private void Start()
@@ -16,44 +14,6 @@ public class MusicChanger : MonoBehaviour {
     }
     private void Update()
     {
-        /* Activate to test
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            m_MT = 1;
-            m_A1 = 0;
-            m_A2 = 0;
-            m_A3 = 0;
-            m_O = 0;
-
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            m_MT = 0;
-            m_A1 = 1;
-            m_A2 = 0;
-            m_A3 = 0;
-            m_O = 0;
-
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            m_MT = 0;
-            m_A1 = 0;
-            m_A2 = 1;
-            m_A3 = 0;
-            m_O = 0;
-
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            m_MT = 0;
-            m_A1 = 0;
-            m_A2 = 0;
-            m_A3 = 1;
-            m_O = 0;
-
-        }*/
-
 
         if (m_MT == 1f)
         {
@@ -94,6 +54,22 @@ public class MusicChanger : MonoBehaviour {
         else
         {
             emitter.SetParameter("Outro", 0);
+        }
+        if (m_Menu == 1f)
+        {
+            emitter.SetParameter("MenuMusic", 1);
+        }
+        else
+        {
+            emitter.SetParameter("MenuMusic", 0);
+        }
+        if (m_Pause == 1f)
+        {
+            emitter.SetParameter("Pause", 1);
+        }
+        else
+        {
+            emitter.SetParameter("Pause", 0);
         }
     }
 }
