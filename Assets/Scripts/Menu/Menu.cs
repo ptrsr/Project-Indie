@@ -53,6 +53,7 @@ public class Menu : EventSystem
         CheckMenu();
     }
 
+	#if UNITY_EDITOR
     protected override void OnValidate()
     {
         base.OnValidate();
@@ -62,6 +63,7 @@ public class Menu : EventSystem
         if (camMovement != null)
             camMovement.CameraChange(_startState);
     }
+	#endif
 
     private void CheckMenu()
     {
