@@ -135,6 +135,9 @@ public class InputHandler : StandaloneInputModule
 			if (skip)
 				continue;
 
+            if (Input.GetButton(player + "Submit"))
+                return ((Player)i);
+
             for (int j = 0; j < 2; j++)
             {
                 string aim = ((Axis)j).ToString();
@@ -204,8 +207,6 @@ public class InputHandler : StandaloneInputModule
     public void SetPlayer(Player player)
     {
         string playerName = player.ToString();
-
-		print (playerName);
 
         horizontalAxis = playerName + "HorMove";
         verticalAxis = playerName + "VerMove";

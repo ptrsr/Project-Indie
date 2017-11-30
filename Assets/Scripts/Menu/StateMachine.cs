@@ -12,8 +12,9 @@ public enum State
 
 public enum Command
 {
-    Continue,
-    Exit
+    Submit,
+    Back,
+    Alt
 }
 
 public class StateMachine
@@ -54,14 +55,15 @@ public class StateMachine
 
         transitions = new Dictionary<StateTransition, State> 
         {
-            { new StateTransition(State.Main, Command.Continue), State.Lobby },
-			{ new StateTransition(State.Lobby, Command.Continue), State.Game }, //Using Game temporarily
-            { new StateTransition(State.Settings, Command.Continue), State.Game },
+            { new StateTransition(State.Main, Command.Submit), State.Lobby },
+            { new StateTransition(State.Lobby, Command.Alt), State.Settings },
+            { new StateTransition(State.Lobby, Command.Submit), State.Game }, 
+            { new StateTransition(State.Settings, Command.Submit), State.Game },
 
 
-            { new StateTransition(State.Game, Command.Exit), State.Lobby },
-            { new StateTransition(State.Settings, Command.Exit), State.Lobby },
-            { new StateTransition(State.Lobby, Command.Exit), State.Main },
+            { new StateTransition(State.Game, Command.Back), State.Lobby },
+            { new StateTransition(State.Settings, Command.Back), State.Lobby },
+            { new StateTransition(State.Lobby, Command.Back), State.Main },
         };
     }
 

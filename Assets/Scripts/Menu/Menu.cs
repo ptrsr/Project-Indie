@@ -42,10 +42,10 @@ public class Menu : EventSystem
         base.Update();
 
         if (Input.GetKeyDown(KeyCode.E))
-            _sm.MoveNext(Command.Continue);
+            _sm.MoveNext(Command.Submit);
 
         if (Input.GetKeyDown(KeyCode.Q))
-            _sm.MoveNext(Command.Exit);
+            _sm.MoveNext(Command.Back);
     }
 
     private void OnGUI()
@@ -105,9 +105,13 @@ public class Menu : EventSystem
                 _currentMenu = _settings;
                 break;
         }
-
         if (_currentMenu != null)
             SetSelectedGameObject(_currentMenu.EnableMenu());
+    }
+
+    public void SelectObject(GameObject obj)
+    {
+        SetSelectedGameObject(obj);
     }
 
     public void SendCommand(int command)

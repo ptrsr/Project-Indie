@@ -352,7 +352,7 @@ public class LobbyController : SubMenu {
 		if (gameController.gameStarted || selectingPlayers)
 			return;
 		
-		lobbyCanvas.SetActive (false);
+		//lobbyCanvas.SetActive (false);
 	}
 
 	public void BackToMainMeny ()
