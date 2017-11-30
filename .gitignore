@@ -32,3 +32,6 @@ sysinfo.txt
 *.unitypackage
 .idea/
 *.DotSettings
+
+fmod.log
+fmod_editor.log

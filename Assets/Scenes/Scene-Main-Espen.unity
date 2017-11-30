@@ -1248,6 +1248,10 @@ MonoBehaviour:
   players: {fileID: 1757376310}
   readyText: {fileID: 1991523172}
   startPositions: {fileID: 1568589799}
+  gameCanvas: {fileID: 0}
+  lobbyCanvas: {fileID: 0}
+  mainCanvas: {fileID: 0}
+  exitConfirmPanel: {fileID: 0}
 --- !u!1 &1324682998
 GameObject:
   m_ObjectHideFlags: 0
@@ -1412,11 +1416,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 286bdbf9fe4e194489db29896779446b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cooldownBar: {fileID: 1378918934332506, guid: 6f6540c626ac40a4ba3a68546c2eaae4,
-    type: 2}
-  cooldownBars: {fileID: 784496281}
   countdown: {fileID: 457850455}
   winText: {fileID: 1324683001}
+  lobbyController: {fileID: 0}
+  pausePanel: {fileID: 0}
+  activeBullets: {fileID: 0}
   playerAmount: 0
   gameStarted: 0
   gameFinished: 0

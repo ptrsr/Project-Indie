@@ -25,7 +25,9 @@ namespace Players
     public enum Button
     {
         Fire,
-        Parry
+        Parry,
+		Submit,
+		Cancel
     }
 
     public enum InputType
@@ -107,8 +109,9 @@ public class InputHandler : StandaloneInputModule
 				continue;
 
 			if (Input.GetButtonDown (_players [i].ToString () + "Submit")) {
+
 				print (_players [i].ToString ());
-				ready ((Player)i);
+				ready ((Player)(i + 1));
 			}
         }
     }
@@ -149,7 +152,7 @@ public class InputHandler : StandaloneInputModule
 
     static public float GetAxis(Player player, InputType inputType, Axis axis)
     {
-        Player controller = _instance._players[(int)player];
+		Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
         {
@@ -161,7 +164,7 @@ public class InputHandler : StandaloneInputModule
 
     static public bool GetButton(Player player, Button button)
     {
-        Player controller = _instance._players[(int)player];
+		Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
         {
@@ -174,7 +177,7 @@ public class InputHandler : StandaloneInputModule
 
     static public bool GetButtonDown(Player player, Button button)
     {
-        Player controller = _instance._players[(int)player];
+		Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
         {
@@ -187,7 +190,7 @@ public class InputHandler : StandaloneInputModule
 
     static public bool GetButtonUp(Player player, Button button)
     {
-        Player controller = _instance._players[(int)player];
+		Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
         {
