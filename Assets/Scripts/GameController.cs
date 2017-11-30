@@ -5,18 +5,19 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 
-	[Header ("Prefabs")]
-	[SerializeField] private GameObject cooldownBar;
-
 	[Header ("Game Objects")]
-	[SerializeField] private Transform cooldownBars;
 	[SerializeField] private Text countdown;
 	[SerializeField] private Text winText;
+	[SerializeField] private LobbyController lobbyController;
+	[SerializeField] private GameObject pausePanel;
+	[SerializeField] private GameObject activeBullets;
 
 	private Transform players;
 
 	[HideInInspector] public int playerAmount;
 	[HideInInspector] public bool gameStarted, gameFinished;
+	private bool canActivatePlayerController;
+	private float timeScale = 1.0f;
 
 	public Dictionary <string, int> victories;
 
@@ -29,40 +30,18 @@ public class GameController : MonoBehaviour {
 
 		for (int i = 0; i < playerAmount; i++)
 			victories.Add (players.GetChild (i).name, 0);
-
+		
 		winText.gameObject.SetActive (false);
+		winText.GetComponent <Animator> ().enabled = true;
 
 		InitializeGame (1.0f);
 	}
 
 	public void InitializeGame (float waitTime)
 	{
-		InitializeCooldownBars ();
 		gameStarted = true;
-		gameFinished = false;
+		timeScale = 1.0f;
 		StartCoroutine (StartCountdown (waitTime));
-	}
-
-	void InitializeCooldownBars ()
-	{
-		if (cooldownBars.childCount > 0)
-		{
-			for (int i = 0; i < cooldownBars.childCount; i++)
-				Destroy (cooldownBars.GetChild (i).gameObject);
-		}
-
-		Invoke ("InstantiateCooldownBars", 0.01f);
-	}
-
-	void InstantiateCooldownBars ()
-	{
-		for (int i = 0; i < playerAmount; i++)
-		{
-			GameObject cooldown = Instantiate (cooldownBar, cooldownBars);
-			cooldown.transform.GetComponentInChildren <Text> ().text = players.GetChild (i).name;
-
-			players.GetChild (i).GetComponent <PlayerController> ().cooldownBar = cooldown.GetComponent <Image> ();
-		}
 	}
 
 	IEnumerator StartCountdown (float waitTime)
@@ -77,8 +56,11 @@ public class GameController : MonoBehaviour {
 
 		countdown.text = "GO";
 
+		if (gameStarted)
+		{
 		for (int i = 0; i < players.childCount; i++)
 			players.GetChild (i).GetComponent <PlayerController> ().enabled = true;
+		}
 
 		yield return new WaitForSeconds (1.0f);
 
@@ -88,58 +70,178 @@ public class GameController : MonoBehaviour {
 	void Update ()
 	{
 		if (gameStarted)
+		{
 			CheckForVictory ();
+
+			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel)) //Should be another button
+			{
+				if (pausePanel.activeInHierarchy)
+					PauseGame (false);
+				else
+					PauseGame (true);
+			}
+		}
+
+		if (gameFinished && InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Submit))
+			BackToLobby ();
+
+		if (gameStarted && Modifiers.graduallySpeedingUp)
+		{
+			timeScale = 1.0f + (activeBullets.transform.childCount * 0.15f);
+
+			if (Time.timeScale != 0)
+				Time.timeScale = timeScale;
+		}
+	}
+
+	//True to pause, false to unpause
+	public void PauseGame (bool status)
+	{
+		if (status)
+		{
+			Time.timeScale = 0;
+			pausePanel.SetActive (true);
+			pausePanel.transform.GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
+
+			if (players.GetChild (0).GetComponent <PlayerController> ().enabled)
+				canActivatePlayerController = true;
+			else
+				canActivatePlayerController = false;
+			
+			for (int i = 0; i < players.childCount; i++)
+				players.GetChild (i).GetComponent <PlayerController> ().enabled = false;
+		}
+		else
+		{
+			Time.timeScale = 1;
+			pausePanel.SetActive (false);
+
+			if (canActivatePlayerController)
+			{
+				for (int i = 0; i < players.childCount; i++)
+					players.GetChild (i).GetComponent <PlayerController> ().enabled = true;
+			}
+		}
 	}
 
 	void CheckForVictory ()
 	{
 		if (playerAmount == 1)
 			return;
-		
-		if (players.childCount == 1)
+
+		int alivePlayers = 0;
+		for (int i = 0; i < players.childCount; i++)
 		{
-			gameStarted = false;
-			gameFinished = true;
+			if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
+				alivePlayers++;
+		}
 
-			foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
-				Destroy (bullet);
+		if (alivePlayers == 1)
+		{
+			for (int i = 0; i < players.childCount; i++)
+			{
+				//Destroy the cooldown circles
+				Destroy (players.GetChild (i).GetChild (2).gameObject);
 
-			Transform player = players.GetChild (0);
-			PlayerController playerController = player.GetComponent <PlayerController> ();
-			playerController.enabled = false;
-
-			victories [player.name]++;
-
-			string playerColorName = "";
-
-			if (playerController.playerColor == Color.blue)
-				playerColorName = "Blue";
-			else if (playerController.playerColor == Color.red)
-				playerColorName = "Red";
-			else if (playerController.playerColor == Color.green)
-				playerColorName = "Green";
-			else if (playerController.playerColor == Color.yellow)
-				playerColorName = "Yellow";
-
-			winText.text = playerColorName + " player wins this round!";
-			winText.gameObject.SetActive (true);
-			print (playerColorName + " player has " + victories [player.name] + " wins!");
-
-			CheckForTotalVictory (player, playerColorName);
+				if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
+					StartCoroutine (Victory (players.GetChild (i)));
+			}
 		}
 	}
 
-	void CheckForTotalVictory (Transform player, string playerColor)
+	IEnumerator Victory (Transform player)
 	{
-		if (victories [player.name] == Modifiers.pointsToVictory)
+		gameStarted = false;
+
+		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
+			Destroy (bullet);
+
+		PlayerController playerController = player.GetComponent <PlayerController> ();
+		playerController.enabled = false;
+		playerController.bodyAnim.SetInteger ("playerClip", 3);
+		playerController.anim.SetBool ("Moving", false);
+
+		Destroy (player.GetComponent <Rigidbody> ());
+
+		victories [player.name]++;
+
+		string playerColorName = playerController.playerColor;
+
+		yield return new WaitForSeconds (2.5f);
+
+		if (CheckForTotalVictory (player))
 		{
 			victories = null;
-			print (playerColor + " player wins the set!");
+			winText.text = playerColorName + " player wins the set!";
+			winText.gameObject.SetActive (true);
+			gameFinished = true;
+
+			Invoke ("LockText", 1.0f);
+
+			print (playerColorName + " player wins the set!");
 		}
+		else
+		{
+			winText.text = playerColorName + " player wins this round!";
+			winText.gameObject.SetActive (true);
+
+			print (playerColorName + " player has " + victories [player.name] + " wins!");
+
+			lobbyController.NewRound ();
+		}
+	}
+
+	void LockText ()
+	{
+		winText.GetComponent <Animator> ().enabled = false;
+		winText.transform.localScale = new Vector3 (1.0f, 1.0f, 1.0f);
+	}
+
+	bool CheckForTotalVictory (Transform player)
+	{
+		if (victories [player.name] == Modifiers.pointsToVictory)
+			return true;
+		return false;
+	}
+
+	void ResetGame ()
+	{
+		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
+			Destroy (bullet);
+		
+		victories = null;
+
+		Time.timeScale = 1;
+
+		StopAllCoroutines ();
+		countdown.text = "";
+
+		gameStarted = false;
+		gameFinished = false;
+
+		lobbyController.RemoveAllPlayers ();
+
+		transform.root.GetComponent <Menu> ().SendCommand (1);
+	}
+
+	public void BackToLobby ()
+	{
+		ResetGame ();
+
+		lobbyController.ResetLobby (true, true);
+
+		lobbyController.BackToLobby ();
 	}
 
 	public void Restart ()
 	{
 		winText.gameObject.SetActive (false);
+	}
+
+	public void BackToMainMenu ()
+	{
+		ResetGame ();
+
+		lobbyController.BackToMainMeny ();
 	}
 }
