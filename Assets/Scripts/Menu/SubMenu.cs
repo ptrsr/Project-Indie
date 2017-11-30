@@ -7,7 +7,7 @@ public class SubMenu : MonoBehaviour
     [SerializeField]
     private GameObject _firstSelected;
 
-    private void Start()
+    private void Awake()
     {
         DisableMenu();
     }
@@ -24,5 +24,10 @@ public class SubMenu : MonoBehaviour
     {
         foreach (UnityEngine.UI.Button button in transform.GetComponentsInChildren<UnityEngine.UI.Button>())
             button.interactable = false;
+    }
+
+    public GameObject FirstSelected
+    {
+        get { return _firstSelected; }
     }
 }
