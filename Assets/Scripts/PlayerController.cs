@@ -27,6 +27,12 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float shieldCooldown = 0.5f;
 	[SerializeField] private float shieldDuration = 0.25f;
 	[SerializeField] private float maxShieldAngle = 60.0f;
+    [SerializeField]
+    private float lightEffectDuration = 0.1f;
+
+
+    [SerializeField]
+    private Light[] lights;
 
 	private float curGlobalCooldown;
 	private float curCooldown;
@@ -194,7 +200,10 @@ public class PlayerController : MonoBehaviour {
 		if (curAmmo == 0 || curGlobalCooldown < globalCooldown)
 			return;
 
-		bodyAnim.SetInteger ("playerClip", 1);
+        foreach (Light light in lights)
+            StartCoroutine(LightEffect(light));
+
+        bodyAnim.SetInteger ("playerClip", 1);
 		Invoke ("Idle", globalCooldown);
 
 		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
@@ -205,6 +214,24 @@ public class PlayerController : MonoBehaviour {
 
 		print ("Player " + name + " Shoots");
 	}
+
+    IEnumerator LightEffect(Light light)
+    {
+        float intensity = light.intensity;
+        float timer = 0;
+
+        light.enabled = true;
+
+        while (timer < lightEffectDuration)
+        {
+            light.intensity = Mathf.Sin((timer / lightEffectDuration) * Mathf.PI) * intensity;
+            print(light.intensity);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        light.enabled = false;
+        light.intensity = intensity;
+    }
 
 	void Idle ()
 	{
