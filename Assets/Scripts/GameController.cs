@@ -22,6 +22,13 @@ public class GameController : MonoBehaviour {
 
 	public Dictionary <string, int> victories;
 
+	private Settings settings;
+
+	void Start ()
+	{
+		settings = ServiceLocator.Locate <Settings> ();
+	}
+
 	public void SetupGame (Transform _players)
 	{
 		musicManager.SetActive (true);
@@ -88,12 +95,21 @@ public class GameController : MonoBehaviour {
 		if (gameFinished && InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Submit))
 			BackToLobby ();
 
-		if (gameStarted && Modifiers.graduallySpeedingUp && Time.timeScale < 50.0f)
+		if (gameStarted && settings.GetBool (Setting.graduallySpeedingUp) && Time.timeScale < 50.0f)
 		{
 			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f);
 
 			if (Time.timeScale != 0)
 				Time.timeScale = timeScale;
+		}
+
+		if (!lobbyController.enabled)
+		{
+			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Settings) || InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel))
+			{
+				lobbyController.enabled = true;
+				ServiceLocator.Locate <Menu> ().SendCommand (1);
+			}
 		}
 	}
 

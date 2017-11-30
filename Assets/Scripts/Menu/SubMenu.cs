@@ -14,7 +14,7 @@ public class SubMenu : MonoBehaviour
 
     public virtual GameObject EnableMenu()
     {
-        foreach (UnityEngine.UI.Button button in transform.GetComponentsInChildren<UnityEngine.UI.Button>())
+        foreach (UnityEngine.UI.Selectable button in transform.GetComponentsInChildren<UnityEngine.UI.Button>())
             button.interactable = true;
 
         return _firstSelected;
@@ -22,7 +22,7 @@ public class SubMenu : MonoBehaviour
 
     public virtual void DisableMenu()
     {
-        foreach (UnityEngine.UI.Button button in transform.GetComponentsInChildren<UnityEngine.UI.Button>())
+        foreach (UnityEngine.UI.Selectable button in transform.GetComponentsInChildren<UnityEngine.UI.Button>())
             button.interactable = false;
     }
 

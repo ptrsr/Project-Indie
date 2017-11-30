@@ -43,7 +43,7 @@ public class Bullet : MonoBehaviour
 			curSpeed = 100;
 
 		if (curSpeed > _speed)
-			curSpeed -= Time.deltaTime * (curSpeed / _speed) * 2;
+			curSpeed -= Time.deltaTime * (curSpeed / _speed) * 4;
 		
 		RB.velocity = transform.forward * curSpeed;
 	}
@@ -128,8 +128,18 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-		_collisions.Add(collision);
+		try {
+			_collisions.Add(collision);
+			
+		} catch {
+			
+		}
     }
+
+	private void OnCollisionStay (Collision collision)
+	{
+		print (collision.gameObject);
+	}
 
     #if UNITY_EDITOR
     private void OnApplicationQuit()

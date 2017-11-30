@@ -4,8 +4,8 @@ using UnityEngine;
 
 public enum Setting
 {
-    test1,
-    test2,
+    multiplyingBulletsOnBlock,
+	graduallySpeedingUp,
     test3
 }
 
@@ -21,6 +21,7 @@ public class Settings : MonoBehaviour
     [SerializeField]
     private List<DefaultBoolSetting> _defaultBools = new List<DefaultBoolSetting>();
 
+	[SerializeField]
     private bool[] bools;
 
     private void Awake()

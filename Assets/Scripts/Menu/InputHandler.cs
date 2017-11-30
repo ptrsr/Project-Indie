@@ -27,7 +27,8 @@ namespace Players
         Fire,
         Parry,
 		Submit,
-		Cancel
+		Cancel,
+		Settings
     }
 
     public enum InputType

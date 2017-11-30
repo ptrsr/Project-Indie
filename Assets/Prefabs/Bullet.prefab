@@ -185,7 +185,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 25
   curSpeed: 0
-  _canCollide: 0
 --- !u!135 &135339855196053334
 SphereCollider:
   m_ObjectHideFlags: 1

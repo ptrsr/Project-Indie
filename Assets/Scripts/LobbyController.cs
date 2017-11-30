@@ -46,6 +46,17 @@ public class LobbyController : SubMenu {
 	{
 		if (selectingPlayers)
 			CheckForPlayerCancel ();
+
+		if (InputHandler.GetButtonDown (Player.P1, Players.Button.Settings) && selectingPlayers)
+		{
+			ServiceLocator.Locate <Menu> ().SendCommand (2);
+			Invoke ("DisableThis", 0.01f);
+		}
+	}
+
+	void DisableThis ()
+	{
+		this.enabled = false;
 	}
 
 	public override GameObject EnableMenu ()
@@ -287,6 +298,7 @@ public class LobbyController : SubMenu {
 	{
 		ResetLobby (true, false);
 		lobbyCanvas.SetActive (true);
+		lobbyCanvas.GetComponentInChildren <UnityEngine.UI.Button> ().interactable = true;
 	}
 
 	//True when starting lobby and false when exiting - second bool true when going back to lobby from game, otherwise false
@@ -313,6 +325,7 @@ public class LobbyController : SubMenu {
 	{
 		Invoke ("LobbyJoinInvoke", 0.01f);
 		lobbyCanvas.SetActive (true);
+		lobbyCanvas.GetComponentInChildren <UnityEngine.UI.Button> ().interactable = true;
 	}
 
 	void LobbyJoinInvoke ()
@@ -353,7 +366,7 @@ public class LobbyController : SubMenu {
 		if (gameController.gameStarted || selectingPlayers)
 			return;
 		
-		//lobbyCanvas.SetActive (false);
+		lobbyCanvas.SetActive (false);
 	}
 
 	public void BackToMainMeny ()

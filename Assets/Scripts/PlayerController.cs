@@ -35,6 +35,8 @@ public class PlayerController : MonoBehaviour {
 
 	private float curShieldCooldown;
 
+	private Settings settings;
+
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
 	[HideInInspector] public bool dead = false;
@@ -58,6 +60,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Start ()
 	{
+		settings = ServiceLocator.Locate <Settings> ();
+
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0).GetChild (0);
 		if (GameObject.Find ("ActiveBullets") != null)
@@ -227,19 +231,21 @@ public class PlayerController : MonoBehaviour {
 	{
 		float speedMultiplier = 2;
 
-		if (Modifiers.multiplyingBullets)
+		Vector3 gunPos = new Vector3 (aim.position.x, gun.position.y + 0.35f, aim.position.z) + aim.forward;
+
+		if (settings.GetBool (Setting.multiplyingBulletsOnBlock))
 		{
-			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
+			GameObject newBullet = Instantiate (bullet, gunPos - aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
 			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
 			_newbullet.curSpeed = curSpeed * speedMultiplier;
 
-			GameObject newBullet2 = Instantiate (bullet, aim.position + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
+			GameObject newBullet2 = Instantiate (bullet, gunPos + aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
 			Bullet _newbullet2 = newBullet2.GetComponent <Bullet> ();
 			_newbullet2.curSpeed = curSpeed * speedMultiplier;
 		}
 		else
 		{
-			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+			GameObject newBullet = Instantiate (bullet, gunPos, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
 			_newbullet.curSpeed = curSpeed * speedMultiplier;
 		}

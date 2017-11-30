@@ -610,8 +610,6 @@ GameObject:
   - component: {fileID: 33053292357492460}
   - component: {fileID: 23819785178174916}
   - component: {fileID: 95969822623671382}
-  - component: {fileID: 114723188326735776}
-  - component: {fileID: 65254705670935636}
   m_Layer: 0
   m_Name: NailGun01
   m_TagString: Gun
@@ -4979,18 +4977,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 5.9400005, y: 3.763145, z: 7.702471}
   m_Center: {x: 0, y: 0.11157885, z: 0.23038685}
---- !u!65 &65254705670935636
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1401429555237342}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 0
-  serializedVersion: 2
-  m_Size: {x: 2.52603, y: 5.779768, z: 11.312909}
-  m_Center: {x: 0.000000015768498, y: 0.13177505, z: 0.48671186}
 --- !u!95 &95803781578412552
 Animator:
   serializedVersion: 3
@@ -5085,10 +5071,10 @@ MonoBehaviour:
   dead: 0
   canShoot: 0
   bullet: {fileID: 1060196065007666, guid: b04151479d6041b4eadbabab83bd5248, type: 2}
-  blue: {fileID: 2800000, guid: 345b28410b38a844ca224b51039aa3c2, type: 3}
-  red: {fileID: 2800000, guid: 05c28a0e4f285324fb02dff83b86b1ef, type: 3}
-  green: {fileID: 2800000, guid: e0137c29104e4bf45a78fd273be36158, type: 3}
-  yellow: {fileID: 2800000, guid: da9b9ccd1310a03458b09cb7b4fcef18, type: 3}
+  blue: {fileID: 2800000, guid: bd1c9a1bf25953249bf21d0ea6c81815, type: 3}
+  red: {fileID: 2800000, guid: a628c31420ef2644380b6fab2c22e766, type: 3}
+  green: {fileID: 2800000, guid: 2f247bd3134468043aa334009dd991b1, type: 3}
+  yellow: {fileID: 2800000, guid: 88f8eaecc5986b44f9c9785ff5870f3f, type: 3}
   player1Mat: {fileID: 2100000, guid: 16eb2121ac360054395a8236011919c0, type: 2}
   player2Mat: {fileID: 2100000, guid: 868f3bf96b007934a848c059968d7093, type: 2}
   player3Mat: {fileID: 2100000, guid: e28bc8a22dcb25042a7fba0a2275a814, type: 2}
@@ -5120,18 +5106,6 @@ MonoBehaviour:
   m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &114723188326735776
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1401429555237342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0e22230527b3ba941a9c32c0c5251e25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerController: {fileID: 0}
 --- !u!114 &114731001714101906
 MonoBehaviour:
   m_ObjectHideFlags: 1
