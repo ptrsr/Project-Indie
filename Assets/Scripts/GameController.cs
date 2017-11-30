@@ -11,18 +11,21 @@ public class GameController : MonoBehaviour {
 	[SerializeField] private LobbyController lobbyController;
 	[SerializeField] private GameObject pausePanel;
 	[SerializeField] private GameObject activeBullets;
+	[SerializeField] private GameObject musicManager;
 
 	private Transform players;
 
 	[HideInInspector] public int playerAmount;
 	[HideInInspector] public bool gameStarted, gameFinished;
 	private bool canActivatePlayerController;
-	private float timeScale = 1.0f;
+	public float timeScale = 1.0f;
 
 	public Dictionary <string, int> victories;
 
 	public void SetupGame (Transform _players)
 	{
+		musicManager.SetActive (true);
+
 		players = _players;
 		playerAmount = players.childCount;
 
@@ -85,9 +88,9 @@ public class GameController : MonoBehaviour {
 		if (gameFinished && InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Submit))
 			BackToLobby ();
 
-		if (gameStarted && Modifiers.graduallySpeedingUp)
+		if (gameStarted && Modifiers.graduallySpeedingUp && Time.timeScale < 50.0f)
 		{
-			timeScale = 1.0f + (activeBullets.transform.childCount * 0.15f);
+			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f);
 
 			if (Time.timeScale != 0)
 				Time.timeScale = timeScale;
@@ -110,6 +113,8 @@ public class GameController : MonoBehaviour {
 			
 			for (int i = 0; i < players.childCount; i++)
 				players.GetChild (i).GetComponent <PlayerController> ().enabled = false;
+
+			musicManager.SetActive (false);
 		}
 		else
 		{
@@ -121,6 +126,8 @@ public class GameController : MonoBehaviour {
 				for (int i = 0; i < players.childCount; i++)
 					players.GetChild (i).GetComponent <PlayerController> ().enabled = true;
 			}
+
+			musicManager.SetActive (true);
 		}
 	}
 
@@ -153,6 +160,8 @@ public class GameController : MonoBehaviour {
 	{
 		gameStarted = false;
 
+		Time.timeScale = 1;
+
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
 
@@ -167,7 +176,7 @@ public class GameController : MonoBehaviour {
 
 		string playerColorName = playerController.playerColor;
 
-		yield return new WaitForSeconds (2.5f);
+		yield return new WaitForSeconds (1.5f);
 
 		if (CheckForTotalVictory (player))
 		{
@@ -226,6 +235,8 @@ public class GameController : MonoBehaviour {
 
 	public void BackToLobby ()
 	{
+		musicManager.SetActive (false);
+
 		ResetGame ();
 
 		lobbyController.ResetLobby (true, true);
@@ -240,6 +251,8 @@ public class GameController : MonoBehaviour {
 
 	public void BackToMainMenu ()
 	{
+		musicManager.SetActive (false);
+
 		ResetGame ();
 
 		lobbyController.BackToMainMeny ();

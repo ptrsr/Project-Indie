@@ -234,7 +234,7 @@ public class LobbyController : SubMenu {
 			for (int i = 0; i < players.childCount; i++)
 			{
 				Transform tempPlayer = players.GetChild (i);
-				tempPlayer.position = startPositions.GetChild (i).position;
+				tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
 
 				players.GetChild (i).GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
 			}
@@ -248,7 +248,7 @@ public class LobbyController : SubMenu {
 
 	IEnumerator NewRoundTransition ()
 	{
-		yield return new WaitForSeconds (4.0f);
+		yield return new WaitForSeconds (3.0f);
 
 		RestartGame ();
 	}
@@ -259,9 +259,10 @@ public class LobbyController : SubMenu {
 
 		for (int i = 0; i < gameController.playerAmount; i++)
 		{
-			GameObject newPlayer = Instantiate (playerPrefab, startPositions.GetChild (i).position, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+			GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+			newPlayer.transform.position = startPositions.GetChild ((int) playerStatus.Keys.ElementAt (i) - 1).position;
 			newPlayer.name = ((int) playerStatus.Keys.ElementAt (i)).ToString ();
-
+		
 			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
 			playerController.AssignColor ();

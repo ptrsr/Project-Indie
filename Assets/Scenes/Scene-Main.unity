@@ -1234,11 +1234,11 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 593126816}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -41.518383, y: -26.544514, z: -26.986216}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &614544441
 GameObject:
@@ -1708,17 +1708,13 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4913972093830904, guid: bc9b14babd3ddc244a94cf70ab111f26, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4913972093830904, guid: bc9b14babd3ddc244a94cf70ab111f26, type: 2}
+    - target: {fileID: 4021107703464382, guid: bc9b14babd3ddc244a94cf70ab111f26, type: 2}
       propertyPath: m_LocalScale.y
-      value: 0.2
+      value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 4913972093830904, guid: bc9b14babd3ddc244a94cf70ab111f26, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 0.5000005
+    - target: {fileID: 4973338764845086, guid: bc9b14babd3ddc244a94cf70ab111f26, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bc9b14babd3ddc244a94cf70ab111f26, type: 2}
@@ -1986,6 +1982,74 @@ MonoBehaviour:
   lobbyCanvas: {fileID: 614544441}
   mainCanvas: {fileID: 1967255515}
   exitConfirmPanel: {fileID: 177019575}
+--- !u!1 &1226134777
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1226134780}
+  - component: {fileID: 1226134779}
+  - component: {fileID: 1226134778}
+  m_Layer: 0
+  m_Name: MusicManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1226134778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1226134777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Event: event:/AdaptiveMusic
+  PlayEvent: 11
+  StopEvent: 12
+  CollisionTag: 
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 0
+  OverrideMaxDistance: 0
+--- !u!114 &1226134779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1226134777}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7de55d3fc3371b49801d945d698bd3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MT: 0
+  m_A1: 0
+  m_A2: 0
+  m_A3: 0
+  m_O: 0
+--- !u!4 &1226134780
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1226134777}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.20000076, y: 42.79996, z: -7.51}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1247524455
 GameObject:
   m_ObjectHideFlags: 0
@@ -2185,9 +2249,11 @@ MonoBehaviour:
   lobbyController: {fileID: 1211538498}
   pausePanel: {fileID: 1573761159}
   activeBullets: {fileID: 1753795052}
+  musicManager: {fileID: 1226134777}
   playerAmount: 0
   gameStarted: 0
   gameFinished: 0
+  timeScale: 1
 --- !u!1 &1366274833
 GameObject:
   m_ObjectHideFlags: 0
@@ -3220,7 +3286,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0

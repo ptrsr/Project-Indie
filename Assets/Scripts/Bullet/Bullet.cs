@@ -4,16 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Bullet : MonoBehaviour
 {
-    public float
+	public float
         _speed;
+
+	[HideInInspector] public float curSpeed;
 
     private Vector3
         _velocity;
 
     private List<Collision> _collisions;
-
-    [SerializeField]
-	private bool _canCollide = false;
 
     #if UNITY_EDITOR
     private List<Vector3> _bounces;
@@ -21,6 +20,9 @@ public class Bullet : MonoBehaviour
 
     void Start ()
     {
+		if (curSpeed == 0)
+			curSpeed = _speed;
+		
         RB.velocity = transform.forward * _speed;
         RB.useGravity = false;
         RB.constraints = RigidbodyConstraints.FreezePositionY;
@@ -35,6 +37,17 @@ public class Bullet : MonoBehaviour
         #endif
     }
 
+	void Update ()
+	{
+		if (curSpeed > 100)
+			curSpeed = 100;
+
+		if (curSpeed > _speed)
+			curSpeed -= Time.deltaTime * (curSpeed / _speed) * 2;
+		
+		RB.velocity = transform.forward * curSpeed;
+	}
+
     private void FixedUpdate()
     {
         ResolveCollisions();
@@ -44,11 +57,11 @@ public class Bullet : MonoBehaviour
 
         #if UNITY_EDITOR
         _bounces[_bounces.Count - 1] = transform.position;
-        #endif
 
         // reset
         if (Input.GetKey(KeyCode.R))
             Destroy(gameObject);
+		#endif
     }
 
     private void ResolveCollisions()
@@ -80,7 +93,7 @@ public class Bullet : MonoBehaviour
 
 					transform.rotation = Quaternion.Euler (new Vector3 (0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
 
-					player.ReflectBullet ();
+					player.ReflectBullet (curSpeed);
 				}
 				else
 					player.Die ();
@@ -115,15 +128,8 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (_canCollide)
-            _collisions.Add(collision);
-
+		_collisions.Add(collision);
     }
-
-	private void OnCollisionExit (Collision collision)
-	{
-		_canCollide = true;
-	}
 
     #if UNITY_EDITOR
     private void OnApplicationQuit()

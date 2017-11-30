@@ -7,7 +7,7 @@ public class Modifiers : MonoBehaviour {
 	public static bool multiplyingBullets = false;
 	public static bool graduallySpeedingUp = false;
 
-	public static int pointsToVictory = 3; 
+	public static int pointsToVictory = 2; 
 	public static int lives = 1;
 	public static int clipSize = 3;
 

@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour {
 	private Transform activeBullets;
 	private Image cooldownBar;
 	private Image outerCooldownBar;
+	private Transform gun;
 	[HideInInspector] public Animator anim;
 	[HideInInspector] public Animator bodyAnim;
 
@@ -37,6 +38,7 @@ public class PlayerController : MonoBehaviour {
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
 	[HideInInspector] public bool dead = false;
+	[HideInInspector] public bool canShoot = true;
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
@@ -67,6 +69,8 @@ public class PlayerController : MonoBehaviour {
 		curShieldCooldown = shieldCooldown;
 
 		bodyAnim.SetInteger ("playerClip", 0);
+
+		clipSize = Modifiers.clipSize;
 	}
 
 	void Update ()
@@ -93,6 +97,14 @@ public class PlayerController : MonoBehaviour {
 
 		foreach (Renderer rend in renderer.GetComponentsInChildren <Renderer> ())
 		{
+			if (rend.transform.tag == "Gun")
+			{
+				gun = rend.transform;
+				continue;
+			}
+			else if (rend.transform.tag == "Shield")
+				continue;
+			
 			switch ((int) playerNumber)
 			{
 			case 1:
@@ -191,13 +203,13 @@ public class PlayerController : MonoBehaviour {
 
 	void Shoot ()
 	{
-		if (curAmmo == 0 || curGlobalCooldown < globalCooldown)
+		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || Physics.CheckSphere (gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, 0.1f))
 			return;
-
+		
 		bodyAnim.SetInteger ("playerClip", 1);
 		Invoke ("Idle", globalCooldown);
 
-		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+		Instantiate (bullet, gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 
 		curGlobalCooldown = 0.0f;
 		curCooldown = 0.0f;
@@ -211,21 +223,28 @@ public class PlayerController : MonoBehaviour {
 		bodyAnim.SetInteger ("playerClip", 0);
 	}
 
-	public void ReflectBullet ()
+	public void ReflectBullet (float curSpeed)
 	{
+		float speedMultiplier = 2;
+
 		if (Modifiers.multiplyingBullets)
 		{
-			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
-			newBullet.GetComponent <Bullet> ()._speed *= 2;
+			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
+			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
+			_newbullet.curSpeed = curSpeed * speedMultiplier;
 
-			GameObject newBullet2 = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
-			newBullet2.GetComponent <Bullet> ()._speed *= 2;
+			GameObject newBullet2 = Instantiate (bullet, aim.position + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
+			Bullet _newbullet2 = newBullet2.GetComponent <Bullet> ();
+			_newbullet2.curSpeed = curSpeed * speedMultiplier;
 		}
 		else
 		{
-			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
-			newBullet.GetComponent <Bullet> ()._speed *= 2;
+			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
+			_newbullet.curSpeed = curSpeed * speedMultiplier;
 		}
+
+		curShieldCooldown = shieldCooldown;
 	}
 
 	void UpdateCooldown ()
@@ -303,11 +322,12 @@ public class PlayerController : MonoBehaviour {
 		
 		bodyAnim.SetInteger ("playerClip", 4);
 
-		GetComponent <BoxCollider> ().enabled = false;
+		foreach (BoxCollider col in GetComponents <BoxCollider> ())
+			Destroy (col);
+		foreach (BoxCollider col in GetComponentsInChildren <BoxCollider> ())
+			Destroy (col);
 
 		Invoke ("ActivateFallingThroughFloor", 2.0f);
-
-		Destroy (gameObject, 4.25f);
 	}
 
 	void ActivateFallingThroughFloor ()

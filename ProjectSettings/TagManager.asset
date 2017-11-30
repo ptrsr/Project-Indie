@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Bullet
+  - Gun
+  - Wall
+  - Shield
   layers:
   - Default
   - TransparentFX
