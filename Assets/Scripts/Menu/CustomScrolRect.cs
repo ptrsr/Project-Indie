@@ -10,6 +10,7 @@ public class CustomScrolRect : ScrollRect
     private delegate void Check();
     private Check _Check;
 
+
     private enum lastInput
     {
         Mouse,

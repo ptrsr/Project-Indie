@@ -11,18 +11,29 @@ public class GameController : MonoBehaviour {
 	[SerializeField] private LobbyController lobbyController;
 	[SerializeField] private GameObject pausePanel;
 	[SerializeField] private GameObject activeBullets;
+	[SerializeField] private GameObject musicManager;
+	[SerializeField] private Transform scorePanel;
 
 	private Transform players;
 
 	[HideInInspector] public int playerAmount;
 	[HideInInspector] public bool gameStarted, gameFinished;
 	private bool canActivatePlayerController;
-	private float timeScale = 1.0f;
+	public float timeScale = 1.0f;
 
 	public Dictionary <string, int> victories;
 
+	private Settings settings;
+
+	void Start ()
+	{
+		settings = ServiceLocator.Locate <Settings> ();
+	}
+
 	public void SetupGame (Transform _players)
 	{
+		musicManager.SetActive (true);
+
 		players = _players;
 		playerAmount = players.childCount;
 
@@ -33,6 +44,12 @@ public class GameController : MonoBehaviour {
 		
 		winText.gameObject.SetActive (false);
 		winText.GetComponent <Animator> ().enabled = true;
+
+		for (int i = 0; i < playerAmount; i++)
+		{
+			PlayerController playerController = players.GetChild (i).GetComponent <PlayerController> ();
+			scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: 0";
+		}
 
 		InitializeGame (1.0f);
 	}
@@ -85,12 +102,22 @@ public class GameController : MonoBehaviour {
 		if (gameFinished && InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Submit))
 			BackToLobby ();
 
-		if (gameStarted && Modifiers.graduallySpeedingUp)
+		if (gameStarted && settings.GetBool (Setting.graduallySpeedingUp) && Time.timeScale < 50.0f)
 		{
-			timeScale = 1.0f + (activeBullets.transform.childCount * 0.15f);
+			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f);
 
 			if (Time.timeScale != 0)
 				Time.timeScale = timeScale;
+		}
+
+		if (!lobbyController.enabled)
+		{
+			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Settings) || InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel))
+			{
+				lobbyController.enabled = true;
+				ServiceLocator.Locate <Menu> ().SendCommand (1);
+				lobbyController.settingsCanvas.SetActive (false);
+			}
 		}
 	}
 
@@ -101,7 +128,7 @@ public class GameController : MonoBehaviour {
 		{
 			Time.timeScale = 0;
 			pausePanel.SetActive (true);
-			pausePanel.transform.GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
+			pausePanel.transform.GetChild (1).GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
 
 			if (players.GetChild (0).GetComponent <PlayerController> ().enabled)
 				canActivatePlayerController = true;
@@ -110,6 +137,8 @@ public class GameController : MonoBehaviour {
 			
 			for (int i = 0; i < players.childCount; i++)
 				players.GetChild (i).GetComponent <PlayerController> ().enabled = false;
+
+			musicManager.SetActive (false);
 		}
 		else
 		{
@@ -121,6 +150,8 @@ public class GameController : MonoBehaviour {
 				for (int i = 0; i < players.childCount; i++)
 					players.GetChild (i).GetComponent <PlayerController> ().enabled = true;
 			}
+
+			musicManager.SetActive (true);
 		}
 	}
 
@@ -153,6 +184,8 @@ public class GameController : MonoBehaviour {
 	{
 		gameStarted = false;
 
+		Time.timeScale = 1;
+
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
 
@@ -164,10 +197,11 @@ public class GameController : MonoBehaviour {
 		Destroy (player.GetComponent <Rigidbody> ());
 
 		victories [player.name]++;
+		scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: " + victories [player.name];
 
 		string playerColorName = playerController.playerColor;
 
-		yield return new WaitForSeconds (2.5f);
+		yield return new WaitForSeconds (1.5f);
 
 		if (CheckForTotalVictory (player))
 		{
@@ -222,10 +256,15 @@ public class GameController : MonoBehaviour {
 		lobbyController.RemoveAllPlayers ();
 
 		transform.root.GetComponent <Menu> ().SendCommand (1);
+
+		for (int i = 0; i < 4; i++)
+			scorePanel.GetChild (i).GetComponent <Text> ().text = "";
 	}
 
 	public void BackToLobby ()
 	{
+		musicManager.SetActive (false);
+
 		ResetGame ();
 
 		lobbyController.ResetLobby (true, true);
@@ -240,6 +279,8 @@ public class GameController : MonoBehaviour {
 
 	public void BackToMainMenu ()
 	{
+		musicManager.SetActive (false);
+
 		ResetGame ();
 
 		lobbyController.BackToMainMeny ();

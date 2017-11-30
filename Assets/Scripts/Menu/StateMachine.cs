@@ -58,8 +58,6 @@ public class StateMachine
             { new StateTransition(State.Main, Command.Submit), State.Lobby },
             { new StateTransition(State.Lobby, Command.Alt), State.Settings },
             { new StateTransition(State.Lobby, Command.Submit), State.Game }, 
-            { new StateTransition(State.Settings, Command.Submit), State.Game },
-
 
             { new StateTransition(State.Game, Command.Back), State.Lobby },
             { new StateTransition(State.Settings, Command.Back), State.Lobby },

@@ -9,11 +9,13 @@ public class MusicChanger : MonoBehaviour {
     //PlayMain needs to be activated to skip from intro/outro to MT,A1,A2 and A3 
     public float m_MT, m_A1, m_A2, m_A3, m_O; //MainTheme, ActionLevel1, ActionLevel2, ActionLevel3, Outro
 
-    FMODUnity.StudioEventEmitter emitter;
+    StudioEventEmitter emitter;
+
     private void Start()
     {
-        emitter = gameObject.GetComponent<FMODUnity.StudioEventEmitter>();
+        emitter = GetComponent<FMODUnity.StudioEventEmitter>();
     }
+
     private void Update()
     {
         /* Activate to test

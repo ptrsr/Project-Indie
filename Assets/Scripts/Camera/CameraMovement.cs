@@ -53,7 +53,7 @@ public class CameraMovement : MonoBehaviour
                 break;
 
             case State.Game:
-                CurrentPoint = _points.gamePoint;
+                CurrentPoint = _points.settingsPoint; //Trying out using same as settings
                 break;
         }
 

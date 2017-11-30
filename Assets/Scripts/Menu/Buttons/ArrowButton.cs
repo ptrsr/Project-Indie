@@ -16,6 +16,8 @@ public class ArrowButton : CustomButton
 
     private EventSystem _system;
 
+	private bool wasInteractable;
+
     protected override void Start()
     {
         _system = EventSystem.current;
@@ -23,7 +25,33 @@ public class ArrowButton : CustomButton
         Selectable[] selectables = GetComponentsInChildren<Selectable>();
         _leftArrow = selectables[1].gameObject;
         _rightArrow = selectables[2].gameObject;
+
+		wasInteractable = IsInteractable ();
     }
+
+	void Update ()
+	{
+		UpdateArrows ();
+	}
+
+	void UpdateArrows ()
+	{
+		if (IsInteractable () == wasInteractable)
+			return;
+		
+		if (!IsInteractable ())
+		{
+			_leftArrow.GetComponent <Selectable> ().interactable = false;
+			_rightArrow.GetComponent <Selectable> ().interactable = false;
+		}
+		else
+		{
+			_leftArrow.GetComponent <Selectable> ().interactable = true;
+			_rightArrow.GetComponent <Selectable> ().interactable = true;
+		}
+
+		wasInteractable = IsInteractable ();
+	}
 
     public override void OnDeselect(BaseEventData eventData)
     {

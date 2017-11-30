@@ -105,8 +105,12 @@ public class Menu : EventSystem
                 _currentMenu = _settings;
                 break;
         }
-        if (_currentMenu != null)
-            SetSelectedGameObject(_currentMenu.EnableMenu());
+		if (_currentMenu != null)
+		{
+			GameObject obj = _currentMenu.EnableMenu ();
+			SetSelectedGameObject (obj);
+			_lastSelectedObject = obj;
+		}
     }
 
     public void SelectObject(GameObject obj)

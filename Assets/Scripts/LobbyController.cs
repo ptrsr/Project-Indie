@@ -27,6 +27,7 @@ public class LobbyController : SubMenu {
 	[SerializeField] private GameObject gameCanvas;
 	[SerializeField] private GameObject lobbyCanvas;
 	[SerializeField] private GameObject mainCanvas;
+	public GameObject settingsCanvas;
 	[SerializeField] private GameObject exitConfirmPanel;
 
 	private GameController gameController;
@@ -46,6 +47,18 @@ public class LobbyController : SubMenu {
 	{
 		if (selectingPlayers)
 			CheckForPlayerCancel ();
+
+		if (InputHandler.GetButtonDown (Player.P1, Players.Button.Settings) && selectingPlayers)
+		{
+			settingsCanvas.SetActive (true);
+			ServiceLocator.Locate <Menu> ().SendCommand (2);
+			Invoke ("DisableThis", 0.01f);
+		}
+	}
+
+	void DisableThis ()
+	{
+		this.enabled = false;
 	}
 
 	public override GameObject EnableMenu ()
@@ -158,7 +171,7 @@ public class LobbyController : SubMenu {
 	void SetPlayersPosition ()
 	{
 		for (int i = 0; i < players.childCount; i++)
-			players.GetChild (i).position = new Vector3 (4.8f + (i * 5), 0.9f, 14.0f);
+			players.GetChild (i).position = new Vector3 (10.8f + (i * 5), 0.9f, 14.0f);
 	}
 
 	void BecomeReady (Player player)
@@ -234,7 +247,7 @@ public class LobbyController : SubMenu {
 			for (int i = 0; i < players.childCount; i++)
 			{
 				Transform tempPlayer = players.GetChild (i);
-				tempPlayer.position = startPositions.GetChild (i).position;
+				tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
 
 				players.GetChild (i).GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
 			}
@@ -248,7 +261,7 @@ public class LobbyController : SubMenu {
 
 	IEnumerator NewRoundTransition ()
 	{
-		yield return new WaitForSeconds (4.0f);
+		yield return new WaitForSeconds (3.0f);
 
 		RestartGame ();
 	}
@@ -259,9 +272,10 @@ public class LobbyController : SubMenu {
 
 		for (int i = 0; i < gameController.playerAmount; i++)
 		{
-			GameObject newPlayer = Instantiate (playerPrefab, startPositions.GetChild (i).position, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+			GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+			newPlayer.transform.position = startPositions.GetChild ((int) playerStatus.Keys.ElementAt (i) - 1).position;
 			newPlayer.name = ((int) playerStatus.Keys.ElementAt (i)).ToString ();
-
+		
 			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
 			playerController.AssignColor ();
@@ -286,6 +300,7 @@ public class LobbyController : SubMenu {
 	{
 		ResetLobby (true, false);
 		lobbyCanvas.SetActive (true);
+		lobbyCanvas.GetComponentInChildren <UnityEngine.UI.Button> ().interactable = true;
 	}
 
 	//True when starting lobby and false when exiting - second bool true when going back to lobby from game, otherwise false
@@ -312,6 +327,7 @@ public class LobbyController : SubMenu {
 	{
 		Invoke ("LobbyJoinInvoke", 0.01f);
 		lobbyCanvas.SetActive (true);
+		lobbyCanvas.GetComponentInChildren <UnityEngine.UI.Button> ().interactable = true;
 	}
 
 	void LobbyJoinInvoke ()
@@ -352,7 +368,7 @@ public class LobbyController : SubMenu {
 		if (gameController.gameStarted || selectingPlayers)
 			return;
 		
-		//lobbyCanvas.SetActive (false);
+		lobbyCanvas.SetActive (false);
 	}
 
 	public void BackToMainMeny ()
