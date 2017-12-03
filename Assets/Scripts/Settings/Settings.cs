@@ -4,9 +4,7 @@ using UnityEngine;
 
 public enum Setting
 {
-    test1,
-    test2,
-    test3
+    Laser
 }
 
 public class Settings : MonoBehaviour

@@ -9,50 +9,76 @@ public class Laser : MonoBehaviour
 
     [SerializeField]
     private float
-        _maxAngle, // max angle for each side in degrees
-        _rotateSpeed,
         _diameter,
         _effectMulti,
         _timeMulti = 1,
-        _darken = 1;
+        _darken = 1,
+        _maxDistance;
 
     [SerializeField]
     private int
-        _bounces = 1;
+        _maxBounces = 6;
 
     [SerializeField]
     private Color _color;
 
-    private Vector2 _currentAngle;
+    private List<GameObject >_parts;
 
-    private Material _mat;
-
-    private GameObject[] _parts;
+    private void Awake()
+    {
+        StateMachine.change += CheckEnabled;
+    }
 
     private void Start()
     {
-        _parts = new GameObject[_bounces + 1];
-
-        for (int i = 0; i < _parts.Length; i++)
-        {
-            //Material mat = new Material(_shader);
-
-            GameObject cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-            Destroy(cylinder.GetComponent<Collider>());
-            cylinder.transform.parent = transform;
-            _parts[i] = cylinder;
-            //cylinder.GetComponent<MeshRenderer>().material = mat;
-        }
+        _parts = new List<GameObject>();
     }
 
     private void Update()
     {
+        UpdateLaser();
+    }
+
+    private void CheckEnabled(State state)
+    {
+        if (state != State.Game)
+            return;
+
+        enabled = ServiceLocator.Locate<Settings>().GetBool(Setting.Laser);
+    }
+
+    private void UpdateLaser()
+    {
         Vector3 direction = transform.forward;
         Vector3 position = transform.position;
 
-        for (int i = 0; i < _bounces + 1; i++)
+        float distance = 0;
+        int i = 0;
+
+        while (distance < _maxDistance && i < _maxBounces)
         {
-            _parts[i].SetActive(true);
+            GameObject laserPart;
+            Material mat;
+
+            if (_parts.Count - 1 < i)
+            {
+                laserPart = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+                _parts.Add(laserPart);
+                laserPart.transform.parent = transform;
+
+                mat = new Material(_shader);
+                laserPart.GetComponent<MeshRenderer>().material = mat;
+                SetUniforms(mat);
+
+                Collider laserCol = laserPart.GetComponent<Collider>();
+                laserCol.enabled = false;
+                Destroy(laserCol);
+            }
+            else
+            {
+                laserPart = _parts[i];
+                mat = laserPart.GetComponent<MeshRenderer>().material;
+            }
 
             Ray ray = new Ray(position, direction);
             RaycastHit hit;
@@ -63,31 +89,26 @@ public class Laser : MonoBehaviour
 
             trans.position = (position + hit.point) / 2;
             trans.localScale = new Vector3(_diameter, Vector3.Distance(position, hit.point), _diameter);
-            //trans.rotation = Quaternion.LookRotation(new Vector3(direction.z, 0, -direction.x).normalized, Vector3.forward);
-            trans.forward = direction;
-            print(trans.forward);
 
-            Collider col = hit.collider;
-            if (col != null && col.GetComponentInParent<PlayerController>() != null)
-            {
-                for (int j = i + 1; j < _bounces + 1; j++)
-                    _parts[j].SetActive(false);
+            trans.rotation = Quaternion.LookRotation(direction.normalized, Vector3.up) * Quaternion.Euler(90, 0, 0);
 
-                break;
-            }
+            mat.SetVector("_lastPos", position);
+            mat.SetVector("_direction", new Vector2(direction.x, direction.z));
+            mat.SetFloat("_lastDist", distance);
+            mat.SetFloat("_time", -Time.realtimeSinceStartup * _timeMulti);
 
+            Debug.DrawLine(position, hit.point);
             position = hit.point;
             direction = Vector3.Reflect(direction, hit.normal);
+            distance += hit.distance;
+            i++;
         }
 
-    }
-
-    private Material InitShader(Shader shader)
-    {
-        Material mat = new Material(shader);
-        _mat = mat;
-        SetUniforms(mat);
-        return mat;
+        for (int j = i; j < _parts.Count; j++)
+        {
+            Destroy(_parts[j]);
+            _parts.RemoveAt(j);
+        }
     }
 
     private void SetUniforms(Material mat)
@@ -95,5 +116,6 @@ public class Laser : MonoBehaviour
         mat.SetColor("_color", _color);
         mat.SetFloat("_effectMulti", _effectMulti);
         mat.SetFloat("_darken", _darken);
+        mat.SetFloat("_maxDist", _maxDistance);
     }
 }
