@@ -86,8 +86,6 @@ public class LobbyController : SubMenu {
 
 	void ProcessInput (Player player)
 	{
-		print (player);
-
 		if (!gameController.gameStarted && selectingPlayers)
 		{
 			if (playerStatus.ContainsKey (player))
@@ -155,8 +153,6 @@ public class LobbyController : SubMenu {
 			playerStatus.Remove (player);
 
 		playerStatus.Add (player, Status.joined);
-
-		print (player + " joined");
 
 		GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
 		newPlayer.name = ((int) player).ToString ();

@@ -13,7 +13,6 @@ public class PlayerController : MonoBehaviour {
 	private Transform activeBullets;
 	private Image cooldownBar;
 	private Image outerCooldownBar;
-	private Transform gun;
 	[HideInInspector] public Animator anim;
 	[HideInInspector] public Animator bodyAnim;
 
@@ -28,6 +27,12 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float shieldCooldown = 0.5f;
 	[SerializeField] private float shieldDuration = 0.25f;
 	[SerializeField] private float maxShieldAngle = 60.0f;
+    [SerializeField]
+    private float lightEffectDuration = 0.1f;
+
+
+    [SerializeField]
+    private Light[] lights;
 
 	private float curGlobalCooldown;
 	private float curCooldown;
@@ -35,12 +40,11 @@ public class PlayerController : MonoBehaviour {
 
 	private float curShieldCooldown;
 
-	private Settings settings;
-
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
+    private bool multiplyingBullets = false;
+
 	[HideInInspector] public bool dead = false;
-	[HideInInspector] public bool canShoot = true;
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
@@ -60,8 +64,6 @@ public class PlayerController : MonoBehaviour {
 
 	void Start ()
 	{
-		settings = ServiceLocator.Locate <Settings> ();
-
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0).GetChild (0);
 		if (GameObject.Find ("ActiveBullets") != null)
@@ -74,8 +76,9 @@ public class PlayerController : MonoBehaviour {
 
 		bodyAnim.SetInteger ("playerClip", 0);
 
-		clipSize = Modifiers.clipSize;
-	}
+        multiplyingBullets = ServiceLocator.Locate<Settings>().GetBool(Setting.multiplyingBulletsOnBlock);
+
+    }
 
 	void Update ()
 	{
@@ -101,14 +104,6 @@ public class PlayerController : MonoBehaviour {
 
 		foreach (Renderer rend in renderer.GetComponentsInChildren <Renderer> ())
 		{
-			if (rend.transform.tag == "Gun")
-			{
-				gun = rend.transform;
-				continue;
-			}
-			else if (rend.transform.tag == "Shield")
-				continue;
-			
 			switch ((int) playerNumber)
 			{
 			case 1:
@@ -126,27 +121,33 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 
+        Laser laser = GetComponentInChildren<Laser>();
+
 		switch ((int) playerNumber)
 		{
 		case 1:
 			renderer.sharedMaterial.mainTexture = blue;
 			outerCooldownBar.color = Color.blue;
 			playerColor = "Blue";
+            laser.Color = new Color(0.2f, 0.67f, 1);
 			break;
 		case 2:
 			renderer.sharedMaterial.mainTexture = red;
 			outerCooldownBar.color = Color.red;
 			playerColor = "Red";
-			break;
+            laser.Color = Color.blue;
+            break;
 		case 3:
 			renderer.sharedMaterial.mainTexture = green;
 			outerCooldownBar.color = Color.green;
 			playerColor = "Green";
-			break;
+            laser.Color = Color.green;
+            break;
 		case 4:
 			renderer.sharedMaterial.mainTexture = yellow;
 			outerCooldownBar.color = Color.yellow;
-			playerColor = "Yellow";
+            laser.Color = Color.yellow;
+            playerColor = "Yellow";
 			break;
 		}
 	}
@@ -207,13 +208,16 @@ public class PlayerController : MonoBehaviour {
 
 	void Shoot ()
 	{
-		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || Physics.CheckSphere (gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, 0.1f))
+		if (curAmmo == 0 || curGlobalCooldown < globalCooldown)
 			return;
-		
-		bodyAnim.SetInteger ("playerClip", 1);
+
+        foreach (Light light in lights)
+            StartCoroutine(LightEffect(light));
+
+        bodyAnim.SetInteger ("playerClip", 1);
 		Invoke ("Idle", globalCooldown);
 
-		Instantiate (bullet, gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 
 		curGlobalCooldown = 0.0f;
 		curCooldown = 0.0f;
@@ -222,35 +226,44 @@ public class PlayerController : MonoBehaviour {
 		print ("Player " + name + " Shoots");
 	}
 
+    IEnumerator LightEffect(Light light)
+    {
+        float intensity = light.intensity;
+        float timer = 0;
+
+        light.enabled = true;
+
+        while (timer < lightEffectDuration)
+        {
+            light.intensity = Mathf.Sin((timer / lightEffectDuration) * Mathf.PI) * intensity;
+            print(light.intensity);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        light.enabled = false;
+        light.intensity = intensity;
+    }
+
 	void Idle ()
 	{
 		bodyAnim.SetInteger ("playerClip", 0);
 	}
 
-	public void ReflectBullet (float curSpeed)
+	public void ReflectBullet ()
 	{
-		float speedMultiplier = 2;
-
-		Vector3 gunPos = new Vector3 (aim.position.x, gun.position.y + 0.35f, aim.position.z) + aim.forward;
-
-		if (settings.GetBool (Setting.multiplyingBulletsOnBlock))
+		if (multiplyingBullets)
 		{
-			GameObject newBullet = Instantiate (bullet, gunPos - aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
-			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
-			_newbullet.curSpeed = curSpeed * speedMultiplier;
+			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
+			newBullet.GetComponent <Bullet> ()._speed *= 2;
 
-			GameObject newBullet2 = Instantiate (bullet, gunPos + aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
-			Bullet _newbullet2 = newBullet2.GetComponent <Bullet> ();
-			_newbullet2.curSpeed = curSpeed * speedMultiplier;
+			GameObject newBullet2 = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
+			newBullet2.GetComponent <Bullet> ()._speed *= 2;
 		}
 		else
 		{
-			GameObject newBullet = Instantiate (bullet, gunPos, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
-			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
-			_newbullet.curSpeed = curSpeed * speedMultiplier;
+			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+			newBullet.GetComponent <Bullet> ()._speed *= 2;
 		}
-
-		curShieldCooldown = shieldCooldown;
 	}
 
 	void UpdateCooldown ()
@@ -317,7 +330,17 @@ public class PlayerController : MonoBehaviour {
 		return false;
 	}
 
-	public void Die ()
+    private void OnEnable()
+    {
+        ServiceLocator.Locate<CameraMovement>().Track(gameObject);
+    }
+
+    private void OnDisable()
+    {
+        ServiceLocator.Locate<CameraMovement>().UnTrack(gameObject);
+    }
+
+    public void Die ()
 	{
 		dead = true;
 
@@ -328,12 +351,13 @@ public class PlayerController : MonoBehaviour {
 		
 		bodyAnim.SetInteger ("playerClip", 4);
 
-		foreach (BoxCollider col in GetComponents <BoxCollider> ())
-			Destroy (col);
-		foreach (BoxCollider col in GetComponentsInChildren <BoxCollider> ())
-			Destroy (col);
+		GetComponent <BoxCollider> ().enabled = false;
 
 		Invoke ("ActivateFallingThroughFloor", 2.0f);
+
+
+
+		Destroy (gameObject, 4.25f);
 	}
 
 	void ActivateFallingThroughFloor ()

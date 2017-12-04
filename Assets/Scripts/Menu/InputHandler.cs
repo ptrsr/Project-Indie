@@ -84,17 +84,14 @@ public class InputHandler : StandaloneInputModule
 
     private void RegisterPlayers()
     {
-        if (Input.GetAxis("AllAxises") == 0)
-            return;
-
         for (int i = 0; i < _players.Length; i++)
         {
             if (_players[i] != Player.none)
                 continue;
 
-            _players[i] = CheckPlayer();
+            _players[i] = CheckPlayer(Input.GetAxis("AllAxises") != 0);
 
-            if (i == 0)
+            if (i == 0 && _players[i] != Player.none)
 				SetPlayer(_players[0]);
         }
     }
@@ -109,14 +106,11 @@ public class InputHandler : StandaloneInputModule
             if (_players[i] == Player.none)
 				continue;
 
-			if (Input.GetButtonDown (_players [i].ToString () + "Submit")) {
-
-				print (_players [i].ToString ());
+			if (Input.GetButtonDown (_players [i].ToString () + "Submit"))
 				ready ((Player)(i + 1));
-			}
         }
     }
-    private Player CheckPlayer()
+    private Player CheckPlayer(bool checkAxises)
     {
         for (int i = 1; i < 6; i++)
         {
@@ -138,6 +132,9 @@ public class InputHandler : StandaloneInputModule
 
             if (Input.GetButton(player + "Submit"))
                 return ((Player)i);
+
+            if (!checkAxises)
+                continue;
 
             for (int j = 0; j < 2; j++)
             {

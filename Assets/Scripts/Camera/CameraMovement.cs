@@ -23,10 +23,16 @@ public class CameraMovement : MonoBehaviour
         _currentPoint,
         _lastPoint;
 
+    private List<GameObject> _players;
+
+    private bool _tracking = false;
 
     private void Awake()
     {
+        ServiceLocator.Provide(this);
+        _players = new List<GameObject>();
         StateMachine.change += CameraChange;
+        StateMachine.change += TrackPlayers;
     }
 
     private void OnEnable()
@@ -71,22 +77,54 @@ public class CameraMovement : MonoBehaviour
 
         float speed;
 
-        if (_lastPoint != null)
+        if (!_tracking || _players.Count == 0)
         {
-            float camDistToPoint = Vector3.Distance(transform.position, _currentPoint.transform.position);
-            float distBetweenPoints = Vector3.Distance(_lastPoint.transform.position, _currentPoint.transform.position);
-            speed = Mathf.Lerp(_currentPoint.ArriveSpeed, _lastPoint.DepartSpeed, camDistToPoint / distBetweenPoints) * Time.deltaTime;
-        }
-        else
-            speed = _currentPoint.ArriveSpeed;
+            if (_lastPoint != null)
+            {
+                float camDistToPoint = Vector3.Distance(transform.position, _currentPoint.transform.position);
+                float distBetweenPoints = Vector3.Distance(_lastPoint.transform.position, _currentPoint.transform.position);
+                speed = Mathf.Lerp(_currentPoint.ArriveSpeed, _lastPoint.DepartSpeed, camDistToPoint / distBetweenPoints) * Time.deltaTime;
+            }
+            else
+                speed = _currentPoint.ArriveSpeed;
 
-        transform.rotation = Quaternion.Slerp(transform.rotation, _currentPoint.transform.rotation, speed);
-        transform.position = Vector3.Lerp(transform.position, _currentPoint.transform.position, speed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, _currentPoint.transform.rotation, speed);
+            transform.position = Vector3.Lerp(transform.position, _currentPoint.transform.position, speed);
+            return;
+        }
+
+        Vector3 desiredLookPosition = new Vector3();
+
+        foreach (GameObject player in _players)
+            desiredLookPosition += player.transform.position;
+
     }
 
     public CameraPoint CurrentPoint
     {
         get { return _currentPoint;  }
         set { _currentPoint = value; }
+    }
+
+    private void TrackPlayers(State state)
+    {
+        if (state != State.Game)
+        {
+            _tracking = false;
+            _players.Clear();
+            return;
+        }
+
+        _tracking = true;
+    }
+
+    public void Track(GameObject player)
+    {
+        _players.Add(player);
+    }
+
+    public void UnTrack(GameObject player)
+    {
+        _players.Remove(player);
     }
 }

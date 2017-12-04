@@ -6,7 +6,7 @@ public enum Setting
 {
     multiplyingBulletsOnBlock,
 	graduallySpeedingUp,
-    test3
+    Laser
 }
 
 public class Settings : MonoBehaviour
