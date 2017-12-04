@@ -62,7 +62,7 @@ Shader "custom/LaserFX"
 				float fallOff = saturate(1 - (_lastDist + distance(_lastPos, i.vertex.xyz)) / _maxDist);
 
 				float alpha = noise3D(float3((i.pos.xy + _direction * _time) / _effectMulti, 0));
-				float4 color = float4(_color.xyz * _color.a * 2, pow(clamp(alpha, 0, 1), _darken) * fallOff);
+				float4 color = float4(_color.xyz * pow(clamp(alpha, 0.3f, 1), _darken) * fallOff, _color.a * fallOff);
 
 				return color;
 			}

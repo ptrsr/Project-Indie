@@ -129,7 +129,7 @@ public class PlayerController : MonoBehaviour {
 			renderer.sharedMaterial.mainTexture = blue;
 			outerCooldownBar.color = Color.blue;
 			playerColor = "Blue";
-            laser.Color = new Color(0.2f, 0.67f, 1);
+            laser.Color = new Color(0.2f, 0.67f, 1, 0.2f);
 			break;
 		case 2:
 			renderer.sharedMaterial.mainTexture = red;

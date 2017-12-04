@@ -124,6 +124,15 @@ public class Laser : MonoBehaviour
         mat.SetFloat("_maxDist", _maxDistance);
     }
 
+    private void OnValidate()
+    {
+        if (!Application.isPlaying || _parts == null)
+            return;
+
+        foreach (GameObject item in _parts)
+            SetUniforms(item.GetComponent<MeshRenderer>().material);
+    }
+
     private void OnDestroy()
     {
         StateMachine.change -= CheckEnabled;
