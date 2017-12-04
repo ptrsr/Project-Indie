@@ -273,6 +273,8 @@ public class LobbyController : SubMenu {
 
 				tempPlayer.GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
 
+				tempPlayer.GetChild (1).GetChild (2).gameObject.SetActive (true);
+
 				//Not random
 				//tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
 			}
@@ -324,6 +326,8 @@ public class LobbyController : SubMenu {
 			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
 			playerController.AssignColor ();
 			playerController.enabled = false;
+
+			newPlayer.transform.GetChild (1).GetChild (2).gameObject.SetActive (true);
 		}
 
 		gameController.Restart ();

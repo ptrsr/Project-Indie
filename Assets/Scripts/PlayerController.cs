@@ -28,12 +28,9 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private float maxShieldDuration = 2.5f;
 	[SerializeField] private float shieldFillSpeed = 5.0f;
 	[SerializeField] private float maxShieldAngle = 60.0f;
-    [SerializeField]
-    private float lightEffectDuration = 0.1f;
+    [SerializeField] private float lightEffectDuration = 0.1f;
 
-
-    [SerializeField]
-    private Light[] lights;
+    [SerializeField] private Light[] lights;
 
 	private float curGlobalCooldown;
 	private float curCooldown;
@@ -53,6 +50,7 @@ public class PlayerController : MonoBehaviour {
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
+	[SerializeField] private GameObject oil;
 
 	[Header ("Textures/Materials")]
 	[SerializeField] private Texture blue;
@@ -384,12 +382,12 @@ public class PlayerController : MonoBehaviour {
 
     private void OnEnable()
     {
-        ServiceLocator.Locate<CameraMovement>().Track(gameObject);
+        ServiceLocator.Locate <CameraMovement> ().Track (gameObject);
     }
 
     private void OnDisable()
     {
-        ServiceLocator.Locate<CameraMovement>().UnTrack(gameObject);
+        ServiceLocator.Locate <CameraMovement> ().UnTrack (gameObject);
     }
 
     public void Die ()
@@ -408,6 +406,8 @@ public class PlayerController : MonoBehaviour {
 		Invoke ("ActivateFallingThroughFloor", 2.0f);
 
 		GetComponentInChildren <Laser> ().gameObject.SetActive (false);
+
+		Instantiate (oil, new Vector3 (transform.position.x, 0.1f, transform.position.z), Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f)));
 
 		Destroy (gameObject, 4.25f);
 	}
