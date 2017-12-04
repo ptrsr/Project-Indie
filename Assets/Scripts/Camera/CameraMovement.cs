@@ -19,9 +19,19 @@ public class CameraMovement : MonoBehaviour
     private Points _points = new Points();
     #endregion
 
+    [SerializeField] [Range(0, 1)]
+    private float
+        _camRotDist,
+        _camRotSpeed;
+
+    [SerializeField]
+    private float _cameraMovement;
+
     private CameraPoint 
         _currentPoint,
         _lastPoint;
+
+    private Vector3 _centerOfLevel;
 
     private List<GameObject> _players;
 
@@ -33,6 +43,11 @@ public class CameraMovement : MonoBehaviour
         _players = new List<GameObject>();
         StateMachine.change += CameraChange;
         StateMachine.change += TrackPlayers;
+
+        Vector3 desiredCenterPos = _points.gamePoint.transform.position;
+        Vector3 ray = _points.gamePoint.transform.rotation * Vector3.forward;
+        ray *= _points.gamePoint.transform.position.z / ray.z;
+        _centerOfLevel = desiredCenterPos - ray;
     }
 
     private void OnEnable()
@@ -98,6 +113,15 @@ public class CameraMovement : MonoBehaviour
         foreach (GameObject player in _players)
             desiredLookPosition += player.transform.position;
 
+
+        desiredLookPosition = Vector3.Lerp(desiredLookPosition, _centerOfLevel, _camRotDist);
+
+        Quaternion desiredRotation = Quaternion.LookRotation((desiredLookPosition - _points.gamePoint.transform.position).normalized, Vector3.up);
+
+        Vector3 delta = (desiredLookPosition - _centerOfLevel).normalized * _cameraMovement;
+        Quaternion xzRot = Quaternion.Euler(delta.z, -delta.x, 0);
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation * xzRot, _camRotSpeed * Time.deltaTime);
     }
 
     public CameraPoint CurrentPoint

@@ -15987,6 +15987,9 @@ MonoBehaviour:
     lobbyPoint: {fileID: 1211538496}
     settingsPoint: {fileID: 920633577}
     gamePoint: {fileID: 1364576332}
+  _camRotDist: 0.98
+  _camRotSpeed: 0.95
+  _cameraMovement: -4.75
 --- !u!1 &2141487251
 GameObject:
   m_ObjectHideFlags: 0
