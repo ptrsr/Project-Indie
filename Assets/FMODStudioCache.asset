@@ -13,13 +13,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorBanks:
   - {fileID: 114903153406085894}
-  - {fileID: 114024071887818602}
+  - {fileID: 114718482184197586}
   EditorEvents:
   - {fileID: 114264513011759036}
   - {fileID: 114426762492984926}
-  MasterBankRef: {fileID: 114024071887818602}
+  MasterBankRef: {fileID: 114718482184197586}
   StringsBankRef: {fileID: 114903153406085894}
-  stringsBankWriteTime: 636479997747924869
+  stringsBankWriteTime: 636479936926742795
   cacheVersion: 2
 --- !u!114 &114024071887818602
 MonoBehaviour:
@@ -346,6 +346,21 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114205654966562578
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel1
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114264513011759036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,18 +375,18 @@ MonoBehaviour:
   Path: event:/AdaptiveMusic
   guid: 1270bc600b23f34ab16b2b3daed8a0ab
   Banks:
-  - {fileID: 114024071887818602}
+  - {fileID: 114718482184197586}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114082868886756116}
-  - {fileID: 114825274808633050}
-  - {fileID: 114031996376541780}
-  - {fileID: 114998610973168232}
-  - {fileID: 114910490146245750}
-  - {fileID: 114601244647977842}
-  - {fileID: 114822913863938200}
+  - {fileID: 114415359411786158}
+  - {fileID: 114564874289759716}
+  - {fileID: 114975794463185026}
+  - {fileID: 114474124147647010}
+  - {fileID: 114432107468011504}
+  - {fileID: 114304372951034084}
+  - {fileID: 114205654966562578}
   MinDistance: 0
   MaxDistance: 0
   Length: 114489
@@ -402,6 +417,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: ActionLevel3
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114304372951034084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Intro
   Min: 0
   Max: 1
   Default: 0
@@ -480,6 +510,21 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114415359411786158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114423746389639694
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,15 +554,30 @@ MonoBehaviour:
   Path: event:/SpeedUpMusic
   guid: 86ba88fb43f1c542a48c49bd56ad2077
   Banks:
-  - {fileID: 114024071887818602}
+  - {fileID: 114718482184197586}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114842905019773036}
+  - {fileID: 114995509103392210}
   MinDistance: 0
   MaxDistance: 0
   Length: 125509
+--- !u!114 &114432107468011504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: MainTheme
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114446998769373488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,6 +605,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Intro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114474124147647010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Outro
   Min: 0
   Max: 1
   Default: 0
@@ -591,6 +666,21 @@ MonoBehaviour:
   MaxDistance: 0
   Length: 114489
 --- !u!114 &114536898605260556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel2
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114564874289759716
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -680,6 +770,24 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114718482184197586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Path: D:\Game Development\GitHub\Assets\FMODProjectFile\Build\Desktop\Master Bank.bank
+  lastModified: 636479936926732606
+  LoadResult: 0
+  FileSizes:
+  - Name: Desktop
+    Value: 10103968
+  Exists: 1
 --- !u!114 &114747273349034846
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -875,7 +983,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: Assets\FMODProjectFile\Build\Desktop\Master Bank.strings.bank
-  lastModified: 636479997747924869
+  lastModified: 636479936926742795
   LoadResult: 0
   FileSizes:
   - Name: Desktop
@@ -940,6 +1048,36 @@ MonoBehaviour:
   Name: ActionLevel3
   Min: 0
   Max: 1
+  Default: 0
+--- !u!114 &114975794463185026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel3
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114995509103392210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  Min: -100
+  Max: 100
   Default: 0
 --- !u!114 &114998610973168232
 MonoBehaviour:
