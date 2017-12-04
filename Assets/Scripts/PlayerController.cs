@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour {
 	private Transform activeBullets;
 	private Image cooldownBar;
 	private Image outerCooldownBar;
+	private Image shieldCooldownBar;
+	private Transform gun;
 	[HideInInspector] public Animator anim;
 	[HideInInspector] public Animator bodyAnim;
 
@@ -21,11 +23,10 @@ public class PlayerController : MonoBehaviour {
 	[Header ("Values")]
 	[SerializeField] private float moveSpeed = 600.0f;
 	[SerializeField] private float rotationSpeed = 10.0f;
-	[SerializeField] private int clipSize = 5;
 	[SerializeField] private float cooldown = 3.0f;
 	[SerializeField] private float globalCooldown = 0.3f;
-	[SerializeField] private float shieldCooldown = 0.5f;
-	[SerializeField] private float shieldDuration = 0.25f;
+	[SerializeField] private float maxShieldDuration = 2.5f;
+	[SerializeField] private float shieldFillSpeed = 5.0f;
 	[SerializeField] private float maxShieldAngle = 60.0f;
     [SerializeField]
     private float lightEffectDuration = 0.1f;
@@ -36,9 +37,13 @@ public class PlayerController : MonoBehaviour {
 
 	private float curGlobalCooldown;
 	private float curCooldown;
+	private int clipSize;
 	private int curAmmo;
 
-	private float curShieldCooldown;
+	private float curShieldDuration;
+
+	private Settings settings;
+	private GameController gameController;
 
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
@@ -53,32 +58,41 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Texture blue;
 	[SerializeField] private Texture red, green, yellow;
 	[SerializeField] private Material player1Mat, player2Mat, player3Mat, player4Mat;
+	[SerializeField] private Texture shieldBlue, shieldRed, shieldGreen, shieldYellow;
 
 	void Awake ()
 	{
 		cooldownBar = transform.GetChild (2).GetChild (0).GetComponent <Image> ();
 		outerCooldownBar = cooldownBar.transform.GetChild (0).GetComponent <Image> ();
+		shieldCooldownBar = cooldownBar.transform.GetChild (1).GetComponent <Image> ();
 		anim = transform.GetChild (1).GetComponent <Animator> ();
 		bodyAnim = transform.GetChild (0).GetComponent <Animator> ();
 	}
 
 	void Start ()
 	{
+		settings = ServiceLocator.Locate <Settings> ();
+		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
+
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0).GetChild (0);
 		if (GameObject.Find ("ActiveBullets") != null)
 			activeBullets = GameObject.Find ("ActiveBullets").transform;
 
 		anim.speed = 8;
-		anim.SetBool ("Moving", false);
-
-		curShieldCooldown = shieldCooldown;
 
 		bodyAnim.SetInteger ("playerClip", 0);
 
         multiplyingBullets = ServiceLocator.Locate<Settings>().GetBool(Setting.multiplyingBulletsOnBlock);
 
+		curShieldDuration = maxShieldDuration;
+		clipSize = Modifiers.clipSize;
+		curAmmo = 1;
+
+		if (clipSize == curAmmo)
+			curCooldown = cooldown;
     }
+	
 
 	void Update ()
 	{
@@ -101,9 +115,21 @@ public class PlayerController : MonoBehaviour {
 	public void AssignColor ()
 	{
 		Renderer renderer = transform.GetChild (0).GetChild (0).GetComponent <Renderer> ();
+		Renderer shieldRenderer = null;
 
 		foreach (Renderer rend in renderer.GetComponentsInChildren <Renderer> ())
 		{
+			if (rend.transform.tag == "Gun")
+			{
+				gun = rend.transform;
+				continue;
+			}
+			else if (rend.transform.tag == "Shield")
+			{
+				shieldRenderer = rend;
+				continue;
+			}
+			
 			switch ((int) playerNumber)
 			{
 			case 1:
@@ -112,7 +138,7 @@ public class PlayerController : MonoBehaviour {
 			case 2:
 				rend.material = player2Mat;
 				break;
-			case 23:
+			case 3:
 				rend.material = player3Mat;
 				break;
 			case 4:
@@ -127,27 +153,31 @@ public class PlayerController : MonoBehaviour {
 		{
 		case 1:
 			renderer.sharedMaterial.mainTexture = blue;
-			outerCooldownBar.color = Color.blue;
+			shieldRenderer.material.mainTexture = shieldBlue;
+			shieldCooldownBar.color = Color.blue;
 			playerColor = "Blue";
-            laser.Color = new Color(0.2f, 0.67f, 1, 0.2f);
+            laser.Color = new Color (0.2f, 0.67f, 1, 0.2f);
 			break;
 		case 2:
 			renderer.sharedMaterial.mainTexture = red;
-			outerCooldownBar.color = Color.red;
+			shieldRenderer.material.mainTexture = shieldRed;
+			shieldCooldownBar.color = Color.red;
 			playerColor = "Red";
-            laser.Color = Color.blue;
+            laser.Color = Color.red;
             break;
 		case 3:
 			renderer.sharedMaterial.mainTexture = green;
-			outerCooldownBar.color = Color.green;
+			shieldRenderer.material.mainTexture = shieldGreen;
+			shieldCooldownBar.color = Color.green;
 			playerColor = "Green";
             laser.Color = Color.green;
             break;
 		case 4:
 			renderer.sharedMaterial.mainTexture = yellow;
-			outerCooldownBar.color = Color.yellow;
-            laser.Color = Color.yellow;
-            playerColor = "Yellow";
+            laser.Color = Color.white;
+			shieldRenderer.material.mainTexture = shieldYellow;
+			shieldCooldownBar.color = Color.white;
+			playerColor = "White";
 			break;
 		}
 	}
@@ -200,8 +230,12 @@ public class PlayerController : MonoBehaviour {
 		if (InputHandler.GetButton (playerNumber, Players.Button.Fire))
 			Shoot ();
 
-		if (InputHandler.GetButtonDown (playerNumber, Players.Button.Parry))
+		if (InputHandler.GetButtonDown (playerNumber, Players.Button.Parry) && curShieldDuration >= maxShieldDuration * 0.4f)
+			StartParry ();
+		if (InputHandler.GetButton (playerNumber, Players.Button.Parry) && curShieldDuration > 0 && parrying)
 			Parry ();
+		else if (parrying)
+			StopParry ();
 
 		UpdateCooldown ();
 	}
@@ -217,10 +251,12 @@ public class PlayerController : MonoBehaviour {
         bodyAnim.SetInteger ("playerClip", 1);
 		Invoke ("Idle", globalCooldown);
 
-		Instantiate (bullet, new Vector3 (aim.position.x, aim.position.y, aim.position.z) + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+		Instantiate (bullet, gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 
 		curGlobalCooldown = 0.0f;
-		curCooldown = 0.0f;
+
+		if (curAmmo == Modifiers.clipSize)
+			curCooldown = 0.0f;
 		curAmmo--;
 
 		print ("Player " + name + " Shoots");
@@ -246,23 +282,31 @@ public class PlayerController : MonoBehaviour {
 
 	void Idle ()
 	{
-		bodyAnim.SetInteger ("playerClip", 0);
+		if (gameController.gameStarted)
+			bodyAnim.SetInteger ("playerClip", 0);
 	}
 
-	public void ReflectBullet ()
+	public void ReflectBullet (float curSpeed)
 	{
-		if (multiplyingBullets)
-		{
-			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
-			newBullet.GetComponent <Bullet> ()._speed *= 2;
+		float speedMultiplier = 2;
 
-			GameObject newBullet2 = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
-			newBullet2.GetComponent <Bullet> ()._speed *= 2;
+		Vector3 gunPos = new Vector3 (aim.position.x, gun.position.y + 0.35f, aim.position.z) + aim.forward;
+
+		if (settings.GetBool (Setting.multiplyingBulletsOnBlock))
+		{
+			GameObject newBullet = Instantiate (bullet, gunPos - aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
+			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
+			_newbullet.curSpeed = curSpeed * speedMultiplier;
+
+			GameObject newBullet2 = Instantiate (bullet, gunPos + aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
+			Bullet _newbullet2 = newBullet2.GetComponent <Bullet> ();
+			_newbullet2.curSpeed = curSpeed * speedMultiplier;
 		}
 		else
 		{
-			GameObject newBullet = Instantiate (bullet, aim.position + aim.forward * 2, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
-			newBullet.GetComponent <Bullet> ()._speed *= 2;
+			GameObject newBullet = Instantiate (bullet, gunPos, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
+			_newbullet.curSpeed = curSpeed * speedMultiplier;
 		}
 	}
 
@@ -297,32 +341,40 @@ public class PlayerController : MonoBehaviour {
 			curGlobalCooldown += Time.deltaTime;
 
 		//Shield cooldown
-		if (curShieldCooldown < shieldCooldown)
-			curShieldCooldown += Time.deltaTime;
+		if (curShieldDuration < maxShieldDuration && !parrying)
+			curShieldDuration += shieldFillSpeed * Time.deltaTime;
+		else if (curShieldDuration > maxShieldDuration)
+			curShieldDuration = maxShieldDuration;
 
-		//Shield duration
-		if (curShieldCooldown >= shieldDuration)
-			parrying = false;
+		//Shield cooldown circle
+		if (shieldCooldownBar != null)
+			shieldCooldownBar.fillAmount = (curShieldDuration / maxShieldDuration) * 0.5f;
+	}
+
+	void StartParry ()
+	{
+		parrying = true;
+		bodyAnim.SetInteger ("playerClip", 2);
 	}
 
 	void Parry ()
 	{
-		if (curShieldCooldown < shieldCooldown)
-			return;
-		
-		curShieldCooldown = 0.0f;
-		parrying = true;
-		bodyAnim.SetInteger ("playerClip", 2);
-		Invoke ("Idle", shieldCooldown);
+		curShieldDuration -= Time.deltaTime;
+	}
+
+	void StopParry ()
+	{
+		parrying = false;
+		Idle ();
 	}
 
 	public bool CanParry (Vector3 bulletPosition)
 	{
 		Vector3 dir = aim.position - new Vector3 (bulletPosition.x, aim.position.y, bulletPosition.z);
 
-		float angle = Vector3.Angle (aim.forward, dir);
+		float angle = Vector3.Angle (aim.forward, dir) / 2;
 
-		print ("Angle: " + angle / 2);
+		print ("Angle: " + angle);
 
 		if (angle >= maxShieldAngle && parrying)
 			return true;
@@ -355,7 +407,7 @@ public class PlayerController : MonoBehaviour {
 
 		Invoke ("ActivateFallingThroughFloor", 2.0f);
 
-
+		GetComponentInChildren <Laser> ().gameObject.SetActive (false);
 
 		Destroy (gameObject, 4.25f);
 	}

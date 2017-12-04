@@ -93,7 +93,7 @@ public class Bullet : MonoBehaviour
 
 					transform.rotation = Quaternion.Euler (new Vector3 (0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
 
-					player.ReflectBullet ();
+					player.ReflectBullet (curSpeed);
 				}
 				else
 					player.Die ();
@@ -135,11 +135,6 @@ public class Bullet : MonoBehaviour
 			
 		}
     }
-
-	private void OnCollisionStay (Collision collision)
-	{
-		print (collision.gameObject);
-	}
 
     #if UNITY_EDITOR
     private void OnApplicationQuit()

@@ -3,99 +3,154 @@ using System.Collections.Generic;
 using UnityEngine;
 using FMODUnity;
 public class MusicChanger : MonoBehaviour {
+	
+	[Header ("Game Objects")]
+	[SerializeField] private GameController gameController;
 
-    //Changing these floats from 0 to 1 will play their corresponding tracks in FMOD
-    //Remember to deactivate other tracks
-    //PlayMain needs to be activated to skip from intro/outro to MT,A1,A2 and A3 
-    public float m_MT, m_A1, m_A2, m_A3, m_O; //MainTheme, ActionLevel1, ActionLevel2, ActionLevel3, Outro
+	private Transform activeBullets;
+	private Settings settings;
+
+	private int currentTrackNumber = 0;
 
     StudioEventEmitter emitter;
 
-    private void Start()
+	void Start ()
+	{
+		activeBullets = gameController.activeBullets.transform;
+		settings = ServiceLocator.Locate <Settings> ();
+	}
+
+	//True when starting game, false when exiting game
+	public void Initialize (bool status)
+	{
+		if (status)
+		{
+			if (settings.GetBool (Setting.graduallySpeedingUp))
+			{
+				GetComponents <StudioEventEmitter> () [0].enabled = false;
+				GetComponents <StudioEventEmitter> () [1].enabled = true;
+
+				emitter = GetComponents <StudioEventEmitter> () [1];
+			}
+			else
+			{
+				GetComponents <StudioEventEmitter> () [0].enabled = true;
+				GetComponents <StudioEventEmitter> () [1].enabled = false;
+
+				emitter = GetComponents <StudioEventEmitter> () [0];
+
+				ChangeTrack (6);
+			}
+		}
+		else
+		{
+			GetComponents <StudioEventEmitter> () [0].enabled = true;
+			GetComponents <StudioEventEmitter> () [1].enabled = false;
+
+			emitter = GetComponents <StudioEventEmitter> () [0];
+
+			ChangeTrack (5);
+		}
+	}
+
+	public void PauseMusic (bool status)
+	{
+		RuntimeManager.PauseAllEvents (status);
+	}
+
+    void Update ()
     {
-        emitter = GetComponent<FMODUnity.StudioEventEmitter>();
+		if (settings.GetBool (Setting.graduallySpeedingUp) && GetComponents <StudioEventEmitter> () [1].enabled)
+		{
+			UpdateSpeedUp ();
+			return;
+		}
+
+		if (Input.GetKeyDown (KeyCode.Alpha0))
+			ChangeTrack (0);
+		if (Input.GetKeyDown (KeyCode.Alpha1))
+			ChangeTrack (1);
+		if (Input.GetKeyDown (KeyCode.Alpha2))
+			ChangeTrack (2);
+		if (Input.GetKeyDown (KeyCode.Alpha3))
+			ChangeTrack (3);
+		if (Input.GetKeyDown (KeyCode.Alpha4))
+			ChangeTrack (4);
     }
 
-    private void Update()
-    {
-        /* Activate to test
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            m_MT = 1;
-            m_A1 = 0;
-            m_A2 = 0;
-            m_A3 = 0;
-            m_O = 0;
+	void UpdateSpeedUp ()
+	{
+		//Higher speed = higher pitch (-100 - 100)
+		float pitch = activeBullets.childCount;
+		emitter.SetParameter ("Pitch", pitch * 2 / gameController.playerAmount);
+	}
 
-        }
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            m_MT = 0;
-            m_A1 = 1;
-            m_A2 = 0;
-            m_A3 = 0;
-            m_O = 0;
+	public void NextTrack ()
+	{
+		if (settings.GetBool (Setting.graduallySpeedingUp))
+			return;
+		
+		if (gameController.MatchPoint ())
+		{
+			if (currentTrackNumber != 0)
+				ChangeTrack (0);
+		}
+		else
+			RandomTrack ();
+	}
 
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            m_MT = 0;
-            m_A1 = 0;
-            m_A2 = 1;
-            m_A3 = 0;
-            m_O = 0;
+	public void OutroTrack ()
+	{
+		ChangeTrack (4);
+	}
 
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            m_MT = 0;
-            m_A1 = 0;
-            m_A2 = 0;
-            m_A3 = 1;
-            m_O = 0;
+	void RandomTrack ()
+	{
+		int random;
 
-        }*/
+		do random = Random.Range (1, 4);
+		while (currentTrackNumber == random);
 
+		ChangeTrack (random);
+	}
 
-        if (m_MT == 1f)
-        {
-            emitter.SetParameter("MainTheme", 1);
-        }
-        else
-        {
-            emitter.SetParameter("MainTheme", 0);
-        }
-        if (m_A1 == 1f)
-        {
-            emitter.SetParameter("ActionLevel1", 1);
-        }
-        else
-        {
-            emitter.SetParameter("ActionLevel1", 0);
-        }
-        if (m_A2 == 1f)
-        {
-            emitter.SetParameter("ActionLevel2", 1);
-        }
-        else
-        {
-            emitter.SetParameter("ActionLevel2", 0);
-        }
-        if (m_A3 == 1f)
-        {
-            emitter.SetParameter("ActionLevel3", 1);
-        }
-        else
-        {
-            emitter.SetParameter("ActionLevel3", 0);
-        }
-        if (m_O == 1f)
-        {
-            emitter.SetParameter("Outro", 1);
-        }
-        else
-        {
-            emitter.SetParameter("Outro", 0);
-        }
-    }
+	void ChangeTrack (int trackNumber)
+	{
+		print ("Change to " + trackNumber);
+
+		emitter.SetParameter ("MainTheme", 0);
+		emitter.SetParameter ("ActionLevel1", 0);
+		emitter.SetParameter ("ActionLevel2", 0);
+		emitter.SetParameter ("ActionLevel3", 0);
+		emitter.SetParameter ("Outro", 0);
+		emitter.SetParameter ("Intro", 0);
+		emitter.SetParameter ("Build Up", 0);
+
+		switch (trackNumber)
+		{
+		case 0:
+			emitter.SetParameter ("MainTheme", 1);
+			break;
+		case 1:
+			emitter.SetParameter ("ActionLevel1", 1);
+			break;
+		case 2:
+			emitter.SetParameter ("ActionLevel2", 1);
+			break;
+		case 3:
+			emitter.SetParameter ("ActionLevel3", 1);
+			break;
+		case 4:
+			emitter.SetParameter ("Outro", 1);
+			break;
+		case 5:
+			emitter.SetParameter ("Intro", 1);
+			break;
+		case 6:
+			emitter.SetParameter ("Build Up", 1);
+			break;
+		}
+
+		currentTrackNumber = trackNumber;
+	}
 }

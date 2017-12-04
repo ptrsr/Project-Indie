@@ -36,6 +36,9 @@ public class Laser : MonoBehaviour
         enabled = false;
 
         Vector3 scale = GetComponentInParent<PlayerController>().transform.localScale;
+
+		if (ServiceLocator.Locate<Menu> ().CurrentState == State.Game)
+			CheckEnabled (State.Game);
     }
 
     private void Update()
@@ -140,7 +143,8 @@ public class Laser : MonoBehaviour
 
     private void OnDisable()
     {
-        StartCoroutine(RemoveLaser());
+		if (isActiveAndEnabled)
+        	StartCoroutine(RemoveLaser());
     }
 
     IEnumerator RemoveLaser()

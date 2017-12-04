@@ -13,7 +13,7 @@ public class LobbyController : SubMenu {
 		ready
 	}
 
-	private bool selectingPlayers = false;
+	[HideInInspector] public bool selectingPlayers = false;
 
 	private Dictionary <Player, Status> playerStatus;
 
@@ -22,13 +22,14 @@ public class LobbyController : SubMenu {
 
 	[Header ("Game Objects")]
 	[SerializeField] private Transform players;
-	[SerializeField] private GameObject readyText;
 	[SerializeField] private Transform startPositions;
 	[SerializeField] private GameObject gameCanvas;
 	[SerializeField] private GameObject lobbyCanvas;
 	[SerializeField] private GameObject mainCanvas;
 	public GameObject settingsCanvas;
 	[SerializeField] private GameObject exitConfirmPanel;
+	[SerializeField] private Transform maps;
+	[SerializeField] private GameObject controlsCanvas;
 
 	private GameController gameController;
 
@@ -52,7 +53,17 @@ public class LobbyController : SubMenu {
 		{
 			settingsCanvas.SetActive (true);
 			ServiceLocator.Locate <Menu> ().SendCommand (2);
+
+			if (exitConfirmPanel.activeInHierarchy)
+				exitConfirmPanel.SetActive (false);
+
 			Invoke ("DisableThis", 0.01f);
+		}
+
+		if (controlsCanvas.activeInHierarchy)
+		{
+			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel))
+				controlsCanvas.SetActive (false);
 		}
 	}
 
@@ -167,7 +178,13 @@ public class LobbyController : SubMenu {
 	void SetPlayersPosition ()
 	{
 		for (int i = 0; i < players.childCount; i++)
-			players.GetChild (i).position = new Vector3 (10.8f + (i * 5), 0.9f, 14.0f);
+		{
+			Transform newPlayer = players.GetChild (i);
+			newPlayer.position = new Vector3 (78.8f + (i * 5), 2.24f, 2.5f);
+			newPlayer.rotation = Quaternion.Euler (new Vector3 (newPlayer.rotation.x, 90.0f, newPlayer.rotation.z));
+		}
+		
+			//players.GetChild (i).position = new Vector3 (10.8f + (i * 5), 0.9f, 14.0f);
 	}
 
 	void BecomeReady (Player player)
@@ -201,27 +218,12 @@ public class LobbyController : SubMenu {
 		return true;
 	}
 
-	//True if it's ready, false if it's not
-	void FinishLobby (bool status)
-	{
-		if (status)
-		{
-			if (!readyText.activeInHierarchy)
-			{
-				print ("Game is ready to start");
-
-				readyText.SetActive (true);
-			}
-		}
-		else
-		{
-			if (readyText.activeInHierarchy)
-				readyText.SetActive (false);
-		}
-	}
-
 	IEnumerator StartGame ()
 	{
+		selectingPlayers = false;
+
+		yield return new WaitForSeconds (1.0f);
+
 		gameCanvas.SetActive (true);
 		lobbyCanvas.SetActive (false);
 		mainCanvas.SetActive (false);
@@ -232,20 +234,47 @@ public class LobbyController : SubMenu {
 
 		//Colors
 		for (int i = 0; i < players.childCount; i++)
-			players.GetChild (i).GetComponent <PlayerController> ().AssignColor ();
-
-		selectingPlayers = false;
+		{
+			PlayerController playerController = players.GetChild (i).GetComponent <PlayerController> ();
+			
+			playerController.AssignColor ();
+			playerController.anim.SetBool ("Moving", false);
+		}
 
 		yield return new WaitForSeconds (1.0f);
 
 		if (gameController.gameStarted)
 		{
-			for (int i = 0; i < players.childCount; i++)
+			int playerCount = players.childCount;
+
+			print ("PlayerCount: " + playerCount);
+
+			List <int> startPos = new List <int> ();
+
+			for (int j = 0; j < playerCount; j++)
+				startPos.Add (j);
+
+			print ("StartposCount: " + startPos.Count);
+
+			for (int i = 0; i < playerCount; i++)
 			{
 				Transform tempPlayer = players.GetChild (i);
-				tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
 
-				players.GetChild (i).GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
+				int randomNumber = Random.Range (0, startPos.Count);
+
+				print ("Random: " + randomNumber);
+
+				if (maps.GetChild (0).gameObject.activeInHierarchy)
+					tempPlayer.position = startPositions.GetChild (0).GetChild (startPos [randomNumber]).position;
+				else if (maps.GetChild (1).gameObject.activeInHierarchy)
+					tempPlayer.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
+				
+				startPos.Remove (startPos [randomNumber]);
+
+				tempPlayer.GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
+
+				//Not random
+				//tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
 			}
 		}
 	}
@@ -266,12 +295,31 @@ public class LobbyController : SubMenu {
 	{
 		RemoveAllPlayers ();
 
-		for (int i = 0; i < gameController.playerAmount; i++)
+		int playerCount = gameController.playerAmount;
+
+		List <int> startPos = new List <int> ();
+
+		for (int j = 0; j < playerCount; j++)
+			startPos.Add (j);
+
+		for (int i = 0; i < playerCount; i++)
 		{
 			GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
-			newPlayer.transform.position = startPositions.GetChild ((int) playerStatus.Keys.ElementAt (i) - 1).position;
+
+			int randomNumber = Random.Range (0, startPos.Count);
+
+			if (maps.GetChild (0).gameObject.activeInHierarchy)
+				newPlayer.transform.position = startPositions.GetChild (0).GetChild (startPos [randomNumber]).position;
+			else if (maps.GetChild (1).gameObject.activeInHierarchy)
+				newPlayer.transform.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
+
+			startPos.Remove (startPos [randomNumber]);
+
+			//Not random
+			//newPlayer.transform.position = startPositions.GetChild ((int) playerStatus.Keys.ElementAt (i) - 1).position;
+
 			newPlayer.name = ((int) playerStatus.Keys.ElementAt (i)).ToString ();
-		
+
 			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
 			playerController.AssignColor ();
@@ -296,7 +344,6 @@ public class LobbyController : SubMenu {
 	{
 		ResetLobby (true, false);
 		lobbyCanvas.SetActive (true);
-		lobbyCanvas.GetComponentInChildren <UnityEngine.UI.Button> ().interactable = true;
 	}
 
 	//True when starting lobby and false when exiting - second bool true when going back to lobby from game, otherwise false
@@ -323,7 +370,6 @@ public class LobbyController : SubMenu {
 	{
 		Invoke ("LobbyJoinInvoke", 0.01f);
 		lobbyCanvas.SetActive (true);
-		lobbyCanvas.GetComponentInChildren <UnityEngine.UI.Button> ().interactable = true;
 	}
 
 	void LobbyJoinInvoke ()

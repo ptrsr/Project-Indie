@@ -8,6 +8,9 @@ TagManager:
   - Gun
   - Wall
   - Shield
+  - SmallButton
+  - LargeButton
+  - PlayerPart
   layers:
   - Default
   - TransparentFX
