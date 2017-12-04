@@ -136,11 +136,6 @@ public class Bullet : MonoBehaviour
 		}
     }
 
-	private void OnCollisionStay (Collision collision)
-	{
-		print (collision.gameObject);
-	}
-
     #if UNITY_EDITOR
     private void OnApplicationQuit()
     {

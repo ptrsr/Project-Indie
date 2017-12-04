@@ -4,13 +4,19 @@ using UnityEngine;
 
 public class PropRotation : MonoBehaviour {
 
+	private GameController gameController;
+	private LobbyController lobbyController;
+
 	private float curRotation = 0.0f;
 	private float rotationLimit = 0.0f;
 
-	public float rotationInterval = 3.0f;
+	[SerializeField] private float rotationInterval = 5.0f;
 
 	void Start ()
 	{
+		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
+		lobbyController = gameController.lobbyController;
+		
 		Invoke ("ChangeRotationLimit", rotationInterval);
 	}
 
@@ -25,7 +31,29 @@ public class PropRotation : MonoBehaviour {
 
 	void ChangeRotationLimit ()
 	{
-		rotationLimit += 45.0f;
+		if (gameController.gameStarted || lobbyController.selectingPlayers)
+		{
+			if (curRotation + 45.0f < rotationLimit)
+			{
+				curRotation = rotationLimit;
+				transform.rotation = Quaternion.Euler (new Vector3 (0.0f, curRotation, 0.0f));
+			}
+		
+			rotationLimit += 45.0f;
+		}
+
 		Invoke ("ChangeRotationLimit", rotationInterval);
+	}
+
+	void OnTriggerStay (Collider col)
+	{
+		if (col.tag == "Player" && col.transform.parent != transform)
+			col.transform.parent = transform;
+	}
+
+	void OnTriggerExit (Collider col)
+	{
+		if (col.tag == "Player")
+			col.transform.parent = gameController.players;
 	}
 }

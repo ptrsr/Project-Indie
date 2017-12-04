@@ -28,7 +28,8 @@ namespace Players
         Parry,
 		Submit,
 		Cancel,
-		Settings
+		Settings,
+		Menu
     }
 
     public enum InputType
@@ -110,8 +111,7 @@ public class InputHandler : StandaloneInputModule
 				continue;
 
 			if (Input.GetButtonDown (_players [i].ToString () + "Submit")) {
-
-				print (_players [i].ToString ());
+				//print (_players [i].ToString ());
 				ready ((Player)(i + 1));
 			}
         }
@@ -185,7 +185,7 @@ public class InputHandler : StandaloneInputModule
 
         if (controller == Player.none)
         {
-            Debug.LogWarning("Trying to get button from unregistered player!");
+            //Debug.LogWarning("Trying to get button from unregistered player!");
             return false;
         }
 

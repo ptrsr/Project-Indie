@@ -8,20 +8,22 @@ public class GameController : MonoBehaviour {
 	[Header ("Game Objects")]
 	[SerializeField] private Text countdown;
 	[SerializeField] private Text winText;
-	[SerializeField] private LobbyController lobbyController;
+	public LobbyController lobbyController;
 	[SerializeField] private GameObject pausePanel;
-	[SerializeField] private GameObject activeBullets;
+	public GameObject activeBullets;
 	[SerializeField] private GameObject musicManager;
 	[SerializeField] private Transform scorePanel;
 
-	private Transform players;
+	[HideInInspector] public Transform players;
 
 	[HideInInspector] public int playerAmount;
 	[HideInInspector] public bool gameStarted, gameFinished;
 	private bool canActivatePlayerController;
-	public float timeScale = 1.0f;
+	private float timeScale = 1.0f;
 
-	public Dictionary <string, int> victories;
+	private GameObject [] activePlayers;
+
+	private Dictionary <string, int> victories;
 
 	private Settings settings;
 
@@ -32,7 +34,7 @@ public class GameController : MonoBehaviour {
 
 	public void SetupGame (Transform _players)
 	{
-		musicManager.SetActive (true);
+		ActivateMusic (true);
 
 		players = _players;
 		playerAmount = players.childCount;
@@ -56,6 +58,7 @@ public class GameController : MonoBehaviour {
 
 	public void InitializeGame (float waitTime)
 	{
+		activePlayers = GameObject.FindGameObjectsWithTag ("Player");
 		gameStarted = true;
 		timeScale = 1.0f;
 		StartCoroutine (StartCountdown (waitTime));
@@ -90,7 +93,7 @@ public class GameController : MonoBehaviour {
 		{
 			CheckForVictory ();
 
-			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel)) //Should be another button
+			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Menu)) //Should be another button
 			{
 				if (pausePanel.activeInHierarchy)
 					PauseGame (false);
@@ -104,7 +107,7 @@ public class GameController : MonoBehaviour {
 
 		if (gameStarted && settings.GetBool (Setting.graduallySpeedingUp) && Time.timeScale < 50.0f)
 		{
-			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f);
+			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f / playerAmount);
 
 			if (Time.timeScale != 0)
 				Time.timeScale = timeScale;
@@ -119,6 +122,9 @@ public class GameController : MonoBehaviour {
 				lobbyController.settingsCanvas.SetActive (false);
 			}
 		}
+
+		if (pausePanel.activeInHierarchy)
+			musicManager.GetComponent <MusicChanger> ().PauseMusic (true);
 	}
 
 	//True to pause, false to unpause
@@ -130,6 +136,9 @@ public class GameController : MonoBehaviour {
 			pausePanel.SetActive (true);
 			pausePanel.transform.GetChild (1).GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
 
+			foreach (GameObject player in GameObject.FindGameObjectsWithTag ("Player"))
+				player.transform.parent = players;
+
 			if (players.GetChild (0).GetComponent <PlayerController> ().enabled)
 				canActivatePlayerController = true;
 			else
@@ -138,7 +147,7 @@ public class GameController : MonoBehaviour {
 			for (int i = 0; i < players.childCount; i++)
 				players.GetChild (i).GetComponent <PlayerController> ().enabled = false;
 
-			musicManager.SetActive (false);
+			musicManager.GetComponent <MusicChanger> ().PauseMusic (true);
 		}
 		else
 		{
@@ -151,7 +160,7 @@ public class GameController : MonoBehaviour {
 					players.GetChild (i).GetComponent <PlayerController> ().enabled = true;
 			}
 
-			musicManager.SetActive (true);
+			musicManager.GetComponent <MusicChanger> ().PauseMusic (false);
 		}
 	}
 
@@ -161,14 +170,20 @@ public class GameController : MonoBehaviour {
 			return;
 
 		int alivePlayers = 0;
-		for (int i = 0; i < players.childCount; i++)
+		for (int i = 0; i < activePlayers.Length; i++)
 		{
-			if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
-				alivePlayers++;
+			if (activePlayers [i] != null)
+			{
+				if (!activePlayers [i].GetComponent <PlayerController> ().dead)
+					alivePlayers++;
+			}
 		}
 
 		if (alivePlayers == 1)
 		{
+			foreach (GameObject player in GameObject.FindGameObjectsWithTag ("Player"))
+				player.transform.parent = players;
+			
 			for (int i = 0; i < players.childCount; i++)
 			{
 				//Destroy the cooldown circles
@@ -182,6 +197,8 @@ public class GameController : MonoBehaviour {
 
 	IEnumerator Victory (Transform player)
 	{
+		musicManager.GetComponent <MusicChanger> ().NextTrack ();
+
 		gameStarted = false;
 
 		Time.timeScale = 1;
@@ -205,8 +222,12 @@ public class GameController : MonoBehaviour {
 
 		if (CheckForTotalVictory (player))
 		{
+			if (!settings.GetBool (Setting.graduallySpeedingUp))
+				musicManager.GetComponent <MusicChanger> ().OutroTrack ();
+
 			victories = null;
 			winText.text = playerColorName + " player wins the set!";
+			winText.transform.GetChild (0).gameObject.SetActive (true);
 			winText.gameObject.SetActive (true);
 			gameFinished = true;
 
@@ -238,6 +259,20 @@ public class GameController : MonoBehaviour {
 		return false;
 	}
 
+	public bool MatchPoint ()
+	{
+		foreach (GameObject player in GameObject.FindGameObjectsWithTag ("Player"))
+			player.transform.parent = players;
+		
+		for (int i = 0; i < playerAmount; i++)
+		{
+			if (victories [players.GetChild (i).name] == Modifiers.pointsToVictory - 1)
+				return true;
+		}
+
+		return false;
+	}
+
 	void ResetGame ()
 	{
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
@@ -249,6 +284,8 @@ public class GameController : MonoBehaviour {
 
 		StopAllCoroutines ();
 		countdown.text = "";
+
+		winText.transform.GetChild (0).gameObject.SetActive (false);
 
 		gameStarted = false;
 		gameFinished = false;
@@ -263,7 +300,8 @@ public class GameController : MonoBehaviour {
 
 	public void BackToLobby ()
 	{
-		musicManager.SetActive (false);
+		musicManager.GetComponent <MusicChanger> ().PauseMusic (false);
+		ActivateMusic (false);
 
 		ResetGame ();
 
@@ -279,10 +317,17 @@ public class GameController : MonoBehaviour {
 
 	public void BackToMainMenu ()
 	{
-		musicManager.SetActive (false);
+		musicManager.GetComponent <MusicChanger> ().PauseMusic (false);
+		ActivateMusic (false);
 
 		ResetGame ();
 
 		lobbyController.BackToMainMeny ();
+	}
+
+	//True when starting game, false when exiting game
+	void ActivateMusic (bool status)
+	{
+		musicManager.GetComponent <MusicChanger> ().Initialize (status);
 	}
 }
