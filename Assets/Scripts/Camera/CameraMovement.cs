@@ -20,9 +20,10 @@ public class CameraMovement : MonoBehaviour
     #endregion
 
     [SerializeField] [Range(0, 1)]
-    private float
-        _camRotDist,
-        _camRotSpeed;
+    private float _camMoveDist;
+
+    [SerializeField] [Range(0, 10)]
+    private float _camMoveSpeed;
 
     [SerializeField]
     private float _cameraMovement;
@@ -31,7 +32,9 @@ public class CameraMovement : MonoBehaviour
         _currentPoint,
         _lastPoint;
 
-    private Vector3 _centerOfLevel;
+    private Vector3
+        _centerOfLevel,
+        _ray;
 
     private List<GameObject> _players;
 
@@ -45,9 +48,9 @@ public class CameraMovement : MonoBehaviour
         StateMachine.change += TrackPlayers;
 
         Vector3 desiredCenterPos = _points.gamePoint.transform.position;
-        Vector3 ray = _points.gamePoint.transform.rotation * Vector3.forward;
-        ray *= _points.gamePoint.transform.position.z / ray.z;
-        _centerOfLevel = desiredCenterPos - ray;
+        _ray = _points.gamePoint.transform.rotation * Vector3.forward;
+        _ray *= _points.gamePoint.transform.position.z / _ray.z;
+        _centerOfLevel = desiredCenterPos - _ray;
     }
 
     private void OnEnable()
@@ -112,16 +115,13 @@ public class CameraMovement : MonoBehaviour
 
         foreach (GameObject player in _players)
             desiredLookPosition += player.transform.position;
+        desiredLookPosition.y = 0;
 
+        desiredLookPosition = Vector3.Lerp(desiredLookPosition, _centerOfLevel, _camMoveDist);
 
-        desiredLookPosition = Vector3.Lerp(desiredLookPosition, _centerOfLevel, _camRotDist);
+        Vector3 desiredCameraPosition = desiredLookPosition + _ray;
 
-        Quaternion desiredRotation = Quaternion.LookRotation((desiredLookPosition - _points.gamePoint.transform.position).normalized, Vector3.up);
-
-        Vector3 delta = (desiredLookPosition - _centerOfLevel).normalized * _cameraMovement;
-        Quaternion xzRot = Quaternion.Euler(delta.z, -delta.x, 0);
-
-        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation * xzRot, _camRotSpeed * Time.deltaTime);
+        transform.position = Vector3.Lerp(transform.position, desiredCameraPosition, _camMoveSpeed * Time.deltaTime);
     }
 
     public CameraPoint CurrentPoint
