@@ -26,8 +26,8 @@ Shader "custom/LaserFX"
              
 			struct v2f
 			{
-				float4 vertex			: POSITION1;
-				float4 pos				: SV_POSITION;
+				float4 vertex			: TEXCOORD1;
+				float4 pos				: SV_Position;
                 float  uv				: TEXCOORD0;
 			};
 

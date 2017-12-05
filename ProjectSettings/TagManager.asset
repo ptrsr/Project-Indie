@@ -11,6 +11,8 @@ TagManager:
   - SmallButton
   - LargeButton
   - PlayerPart
+  - BodyPart
+  - Head
   layers:
   - Default
   - TransparentFX
