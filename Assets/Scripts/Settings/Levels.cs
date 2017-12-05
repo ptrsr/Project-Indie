@@ -8,6 +8,9 @@ public class Levels : MonoBehaviour
 
     private int selector = 0;
 
+	[SerializeField] private CameraObjectsPositioning settingsObject;
+	private bool canMove = false;
+
     private void Awake()
     {
         _levels = new GameObject[transform.childCount];
@@ -17,6 +20,7 @@ public class Levels : MonoBehaviour
 
         ServiceLocator.Provide(this);
     }
+
     public string ChangeLevel(int number)
     {
         if (number < 0 || number > _levels.Length - 1)
@@ -29,6 +33,11 @@ public class Levels : MonoBehaviour
 
         selector = number;
         _levels[selector].SetActive(true);
+
+		if (canMove)
+			settingsObject.EnableMoving ();
+		else
+			canMove = true;
 
         return _levels[selector].name;
     }

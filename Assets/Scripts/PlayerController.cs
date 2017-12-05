@@ -19,6 +19,7 @@ public class PlayerController : MonoBehaviour {
 	[HideInInspector] public Animator bodyAnim;
 
 	[HideInInspector] public string playerColor;
+	private Color _playerColor;
 
 	[Header ("Values")]
 	[SerializeField] private float moveSpeed = 600.0f;
@@ -48,9 +49,15 @@ public class PlayerController : MonoBehaviour {
 
 	[HideInInspector] public bool dead = false;
 
+	[Header ("Game Objects")]
+	[SerializeField] private Transform shield;
+	[SerializeField] private Transform leftArm;
+
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
 	[SerializeField] private GameObject oil;
+	[SerializeField] private GameObject parryParticle;
+	[SerializeField] private GameObject deathParticle;
 
 	[Header ("Textures/Materials")]
 	[SerializeField] private Texture blue;
@@ -154,6 +161,7 @@ public class PlayerController : MonoBehaviour {
 			shieldRenderer.material.mainTexture = shieldBlue;
 			shieldCooldownBar.color = Color.blue;
 			playerColor = "Blue";
+			_playerColor = Color.blue;
             laser.Color = new Color (0.2f, 0.67f, 1, 0.2f);
 			break;
 		case 2:
@@ -161,6 +169,7 @@ public class PlayerController : MonoBehaviour {
 			shieldRenderer.material.mainTexture = shieldRed;
 			shieldCooldownBar.color = Color.red;
 			playerColor = "Red";
+			_playerColor = Color.red;
             laser.Color = Color.red;
             break;
 		case 3:
@@ -168,6 +177,7 @@ public class PlayerController : MonoBehaviour {
 			shieldRenderer.material.mainTexture = shieldGreen;
 			shieldCooldownBar.color = Color.green;
 			playerColor = "Green";
+			_playerColor = Color.green;
             laser.Color = Color.green;
             break;
 		case 4:
@@ -176,6 +186,7 @@ public class PlayerController : MonoBehaviour {
 			shieldRenderer.material.mainTexture = shieldYellow;
 			shieldCooldownBar.color = Color.white;
 			playerColor = "White";
+			_playerColor = Color.white;
 			break;
 		}
 	}
@@ -240,7 +251,7 @@ public class PlayerController : MonoBehaviour {
 
 	void Shoot ()
 	{
-		if (curAmmo == 0 || curGlobalCooldown < globalCooldown)
+		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || parrying)
 			return;
 
         foreach (Light light in lights)
@@ -282,10 +293,20 @@ public class PlayerController : MonoBehaviour {
 	{
 		if (gameController.gameStarted)
 			bodyAnim.SetInteger ("playerClip", 0);
+
+		bodyAnim.speed = 1;
 	}
 
 	public void ReflectBullet (float curSpeed)
 	{
+		GameObject shieldParticle = Instantiate (parryParticle, shield);
+		shieldParticle.transform.localPosition = new Vector3 (-1.16f, -1.42f, -0.92f);
+		shieldParticle.transform.localRotation = Quaternion.Euler (new Vector3 (-19.0f, -2.1f, -68.0f));
+		ParticleSystem ps = shieldParticle.transform.GetChild (0).GetComponent <ParticleSystem> ();
+		var main = ps.main;
+		main.startColor = _playerColor;
+		Destroy (shieldParticle, 2.1f);
+
 		float speedMultiplier = 2;
 
 		Vector3 gunPos = new Vector3 (aim.position.x, gun.position.y + 0.35f, aim.position.z) + aim.forward;
@@ -332,7 +353,7 @@ public class PlayerController : MonoBehaviour {
 
 		//Outer cooldown circle
 		if (outerCooldownBar != null)
-			outerCooldownBar.fillAmount = curAmmo * 0.11f;
+			outerCooldownBar.fillAmount = curAmmo * 0.1f;
 
 		//Shoot global cooldown
 		if (curGlobalCooldown < globalCooldown)
@@ -352,6 +373,7 @@ public class PlayerController : MonoBehaviour {
 	void StartParry ()
 	{
 		parrying = true;
+		bodyAnim.speed = 5;
 		bodyAnim.SetInteger ("playerClip", 2);
 	}
 
@@ -362,6 +384,7 @@ public class PlayerController : MonoBehaviour {
 
 	void StopParry ()
 	{
+		leftArm.localRotation = Quaternion.Euler (Vector3.zero);
 		parrying = false;
 		Idle ();
 	}
@@ -394,6 +417,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		dead = true;
 
+		Instantiate (deathParticle, transform);
+
 		Destroy (GetComponent <Rigidbody> ());
 
 		if (anim.GetBool ("Moving"))
@@ -405,7 +430,8 @@ public class PlayerController : MonoBehaviour {
 
 		Invoke ("ActivateFallingThroughFloor", 2.0f);
 
-		GetComponentInChildren <Laser> ().gameObject.SetActive (false);
+		if (GetComponentInChildren <Laser> () != null)
+			GetComponentInChildren <Laser> ().gameObject.SetActive (false);
 
 		Instantiate (oil, new Vector3 (transform.position.x, 0.1f, transform.position.z), Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f)));
 

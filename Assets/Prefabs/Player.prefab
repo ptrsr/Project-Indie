@@ -843,6 +843,7 @@ GameObject:
   - component: {fileID: 4710902783155640}
   - component: {fileID: 33096503119385926}
   - component: {fileID: 23846527130309084}
+  - component: {fileID: 65321833029361550}
   m_Layer: 0
   m_Name: R_Arm
   m_TagString: Untagged
@@ -1026,7 +1027,6 @@ GameObject:
   - component: {fileID: 4716299307295918}
   - component: {fileID: 33283229865655630}
   - component: {fileID: 23064696573898410}
-  - component: {fileID: 65121735283160934}
   m_Layer: 0
   m_Name: L_Arm
   m_TagString: Untagged
@@ -1725,7 +1725,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1206634264190598}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 16.18, y: 5.79, z: 10.92}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.4, y: 0.4, z: 0.4}
   m_Children:
   - {fileID: 4832221373832426}
@@ -2232,7 +2232,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1740806942397824}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.1004658, y: 4.744106, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5090,18 +5090,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4.5, y: 9.621504, z: 4.5}
   m_Center: {x: 0, y: 4.310751, z: 0}
---- !u!65 &65121735283160934
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1740806942397824}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 9.12255, y: 2.5327566, z: 4.8724613}
-  m_Center: {x: 1.936595, y: -0.84626245, z: 1.9790778}
 --- !u!65 &65145247309444368
 BoxCollider:
   m_ObjectHideFlags: 1
@@ -5126,6 +5114,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 5.9400005, y: 1.2880404, z: 7.7024713}
   m_Center: {x: -0.00000013254659, y: -2.760899, z: 0.23038681}
+--- !u!65 &65321833029361550
+BoxCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1577557195820932}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 9.12255, y: 2.5327566, z: 4.8724613}
+  m_Center: {x: -2, y: -0.84626245, z: 1.9790778}
 --- !u!95 &95803781578412552
 Animator:
   serializedVersion: 3
@@ -5382,7 +5382,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: fa5f291157e5c5544a12841c8f4a1aae, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 445f220f8a397ef4eb629f824bfc14cb, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5432,8 +5432,14 @@ MonoBehaviour:
   lightEffectDuration: 0.1
   lights: []
   dead: 0
+  shield: {fileID: 4155212319730524}
+  leftArm: {fileID: 4716299307295918}
   bullet: {fileID: 1060196065007666, guid: b04151479d6041b4eadbabab83bd5248, type: 2}
   oil: {fileID: 1836384586873024, guid: a04c7ff88e9caa84c84cb2f2253ddbff, type: 2}
+  parryParticle: {fileID: 1401334335663536, guid: 1517bf12d545cb345b74097283c91798,
+    type: 2}
+  deathParticle: {fileID: 1294576157289622, guid: 361be60bd91ed834d9d188ace89c0268,
+    type: 2}
   blue: {fileID: 2800000, guid: bd1c9a1bf25953249bf21d0ea6c81815, type: 3}
   red: {fileID: 2800000, guid: a628c31420ef2644380b6fab2c22e766, type: 3}
   green: {fileID: 2800000, guid: 2f247bd3134468043aa334009dd991b1, type: 3}
@@ -5465,7 +5471,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: fa5f291157e5c5544a12841c8f4a1aae, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 445f220f8a397ef4eb629f824bfc14cb, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1

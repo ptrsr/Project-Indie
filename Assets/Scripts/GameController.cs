@@ -13,6 +13,8 @@ public class GameController : MonoBehaviour {
 	public GameObject activeBullets;
 	[SerializeField] private GameObject musicManager;
 	[SerializeField] private Transform scorePanel;
+	public PPController ppController;
+	[SerializeField] private GameObject winParticle;
 
 	[HideInInspector] public Transform players;
 
@@ -20,6 +22,9 @@ public class GameController : MonoBehaviour {
 	[HideInInspector] public bool gameStarted, gameFinished;
 	private bool canActivatePlayerController;
 	private float timeScale = 1.0f;
+	private string playerStreak = "";
+	private int playerStreakNumber = 0;
+	private bool firstRound;
 
 	private GameObject [] activePlayers;
 
@@ -34,6 +39,8 @@ public class GameController : MonoBehaviour {
 
 	public void SetupGame (Transform _players)
 	{
+		firstRound = true;
+
 		ActivateMusic (true);
 
 		players = _players;
@@ -62,6 +69,7 @@ public class GameController : MonoBehaviour {
 		gameStarted = true;
 		timeScale = 1.0f;
 		StartCoroutine (StartCountdown (waitTime));
+		ppController.ChangePP (PPController.PP.game);
 	}
 
 	IEnumerator StartCountdown (float waitTime)
@@ -107,7 +115,7 @@ public class GameController : MonoBehaviour {
 
 		if (gameStarted && settings.GetBool (Setting.graduallySpeedingUp) && Time.timeScale < 50.0f)
 		{
-			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f / playerAmount);
+			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f / (playerAmount / 1.5f));
 
 			if (Time.timeScale != 0)
 				Time.timeScale = timeScale;
@@ -119,6 +127,7 @@ public class GameController : MonoBehaviour {
 			{
 				lobbyController.enabled = true;
 				ServiceLocator.Locate <Menu> ().SendCommand (1);
+				ppController.ChangePP (PPController.PP.menu);
 				lobbyController.settingsCanvas.SetActive (false);
 			}
 		}
@@ -203,12 +212,13 @@ public class GameController : MonoBehaviour {
 
 		Time.timeScale = 1;
 
+		int bulletAmount = activeBullets.transform.childCount;
+
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
 
 		PlayerController playerController = player.GetComponent <PlayerController> ();
 		playerController.enabled = false;
-		playerController.bodyAnim.SetInteger ("playerClip", 3);
 		playerController.anim.SetBool ("Moving", false);
 
 		Destroy (player.GetComponent <Rigidbody> ());
@@ -216,7 +226,16 @@ public class GameController : MonoBehaviour {
 		victories [player.name]++;
 		scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: " + victories [player.name];
 
-		string playerColorName = playerController.playerColor;
+		if (playerStreak != playerController.playerColor)
+		{
+			playerStreak = playerController.playerColor;
+			playerStreakNumber = 1;
+		}
+		else if (playerStreak == playerController.playerColor)
+			playerStreakNumber++;
+
+		if (!CheckForTotalVictory (player))
+			playerController.bodyAnim.SetInteger ("playerClip", 3);
 
 		yield return new WaitForSeconds (1.5f);
 
@@ -226,24 +245,90 @@ public class GameController : MonoBehaviour {
 				musicManager.GetComponent <MusicChanger> ().OutroTrack ();
 
 			victories = null;
-			winText.text = playerColorName + " player wins the set!";
+
+			string [] victoryTexts = VictoryTexts (false, playerController, bulletAmount);
+			winText.text = victoryTexts [Random.Range (0, victoryTexts.Length)];
 			winText.transform.GetChild (0).gameObject.SetActive (true);
 			winText.gameObject.SetActive (true);
 			gameFinished = true;
 
-			Invoke ("LockText", 1.0f);
+			playerController.bodyAnim.SetInteger ("playerClip", 3);
+			Instantiate (winParticle, player);
 
-			print (playerColorName + " player wins the set!");
+			Invoke ("LockText", 1.0f);
 		}
 		else
 		{
-			winText.text = playerColorName + " player wins this round!";
+			string [] victoryTexts = VictoryTexts (true, playerController, bulletAmount);
+			winText.text = victoryTexts [Random.Range (0, victoryTexts.Length)];
 			winText.gameObject.SetActive (true);
-
-			print (playerColorName + " player has " + victories [player.name] + " wins!");
-
 			lobbyController.NewRound ();
 		}
+
+		if (firstRound)
+			firstRound = false;
+	}
+
+	string [] VictoryTexts (bool round, PlayerController player, int bulletAmount)
+	{
+		List <string> victoryTexts = new List <string> ();
+		string playerColor = player.playerColor + " player";
+
+		if (round)
+		{
+			//Round
+			if (firstRound)
+			{
+				//First round
+				victoryTexts.Add (playerColor + " is off to a good start!");
+				victoryTexts.Add (playerColor + " has drawn first oil!");
+			}
+			else if (playerStreakNumber == 2)
+			{
+				//2 wins in a row
+				victoryTexts.Add (playerColor + " is on a streak!");
+				victoryTexts.Add (playerColor + " is double dipping!");
+				victoryTexts.Add (playerColor + " is dominating!");
+				victoryTexts.Add (playerColor + " is making it look easy!");
+				victoryTexts.Add (playerColor + "! Somebody stop him!");
+			}
+			else if (playerStreakNumber > 2)
+			{
+				//3+ wins in a row
+				victoryTexts.Add (playerColor + " is dominating!");
+				victoryTexts.Add (playerColor + " is pimpin!");
+				victoryTexts.Add (playerColor + " master race!");
+				victoryTexts.Add (playerColor + " is running away with the game!");
+				victoryTexts.Add (playerColor + " must be DDOSing the other players!");
+			}
+			else
+			{
+				//Default
+				victoryTexts.Add (playerColor + " wins the round!");
+
+				//Needs more stuff here
+			}
+
+			if (bulletAmount >= 15)
+			{
+				//At least 20 active bullets
+				victoryTexts.Add (playerColor + " is the juke master!");
+				victoryTexts.Add (playerColor + " is the juke king!");
+				victoryTexts.Add (playerColor + "! Happy feet!");
+			}
+		}
+		else
+		{
+			//Set
+			//Default
+			victoryTexts.Add (playerColor + " wins the set!");
+			victoryTexts.Add (playerColor + " is victorious!");
+			victoryTexts.Add (playerColor + " is CLEARLY the best robot!");
+			victoryTexts.Add ("All hail " + playerColor + "!");
+			victoryTexts.Add (playerColor + " is tasting the sweet taste of victory!");
+		}
+
+		return victoryTexts.ToArray ();
 	}
 
 	void LockText ()
@@ -264,7 +349,7 @@ public class GameController : MonoBehaviour {
 		foreach (GameObject player in GameObject.FindGameObjectsWithTag ("Player"))
 			player.transform.parent = players;
 		
-		for (int i = 0; i < playerAmount; i++)
+		for (int i = 0; i < players.childCount; i++)
 		{
 			if (victories [players.GetChild (i).name] == Modifiers.pointsToVictory - 1)
 				return true;

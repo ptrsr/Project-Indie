@@ -12,7 +12,9 @@ public class CameraObjectsPositioning : MonoBehaviour {
 
 	private GameObject arena1, arena2;
 
-	void Start ()
+	private bool canMove = false;
+
+	void Awake ()
 	{
 		arena1 = maps.GetChild (0).gameObject;
 		arena2 = maps.GetChild (1).gameObject;
@@ -20,13 +22,42 @@ public class CameraObjectsPositioning : MonoBehaviour {
 
 	void Update ()
 	{
+		if (!canMove)
+			return;
+		
 		if (arena1.activeInHierarchy)
 		{
+			Camera.main.transform.position = cameraPositions [0];
 			transform.position = cameraPositions [0];
 		}
 		else if (arena2.activeInHierarchy)
 		{
+			Camera.main.transform.position = cameraPositions [1];
 			transform.position = cameraPositions [1];
 		}
+	}
+
+	public void EnableThis ()
+	{
+		this.enabled = true;
+		StartCoroutine (ActivateMoving ());
+	}
+
+	IEnumerator ActivateMoving ()
+	{
+		yield return new WaitForSeconds (1.5f);
+		EnableMoving ();
+	}
+
+	public void EnableMoving ()
+	{
+		canMove = true;
+	}
+
+	void OnDisable ()
+	{
+		StopAllCoroutines ();
+		canMove = false;
+		this.enabled = false;
 	}
 }

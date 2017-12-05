@@ -5,11 +5,13 @@ using UnityEngine;
 public class SpawnController : MonoBehaviour {
 
 	public GameObject PlayerTrack;
-	// Use this for initialization
+	[SerializeField] private Texture [] textures;
+
 	void Start () {
 		InvokeRepeating ("Spawn", 0, 3);
 	}
 	void Spawn () {
-		Destroy(Instantiate (PlayerTrack, transform.root),14);
+		GameObject tracks = Instantiate (PlayerTrack, transform.root);
+		Destroy(tracks, 14);
 	}
 }

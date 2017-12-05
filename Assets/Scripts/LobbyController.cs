@@ -14,6 +14,7 @@ public class LobbyController : SubMenu {
 	}
 
 	[HideInInspector] public bool selectingPlayers = false;
+	private bool activateMainCanvas = false;
 
 	private Dictionary <Player, Status> playerStatus;
 
@@ -32,10 +33,12 @@ public class LobbyController : SubMenu {
 	[SerializeField] private GameObject controlsCanvas;
 
 	private GameController gameController;
+	private PPController ppController;
 
 	void Start ()
 	{
 		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
+		ppController = gameController.ppController;
 		DeactivateLobbyCanvas ();
 		exitConfirmPanel.SetActive (false);
 
@@ -53,6 +56,8 @@ public class LobbyController : SubMenu {
 		{
 			settingsCanvas.SetActive (true);
 			ServiceLocator.Locate <Menu> ().SendCommand (2);
+			settingsCanvas.GetComponent <CameraObjectsPositioning> ().EnableThis ();
+			ppController.ChangePP (PPController.PP.game);
 
 			if (exitConfirmPanel.activeInHierarchy)
 				exitConfirmPanel.SetActive (false);
@@ -65,6 +70,9 @@ public class LobbyController : SubMenu {
 			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel))
 				controlsCanvas.SetActive (false);
 		}
+
+		if (activateMainCanvas)
+			ActivateMainCanvas ();
 	}
 
 	void DisableThis ()
@@ -180,7 +188,7 @@ public class LobbyController : SubMenu {
 		for (int i = 0; i < players.childCount; i++)
 		{
 			Transform newPlayer = players.GetChild (i);
-			newPlayer.position = new Vector3 (78.8f + (i * 5), 2.24f, 2.5f);
+			newPlayer.position = new Vector3 (78.8f + (i * 5), 4.95f, 2.5f);
 			newPlayer.rotation = Quaternion.Euler (new Vector3 (newPlayer.rotation.x, 90.0f, newPlayer.rotation.z));
 		}
 		
@@ -226,7 +234,6 @@ public class LobbyController : SubMenu {
 
 		gameCanvas.SetActive (true);
 		lobbyCanvas.SetActive (false);
-		mainCanvas.SetActive (false);
 		Invoke ("DeactivateLobbyCanvas", 1.0f);
 		transform.root.GetComponent <Menu> ().SendCommand (0);
 
@@ -265,9 +272,15 @@ public class LobbyController : SubMenu {
 				print ("Random: " + randomNumber);
 
 				if (maps.GetChild (0).gameObject.activeInHierarchy)
+				{
 					tempPlayer.position = startPositions.GetChild (0).GetChild (startPos [randomNumber]).position;
+					tempPlayer.rotation = startPositions.GetChild (0).GetChild (startPos [randomNumber]).rotation;
+				}
 				else if (maps.GetChild (1).gameObject.activeInHierarchy)
+				{
 					tempPlayer.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
+					tempPlayer.rotation = startPositions.GetChild (1).GetChild (startPos [randomNumber]).rotation;
+				}
 				
 				startPos.Remove (startPos [randomNumber]);
 
@@ -311,9 +324,15 @@ public class LobbyController : SubMenu {
 			int randomNumber = Random.Range (0, startPos.Count);
 
 			if (maps.GetChild (0).gameObject.activeInHierarchy)
+			{
 				newPlayer.transform.position = startPositions.GetChild (0).GetChild (startPos [randomNumber]).position;
+				newPlayer.transform.rotation = startPositions.GetChild (0).GetChild (startPos [randomNumber]).rotation;
+			}
 			else if (maps.GetChild (1).gameObject.activeInHierarchy)
+			{
 				newPlayer.transform.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
+				newPlayer.transform.rotation = startPositions.GetChild (1).GetChild (startPos [randomNumber]).rotation;
+			}
 
 			startPos.Remove (startPos [randomNumber]);
 
@@ -325,6 +344,7 @@ public class LobbyController : SubMenu {
 			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
 			playerController.AssignColor ();
+			playerController.anim.SetBool ("Moving", false);
 			playerController.enabled = false;
 
 			newPlayer.transform.GetChild (1).GetChild (2).gameObject.SetActive (true);
@@ -358,6 +378,7 @@ public class LobbyController : SubMenu {
 			if (!backToLobby)
 				playerStatus = new Dictionary <Player, Status> ();
 			gameCanvas.SetActive (false);
+			ppController.ChangePP (PPController.PP.menu);
 			Invoke ("ActivateLobbyFunctionality", 0.01f);
 		}
 		else
@@ -421,12 +442,27 @@ public class LobbyController : SubMenu {
 	{
 		transform.root.GetComponent <Menu> ().SendCommand (1);
 		ResetLobby (false, false);
-		mainCanvas.SetActive (true);
+		activateMainCanvas = true;
 		exitConfirmPanel.SetActive (false);
 
 		//Fail-safe
 		foreach (UnityEngine.UI.Button button in mainCanvas.GetComponentsInChildren <UnityEngine.UI.Button> ())
 			button.interactable = true;
+	}
+
+	void ActivateMainCanvas ()
+	{
+		if (Vector3.Distance (Camera.main.transform.position, transform.root.GetChild (0).position) < 0.2f)
+		{
+			mainCanvas.SetActive (true);
+			activateMainCanvas = false;
+		}
+	}
+
+	public void DeactivateMainCanvas ()
+	{
+		mainCanvas.SetActive (false);
+		activateMainCanvas = false;
 	}
 
 	void ActivateLobbyFunctionality ()
