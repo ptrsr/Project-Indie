@@ -70,6 +70,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a991f13f1c1e5d948b25141304b086f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _shader: {fileID: 4800000, guid: 0091b6de0f532784aa0f8361f4e7858c, type: 3}
   oilSprites:
   - {fileID: 21300000, guid: 0acaf335e4260614eaa2ab80ff4813ca, type: 3}
   - {fileID: 21300000, guid: 93b4bd250183efc4f9600d3d555d29c8, type: 3}

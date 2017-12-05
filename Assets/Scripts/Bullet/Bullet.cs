@@ -1,18 +1,20 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Bullet : MonoBehaviour
 {
-	public float
-        _speed;
+    [SerializeField]
+    private GameObject _particleEffect;
 
-	[HideInInspector] public float curSpeed;
+    [SerializeField]
+    private float _startSpeed = 20;
+
+	[HideInInspector] public float _speed;
 
     private Vector3
         _velocity;
-
-    private List<Collision> _collisions;
 
     #if UNITY_EDITOR
     private List<Vector3> _bounces;
@@ -20,14 +22,11 @@ public class Bullet : MonoBehaviour
 
     void Start ()
     {
-		if (curSpeed == 0)
-			curSpeed = _speed;
+		_speed = _startSpeed;
 		
         RB.velocity = transform.forward * _speed;
         RB.useGravity = false;
         RB.constraints = RigidbodyConstraints.FreezePositionY;
-
-        _collisions = new List<Collision>();
 
         #if UNITY_EDITOR
         // track spawn position
@@ -39,107 +38,63 @@ public class Bullet : MonoBehaviour
 
 	void Update ()
 	{
-		if (curSpeed > 100)
-			curSpeed = 100;
+		if (_speed > 100)
+			_speed = 100;
 
-		if (curSpeed > _speed)
-			curSpeed -= Time.deltaTime * (curSpeed / _speed) * 4;
-		
-		RB.velocity = transform.forward * curSpeed;
-	}
-
-    private void FixedUpdate()
-    {
-        ResolveCollisions();
-
-        // keep track of velocity for collision
-        _velocity = RB.velocity;
+		if (_speed > _startSpeed)
+			_speed -= Time.deltaTime * (_startSpeed / _speed) * 4;
 
         #if UNITY_EDITOR
         _bounces[_bounces.Count - 1] = transform.position;
-
-        // reset
-        if (Input.GetKey(KeyCode.R))
-            Destroy(gameObject);
-		#endif
+        #endif
     }
 
-    private void ResolveCollisions()
+    private void OnCollisionEnter(Collision collision)
     {
-        if (_collisions.Count == 0)
-            return;
+        PlayerController player = collision.transform.GetComponent<PlayerController>();
 
-        for (int i = 0; i < _collisions.Count; i++)
-            for (int j = _collisions.Count - 1; j > i; j--)
-                if (_collisions[i].contacts[0].normal == _collisions[j].contacts[0].normal)
-                    _collisions.RemoveAt(j);
-
-        Vector3 normal = new Vector3();
-
-        for (int i = 0; i < _collisions.Count; i++)
+        if (player != null)
         {
-            Collision collision = _collisions[i];
-            ContactPoint point = collision.contacts[0];
-
-            GameObject other = collision.gameObject;
-
-            if (other.tag == "Player")
-			{
-				PlayerController player = other.GetComponent <PlayerController> ();
-				
-				if (player.CanParry (transform.position))
-				{
-					print ("Player " + player.name + " dodged a bullet!");
-
-					transform.rotation = Quaternion.Euler (new Vector3 (0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
-
-					player.ReflectBullet (curSpeed);
-				}
-				else
-					player.Die ();
-
-				Destroy (gameObject);
-				return;
-			}
-
-            Vector3 newNormal = point.normal;
-            newNormal.y = 0;
-            newNormal.Normalize();
-
-            normal += newNormal;
+            if (player.CanParry(transform.position))
+            {
+                transform.rotation = Quaternion.Euler(new Vector3(0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
+                player.ReflectBullet(_speed);
+            }
+            else
+            {
+                player.Die();
+                Destroy(gameObject);
+                return;
+            }
         }
-        normal.Normalize();
-
-        Vector3 nextBounceDir = Vector3.Reflect(_velocity.normalized, normal).normalized;
-
-        transform.forward = nextBounceDir;
-        RB.velocity = nextBounceDir * _velocity.magnitude;
-        _velocity = RB.velocity;
-
-        RB.angularVelocity = new Vector3();
 
         #if UNITY_EDITOR
         // track bounce
         _bounces.Add(transform.position);
         #endif
 
-        _collisions.Clear();
+        StartCoroutine(bounce());
     }
 
-    private void OnCollisionEnter(Collision collision)
+    IEnumerator bounce()
     {
-		try {
-			_collisions.Add(collision);
-			
-		} catch {
-			
-		}
+        yield return new WaitForEndOfFrame();
+
+        RB.angularVelocity = new Vector3();
+
+        print(_speed);
+        RB.velocity = RB.velocity.normalized * _speed;
+
+        transform.forward = RB.velocity.normalized;
     }
 
     #if UNITY_EDITOR
     private void OnApplicationQuit()
     {
-        ServiceLocator.Locate<BulletTracker>().AddTrajectory(_bounces);
+        BulletTracker tracker = ServiceLocator.Locate<BulletTracker>();
+
+        if (tracker != null)
+            tracker.AddTrajectory(_bounces);
     }
 
     private void OnDrawGizmos()

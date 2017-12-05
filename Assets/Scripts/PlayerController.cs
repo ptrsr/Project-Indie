@@ -294,17 +294,17 @@ public class PlayerController : MonoBehaviour {
 		{
 			GameObject newBullet = Instantiate (bullet, gunPos - aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y - 40.0f, 0.0f)), activeBullets);
 			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
-			_newbullet.curSpeed = curSpeed * speedMultiplier;
+			_newbullet._speed = curSpeed * speedMultiplier;
 
 			GameObject newBullet2 = Instantiate (bullet, gunPos + aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
 			Bullet _newbullet2 = newBullet2.GetComponent <Bullet> ();
-			_newbullet2.curSpeed = curSpeed * speedMultiplier;
+			_newbullet2._speed = curSpeed * speedMultiplier;
 		}
 		else
 		{
 			GameObject newBullet = Instantiate (bullet, gunPos, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
-			_newbullet.curSpeed = curSpeed * speedMultiplier;
+			_newbullet._speed = curSpeed * speedMultiplier;
 		}
 	}
 
@@ -401,13 +401,14 @@ public class PlayerController : MonoBehaviour {
 		
 		bodyAnim.SetInteger ("playerClip", 4);
 
-		GetComponent <BoxCollider> ().enabled = false;
-
 		Invoke ("ActivateFallingThroughFloor", 2.0f);
 
 		GetComponentInChildren <Laser> ().gameObject.SetActive (false);
 
 		Instantiate (oil, new Vector3 (transform.position.x, 0.1f, transform.position.z), Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f)));
+
+        foreach (Collider col in GetComponentsInChildren<Collider>())
+            col.enabled = false;
 
 		Destroy (gameObject, 4.25f);
 	}
