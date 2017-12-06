@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour {
 	public LobbyController lobbyController;
 	[SerializeField] private GameObject pausePanel;
 	public GameObject activeBullets;
-	[SerializeField] private GameObject musicManager;
+	public GameObject musicManager;
 	[SerializeField] private Transform scorePanel;
 	public PPController ppController;
 	[SerializeField] private GameObject winParticle;
@@ -57,7 +57,12 @@ public class GameController : MonoBehaviour {
 		for (int i = 0; i < playerAmount; i++)
 		{
 			PlayerController playerController = players.GetChild (i).GetComponent <PlayerController> ();
-			scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: 0";
+
+			int playerID = (int)playerController.playerNumber - 1;
+			scorePanel.GetChild (playerID).gameObject.SetActive (true);
+			scorePanel.GetChild (playerID).GetComponent <Image> ().sprite = playerController.playerIcon;
+			scorePanel.GetChild (playerID).GetComponent <Image> ().transform.GetChild (0).GetComponent <Text> ().text = "0";
+
 		}
 
 		InitializeGame (1.0f);
@@ -199,7 +204,7 @@ public class GameController : MonoBehaviour {
 			{
 				//Destroy the cooldown circles
 				Destroy (players.GetChild (i).GetChild (2).gameObject);
-				players.GetComponent <PlayerController> ().arrow.SetActive (false);
+				players.GetChild (i).GetComponent <PlayerController> ().arrow.SetActive (false);
 
 				if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
 					StartCoroutine (Victory (players.GetChild (i)));
@@ -209,8 +214,6 @@ public class GameController : MonoBehaviour {
 
 	IEnumerator Victory (Transform player)
 	{
-		musicManager.GetComponent <MusicChanger> ().NextTrack ();
-
 		gameStarted = false;
 
 		Time.timeScale = 1;
@@ -227,7 +230,9 @@ public class GameController : MonoBehaviour {
 		Destroy (player.GetComponent <Rigidbody> ());
 
 		victories [player.name]++;
-		scorePanel.GetChild ((int)playerController.playerNumber - 1).GetComponent <Text> ().text = playerController.playerColor + " player: " + victories [player.name];
+		scorePanel.GetChild ((int)playerController.playerNumber - 1).GetChild (0).GetComponent <Text> ().text = victories [player.name].ToString ();
+
+		musicManager.GetComponent <MusicChanger> ().NextTrack ();
 
 		if (playerStreak != playerController.playerColor)
 		{
@@ -252,6 +257,7 @@ public class GameController : MonoBehaviour {
 			string [] victoryTexts = VictoryTexts (false, playerController, bulletAmount);
 			winText.text = victoryTexts [Random.Range (0, victoryTexts.Length)];
 			winText.transform.GetChild (0).gameObject.SetActive (true);
+			winText.color = playerController.textColor;
 			winText.gameObject.SetActive (true);
 			gameFinished = true;
 
@@ -264,6 +270,7 @@ public class GameController : MonoBehaviour {
 		{
 			string [] victoryTexts = VictoryTexts (true, playerController, bulletAmount);
 			winText.text = victoryTexts [Random.Range (0, victoryTexts.Length)];
+			winText.color = playerController.textColor;
 			winText.gameObject.SetActive (true);
 			lobbyController.NewRound ();
 		}
@@ -342,7 +349,7 @@ public class GameController : MonoBehaviour {
 
 	bool CheckForTotalVictory (Transform player)
 	{
-		if (victories [player.name] == Modifiers.pointsToVictory)
+		if (victories [player.name] == settings.GetInt (Setting.roundsToWin))
 			return true;
 		return false;
 	}
@@ -354,7 +361,7 @@ public class GameController : MonoBehaviour {
 		
 		for (int i = 0; i < players.childCount; i++)
 		{
-			if (victories [players.GetChild (i).name] == Modifiers.pointsToVictory - 1)
+			if (victories [players.GetChild (i).name] == settings.GetInt (Setting.roundsToWin) - 1)
 				return true;
 		}
 
@@ -383,7 +390,7 @@ public class GameController : MonoBehaviour {
 		transform.root.GetComponent <Menu> ().SendCommand (1);
 
 		for (int i = 0; i < 4; i++)
-			scorePanel.GetChild (i).GetComponent <Text> ().text = "";
+			scorePanel.GetChild (i).gameObject.SetActive (false);
 	}
 
 	public void BackToLobby ()

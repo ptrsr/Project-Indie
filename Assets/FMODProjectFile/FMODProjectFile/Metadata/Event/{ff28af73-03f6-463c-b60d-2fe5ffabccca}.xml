@@ -5,7 +5,7 @@
             <value>RobotDeathSound</value>
         </property>
         <property name="outputFormat">
-            <value>2</value>
+            <value>0</value>
         </property>
         <relationship name="folder">
             <destination>{d902b153-d089-46d9-b79e-41f3dc1b768f}</destination>
@@ -127,7 +127,6 @@
     <object class="MixerBusEffectChain" id="{eeb25b38-1069-471e-9ee0-73ef6d026bf7}">
         <relationship name="effects">
             <destination>{60ded974-606e-4428-bba8-dfb4528812d1}</destination>
-            <destination>{ac9b6d15-e4cf-4e31-bfeb-17b4b67beb19}</destination>
         </relationship>
     </object>
     <object class="MixerBusPanner" id="{23ce5edc-db83-4cc3-baa0-f71bbc0c2795}"/>
@@ -167,7 +166,6 @@
     </object>
     <object class="MixerBusPanner" id="{d9990afd-1aff-46a7-8040-6d84fdb07246}"/>
     <object class="MixerBusFader" id="{60ded974-606e-4428-bba8-dfb4528812d1}"/>
-    <object class="SpatialiserEffect" id="{ac9b6d15-e4cf-4e31-bfeb-17b4b67beb19}"/>
     <object class="AutomationCurve" id="{7ff15237-5dc4-49f2-a85b-8066a742a59d}">
         <relationship name="parameter">
             <destination>{d5ff73e1-a480-4954-a05c-1b73ea1f040a}</destination>

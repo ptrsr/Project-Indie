@@ -8,7 +8,9 @@ public enum Setting
     multiplyingBulletsOnBlock,
 	graduallySpeedingUp,
     Laser,
-    maxBounces
+    maxBounces,
+	roundsToWin,
+	clipSize
 }
 
 public class Settings : MonoBehaviour
@@ -41,7 +43,6 @@ public class Settings : MonoBehaviour
     private bool[] bools;
     private int[] ints;
 
-
     private void Awake()
     {
         bools = new bool[10];
@@ -57,6 +58,9 @@ public class Settings : MonoBehaviour
 
         foreach (BoolSetting setting in _defaultBools)
             bools[(int)setting.setting] = setting.value;
+
+		foreach (IntSetting setting in _defaultInts)
+			ints [(int)setting.setting] = setting.value;
     }
 
     public bool GetBool(Setting setting)

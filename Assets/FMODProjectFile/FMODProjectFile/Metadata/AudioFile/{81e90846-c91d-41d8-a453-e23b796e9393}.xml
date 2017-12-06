@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{81e90846-c91d-41d8-a453-e23b796e9393}">
+        <property name="assetPath">
+            <value>MetalHit4.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>48</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>0.57193749999999999</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{a04f1a87-c961-4b9f-a10e-bb511d45d39f}</destination>
+        </relationship>
+    </object>
+</objects>

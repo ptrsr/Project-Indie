@@ -151,4 +151,11 @@ public class MusicChanger : MonoBehaviour {
 
 		currentTrackNumber = trackNumber;
 	}
+
+	public void PlayLobbySound ()
+	{
+		FMOD.Studio.EventInstance randomSound;
+		randomSound = FMODUnity.RuntimeManager.CreateInstance ("event:/RandomRobotSounds");
+		randomSound.start ();
+	}
 }

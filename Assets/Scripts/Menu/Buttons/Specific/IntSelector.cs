@@ -29,7 +29,11 @@ public class IntSelector : ArrowButton {
         _text = GetComponentsInChildren<Text>()[1];
 
         _selector = Mathf.Clamp(_settings.GetInt(_setting), _min, _max);
-        _text.text = _selector.ToString();
+
+		if (_selector == -1)
+			_text.text = "∞";
+		else
+        	_text.text = _selector.ToString();
     }
 
     public override void ArrowKey(int side)
@@ -45,5 +49,7 @@ public class IntSelector : ArrowButton {
             _text.text = "∞";
         else
             _text.text = _selector.ToString();
+
+		_settings.SetInt (_setting, _selector);
     }
 }

@@ -199,6 +199,8 @@ public class LobbyController : SubMenu {
 		playerController.AssignColor ();
 		playerController.inLobby = true;
 
+		gameController.musicManager.GetComponent <MusicChanger> ().PlayLobbySound ();
+
 		SetPlayersPosition ();
 	}
 
@@ -207,7 +209,7 @@ public class LobbyController : SubMenu {
 		for (int i = 0; i < players.childCount; i++)
 		{
 			Transform newPlayer = players.GetChild (i);
-			newPlayer.position = new Vector3 (78.8f + (i * 5), 4.95f, 2.5f);
+			newPlayer.position = new Vector3 (77.5f + (i * 6.5f), 4.95f, 2.5f);
 			newPlayer.rotation = Quaternion.Euler (new Vector3 (newPlayer.rotation.x, 90.0f, newPlayer.rotation.z));
 		}
 		
@@ -297,6 +299,11 @@ public class LobbyController : SubMenu {
 					tempPlayer.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
 					tempPlayer.rotation = startPositions.GetChild (1).GetChild (startPos [randomNumber]).rotation;
 				}
+				else if (maps.GetChild (2).gameObject.activeInHierarchy)
+				{
+					tempPlayer.position = startPositions.GetChild (2).GetChild (startPos [randomNumber]).position;
+					tempPlayer.rotation = startPositions.GetChild (2).GetChild (startPos [randomNumber]).rotation;
+				}
 
 				PlayerController playerController = tempPlayer.GetComponent <PlayerController> ();
 
@@ -355,6 +362,11 @@ public class LobbyController : SubMenu {
 				newPlayer.transform.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
 				newPlayer.transform.rotation = startPositions.GetChild (1).GetChild (startPos [randomNumber]).rotation;
 			}
+			else if (maps.GetChild (2).gameObject.activeInHierarchy)
+			{
+				newPlayer.transform.position = startPositions.GetChild (2).GetChild (startPos [randomNumber]).position;
+				newPlayer.transform.rotation = startPositions.GetChild (2).GetChild (startPos [randomNumber]).rotation;
+			}
 
 			startPos.Remove (startPos [randomNumber]);
 
@@ -385,7 +397,11 @@ public class LobbyController : SubMenu {
 		if (childCount > 0)
 		{
 			for (int i = 0; i < childCount; i++)
+			{
+				players.GetChild (i).GetComponent <PlayerController> ().StopAllSounds ();
+				
 				Destroy (players.GetChild (i).gameObject);
+			}
 		}
 	}
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{cb1f6f60-f754-4ea6-a062-178e7bb2df62}">
+        <property name="assetPath">
+            <value>387229__eflexthesounddesigner__explosion-close-near-mixed.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>48</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>5.879458333333333</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{a04f1a87-c961-4b9f-a10e-bb511d45d39f}</destination>
+        </relationship>
+    </object>
+</objects>
