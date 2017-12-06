@@ -5432,12 +5432,11 @@ MonoBehaviour:
   lightEffectDuration: 0.1
   lights: []
   dead: 0
-  shield: {fileID: 4155212319730524}
-  leftArm: {fileID: 4716299307295918}
+  shield: {fileID: 0}
+  leftArm: {fileID: 0}
   bullet: {fileID: 1060196065007666, guid: b04151479d6041b4eadbabab83bd5248, type: 2}
   oil: {fileID: 1836384586873024, guid: a04c7ff88e9caa84c84cb2f2253ddbff, type: 2}
-  parryParticle: {fileID: 1401334335663536, guid: 1517bf12d545cb345b74097283c91798,
-    type: 2}
+  parryParticle: {fileID: 0}
   deathParticle: {fileID: 1294576157289622, guid: 361be60bd91ed834d9d188ace89c0268,
     type: 2}
   blue: {fileID: 2800000, guid: bd1c9a1bf25953249bf21d0ea6c81815, type: 3}
