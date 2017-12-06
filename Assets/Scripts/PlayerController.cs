@@ -6,7 +6,7 @@ using Players;
 
 public class PlayerController : MonoBehaviour {
 
-	public Player playerNumber;
+	[HideInInspector] public Player playerNumber;
 
 	private Rigidbody rb;
 	[HideInInspector] public Transform aim;
@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour {
 
 	[HideInInspector] public string playerColor;
 	private Color _playerColor;
+	private Color nonStandardColor;
+	[HideInInspector] public Color textColor;
 
 	[Header ("Values")]
 	[SerializeField] private float moveSpeed = 600.0f;
@@ -43,6 +45,8 @@ public class PlayerController : MonoBehaviour {
 	private Settings settings;
 	private GameController gameController;
 	private Transform lastBullet;
+	private SoundManager soundManager;
+	[HideInInspector] public Sprite playerIcon;
 
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
@@ -74,6 +78,12 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Color greenColor;
 	[SerializeField] private Color whiteColor;
 
+	[Header ("Sprites")]
+	[SerializeField] private Sprite blueIcon;
+	[SerializeField] private Sprite redIcon;
+	[SerializeField] private Sprite greenIcon;
+	[SerializeField] private Sprite whiteIcon;
+
 	void Awake ()
 	{
 		cooldownBar = transform.GetChild (2).GetChild (0).GetComponent <Image> ();
@@ -87,6 +97,7 @@ public class PlayerController : MonoBehaviour {
 	{
 		settings = ServiceLocator.Locate <Settings> ();
 		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
+		soundManager = GetComponent <SoundManager> ();
 
 		rb = GetComponent <Rigidbody> ();
 		aim = transform.GetChild (0).GetChild (0);
@@ -177,6 +188,9 @@ public class PlayerController : MonoBehaviour {
 			_playerColor = Color.blue;
 			laser.Color = new Color (0.2f, 0.67f, 1, 0.2f);
 			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = blueColor;
+			playerIcon = blueIcon;
+			nonStandardColor = _playerColor;
+			textColor = blueColor;
 			break;
 		case 2:
 			renderer.sharedMaterial.mainTexture = red;
@@ -185,7 +199,10 @@ public class PlayerController : MonoBehaviour {
 			playerColor = "Red";
 			_playerColor = Color.red;
 			laser.Color = redColor;
-			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = redColor;
+			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = _playerColor;
+			playerIcon = redIcon;
+			nonStandardColor = redColor;
+			textColor = redColor;
             break;
 		case 3:
 			renderer.sharedMaterial.mainTexture = green;
@@ -195,6 +212,9 @@ public class PlayerController : MonoBehaviour {
 			_playerColor = Color.green;
 			laser.Color = greenColor;
 			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = greenColor;
+			playerIcon = greenIcon;
+			nonStandardColor = greenColor;
+			textColor = redColor;
             break;
 		case 4:
 			renderer.sharedMaterial.mainTexture = yellow;
@@ -204,6 +224,9 @@ public class PlayerController : MonoBehaviour {
 			playerColor = "White";
 			_playerColor = Color.white;
 			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = whiteColor;
+			playerIcon = whiteIcon;
+			nonStandardColor = whiteColor;
+			textColor = Color.white;
 			break;
 		}
 	}
@@ -271,13 +294,21 @@ public class PlayerController : MonoBehaviour {
 		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || parrying || Physics.CheckSphere (gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, 0.1f))
 			return;
 
+		soundManager.PlayShootingSound ();
+
         foreach (Light light in lights)
             StartCoroutine(LightEffect(light));
 
         bodyAnim.SetInteger ("playerClip", 1);
 		Invoke ("Idle", globalCooldown);
 
-		Instantiate (bullet, gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+		GameObject newBullet = Instantiate (bullet, gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
+
+		ParticleSystem ps = newBullet.transform.GetChild (0).GetComponent <ParticleSystem> ();
+		var main = ps.main;
+		main.startColor = nonStandardColor;
+
+		newBullet.transform.GetChild (1).GetComponent <MeshRenderer> ().material.SetColor ("_EmissionColor", nonStandardColor);
 
 		curGlobalCooldown = 0.0f;
 
@@ -346,12 +377,31 @@ public class PlayerController : MonoBehaviour {
 			GameObject newBullet2 = Instantiate (bullet, gunPos + aim.right, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y + 40.0f, 0.0f)), activeBullets);
 			Bullet _newbullet2 = newBullet2.GetComponent <Bullet> ();
 			_newbullet2._speed = curSpeed * speedMultiplier;
+
+			ParticleSystem ps3 = newBullet.transform.GetChild (0).GetComponent <ParticleSystem> ();
+			var main3 = ps3.main;
+			main3.startColor = nonStandardColor;
+
+			newBullet.transform.GetChild (1).GetComponent <MeshRenderer> ().material.SetColor ("_EmissionColor", nonStandardColor);
+
+			ParticleSystem ps2 = newBullet2.transform.GetChild (0).GetComponent <ParticleSystem> ();
+			var main2 = ps2.main;
+			main2.startColor = nonStandardColor;
+
+			newBullet2.transform.GetChild (1).GetComponent <MeshRenderer> ().material.SetColor ("_EmissionColor", nonStandardColor);
 		}
 		else
 		{
 			GameObject newBullet = Instantiate (bullet, gunPos, Quaternion.Euler (new Vector3 (0.0f, aim.rotation.eulerAngles.y, 0.0f)), activeBullets);
 			Bullet _newbullet = newBullet.GetComponent <Bullet> ();
 			_newbullet._speed = curSpeed * speedMultiplier;
+
+
+			ParticleSystem ps3 = newBullet.transform.GetChild (0).GetComponent <ParticleSystem> ();
+			var main3 = ps3.main;
+			main3.startColor = nonStandardColor;
+
+			newBullet.transform.GetChild (1).GetComponent <MeshRenderer> ().material.SetColor ("_EmissionColor", nonStandardColor);
 		}
 	}
 
@@ -443,6 +493,8 @@ public class PlayerController : MonoBehaviour {
 	{
 		dead = true;
 
+		soundManager.PlayDeathSound ();
+
 		Instantiate (deathParticle, transform);
 
 		Destroy (GetComponent <Rigidbody> ());
@@ -473,5 +525,10 @@ public class PlayerController : MonoBehaviour {
 	void FallThroughFloor ()
 	{
 		transform.position -= new Vector3 (0.0f, 2.0f, 0.0f) * Time.deltaTime;
+	}
+
+	public void StopAllSounds ()
+	{
+		soundManager.StopAllSounds ();
 	}
 }

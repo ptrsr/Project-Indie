@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
     [SerializeField]
     private float _startSpeed = 20;
 
-	public float _speed = 20;
+	[HideInInspector] public float _speed = 20;
 
     private Vector3
         _velocity;

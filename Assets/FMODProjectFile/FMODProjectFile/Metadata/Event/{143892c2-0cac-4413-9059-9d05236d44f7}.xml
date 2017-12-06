@@ -5,7 +5,7 @@
             <value>RandomRobotSounds</value>
         </property>
         <property name="outputFormat">
-            <value>2</value>
+            <value>0</value>
         </property>
         <relationship name="folder">
             <destination>{d902b153-d089-46d9-b79e-41f3dc1b768f}</destination>
@@ -129,7 +129,6 @@
     <object class="MixerBusEffectChain" id="{c0d6e60e-b96c-4de9-aa49-7bcc180d5938}">
         <relationship name="effects">
             <destination>{f7066c41-6ee9-4cad-8f0d-e2265ce911de}</destination>
-            <destination>{6384d89f-c777-4cf2-92a1-99f5f6e33756}</destination>
         </relationship>
     </object>
     <object class="MixerBusPanner" id="{89aba7b3-0196-476b-bf6d-b75ed6712ad6}"/>
@@ -172,7 +171,6 @@
     </object>
     <object class="MixerBusPanner" id="{6f94050e-a51c-4754-b257-70c1797818da}"/>
     <object class="MixerBusFader" id="{f7066c41-6ee9-4cad-8f0d-e2265ce911de}"/>
-    <object class="SpatialiserEffect" id="{6384d89f-c777-4cf2-92a1-99f5f6e33756}"/>
     <object class="AutomationCurve" id="{21f7b0b5-610d-42c9-a059-cdd3b401ed89}">
         <relationship name="parameter">
             <destination>{2536280d-04fa-4096-9d24-011c6da72c71}</destination>

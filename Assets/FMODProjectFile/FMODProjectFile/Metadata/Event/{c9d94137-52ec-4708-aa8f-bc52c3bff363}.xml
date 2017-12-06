@@ -5,7 +5,7 @@
             <value>ReloadSound</value>
         </property>
         <property name="outputFormat">
-            <value>2</value>
+            <value>1</value>
         </property>
         <relationship name="folder">
             <destination>{d902b153-d089-46d9-b79e-41f3dc1b768f}</destination>
@@ -121,7 +121,6 @@
     <object class="MixerBusEffectChain" id="{74bc1cd1-3acf-4d8b-af3d-015f0adf8bc8}">
         <relationship name="effects">
             <destination>{0368dcb4-d6d9-4588-9ad7-ef798cb3ffc8}</destination>
-            <destination>{f4b6f740-76fd-4856-9132-cfd7f5bbc81f}</destination>
         </relationship>
     </object>
     <object class="MixerBusPanner" id="{7c1ddfbb-b9af-4a2a-a3c9-e29d4ef00df5}"/>
@@ -156,6 +155,5 @@
     </object>
     <object class="MixerBusPanner" id="{20fd7da0-850f-436a-9380-c3adb16aaab5}"/>
     <object class="MixerBusFader" id="{0368dcb4-d6d9-4588-9ad7-ef798cb3ffc8}"/>
-    <object class="SpatialiserEffect" id="{f4b6f740-76fd-4856-9132-cfd7f5bbc81f}"/>
     <object class="MixerBusFader" id="{d2efef95-1c60-45de-bd0e-8e5042e411f1}"/>
 </objects>

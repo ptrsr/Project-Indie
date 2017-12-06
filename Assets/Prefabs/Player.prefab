@@ -291,6 +291,7 @@ GameObject:
   - component: {fileID: 114487827337888654}
   - component: {fileID: 65012560903396532}
   - component: {fileID: 65200106264475586}
+  - component: {fileID: 114804788517336404}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -5479,6 +5480,7 @@ MonoBehaviour:
   maxShieldAngle: 50
   lightEffectDuration: 0.1
   lights: []
+  playerIcon: {fileID: 0}
   inLobby: 0
   dead: 0
   shield: {fileID: 4155212319730524}
@@ -5506,6 +5508,10 @@ MonoBehaviour:
   redColor: {r: 0.85294116, g: 0, b: 0, a: 1}
   greenColor: {r: 0.20410766, g: 0.8455882, b: 0, a: 1}
   whiteColor: {r: 0.9485294, g: 0.9485294, b: 0.9485294, a: 1}
+  blueIcon: {fileID: 21300000, guid: a4eb74820a912f84a96dbd69fee0b394, type: 3}
+  redIcon: {fileID: 21300000, guid: 03d4742a34b451640aad6be4d3004995, type: 3}
+  greenIcon: {fileID: 21300000, guid: 5e9c193f9bde77241afe5277dbba6091, type: 3}
+  whiteIcon: {fileID: 21300000, guid: 59fb49f48601a3a4eb5d920a72ec8ada, type: 3}
 --- !u!114 &114550090232361880
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5596,6 +5602,17 @@ MonoBehaviour:
   m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &114804788517336404
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1206634264190598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8277f8aed35958449980889170a857b1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114854311444474652
 MonoBehaviour:
   m_ObjectHideFlags: 1

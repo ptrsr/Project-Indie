@@ -385,7 +385,11 @@ public class LobbyController : SubMenu {
 		if (childCount > 0)
 		{
 			for (int i = 0; i < childCount; i++)
+			{
+				players.GetChild (i).GetComponent <PlayerController> ().StopAllSounds ();
+				
 				Destroy (players.GetChild (i).gameObject);
+			}
 		}
 	}
 
