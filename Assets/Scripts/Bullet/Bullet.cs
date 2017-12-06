@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
     [SerializeField]
     private float _startSpeed = 20;
 
-	[HideInInspector] public float _speed;
+	public float _speed = 20;
 
     private Vector3
         _velocity;
@@ -20,9 +20,14 @@ public class Bullet : MonoBehaviour
     private List<Vector3> _bounces;
     #endif
 
+	void Awake ()
+	{
+		_speed = _startSpeed;
+	}
+
     void Start ()
     {
-		_speed = _startSpeed;
+		//_speed = _startSpeed;
 		
         RB.velocity = transform.forward * _speed;
         RB.useGravity = false;
@@ -42,7 +47,7 @@ public class Bullet : MonoBehaviour
 			_speed = 100;
 
 		if (_speed > _startSpeed)
-			_speed -= Time.deltaTime * (_startSpeed / _speed) * 4;
+			_speed -= Time.deltaTime * (_speed / _startSpeed) * 4;
 
         #if UNITY_EDITOR
         _bounces[_bounces.Count - 1] = transform.position;
@@ -51,26 +56,20 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        PlayerController player = collision.transform.GetComponent<PlayerController>();
+		if (collision.transform.GetComponent <PlayerController> () != null)
+		{
+			Destroy (gameObject);
 
-        if (player != null)
-        {
-            if (player.CanParry(transform.position))
-            {
-                transform.rotation = Quaternion.Euler(new Vector3(0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
-                player.ReflectBullet(_speed);
+			PlayerController player = collision.transform.GetComponent<PlayerController> ();
 
-                GameObject particle = Instantiate(_particleEffect);
-                particle.transform.position = transform.position;
-                particle.transform.forward = -transform.forward;
-            }
-            else
-            {
-                player.Die();
-                Destroy(gameObject);
-                return;
-            }
-        }
+			if (player.CanParry (transform.position))
+				player.ReflectBullet (_speed, transform);
+			else
+			{
+				player.Die ();
+				return;
+			}
+		}
 
         #if UNITY_EDITOR
         // track bounce
@@ -86,14 +85,9 @@ public class Bullet : MonoBehaviour
 
         RB.angularVelocity = new Vector3();
 
-        print(_speed);
         RB.velocity = RB.velocity.normalized * _speed;
 
         transform.forward = RB.velocity.normalized;
-
-        GameObject particle = Instantiate(_particleEffect);
-        particle.transform.position = transform.position;
-        particle.transform.forward = -transform.forward;
     }
 
     #if UNITY_EDITOR

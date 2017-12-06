@@ -42,16 +42,19 @@ public class PlayerController : MonoBehaviour {
 
 	private Settings settings;
 	private GameController gameController;
+	private Transform lastBullet;
 
 	private bool parrying = false;
 	private bool fallingThroughFloor = false;
     private bool multiplyingBullets = false;
+	[HideInInspector] public bool inLobby;
 
 	[HideInInspector] public bool dead = false;
 
 	[Header ("Game Objects")]
 	[SerializeField] private Transform shield;
 	[SerializeField] private Transform leftArm;
+	public GameObject arrow;
 
 	[Header ("Prefabs")]
 	[SerializeField] private GameObject bullet;
@@ -64,6 +67,12 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private Texture red, green, yellow;
 	[SerializeField] private Material player1Mat, player2Mat, player3Mat, player4Mat;
 	[SerializeField] private Texture shieldBlue, shieldRed, shieldGreen, shieldYellow;
+
+	[Header ("Colors")]
+	[SerializeField] private Color blueColor;
+	[SerializeField] private Color redColor;
+	[SerializeField] private Color greenColor;
+	[SerializeField] private Color whiteColor;
 
 	void Awake ()
 	{
@@ -84,7 +93,7 @@ public class PlayerController : MonoBehaviour {
 		if (GameObject.Find ("ActiveBullets") != null)
 			activeBullets = GameObject.Find ("ActiveBullets").transform;
 
-		anim.speed = 8;
+		anim.speed = 2.75f;
 
 		bodyAnim.SetInteger ("playerClip", 0);
 
@@ -101,6 +110,9 @@ public class PlayerController : MonoBehaviour {
 
 	void Update ()
 	{
+		if (inLobby)
+			return;
+		
 		if (!dead)
 			UpdateAbilities ();
 
@@ -113,7 +125,8 @@ public class PlayerController : MonoBehaviour {
 		if (dead)
 			return;
 		
-		Move ();
+		if (!inLobby)
+			Move ();
 		Aim ();
 	}
 
@@ -159,34 +172,38 @@ public class PlayerController : MonoBehaviour {
 		case 1:
 			renderer.sharedMaterial.mainTexture = blue;
 			shieldRenderer.material.mainTexture = shieldBlue;
-			shieldCooldownBar.color = Color.blue;
+			shieldCooldownBar.color = blueColor;
 			playerColor = "Blue";
 			_playerColor = Color.blue;
-            laser.Color = new Color (0.2f, 0.67f, 1, 0.2f);
+			laser.Color = new Color (0.2f, 0.67f, 1, 0.2f);
+			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = blueColor;
 			break;
 		case 2:
 			renderer.sharedMaterial.mainTexture = red;
 			shieldRenderer.material.mainTexture = shieldRed;
-			shieldCooldownBar.color = Color.red;
+			shieldCooldownBar.color = redColor;
 			playerColor = "Red";
 			_playerColor = Color.red;
-            laser.Color = Color.red;
+			laser.Color = redColor;
+			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = redColor;
             break;
 		case 3:
 			renderer.sharedMaterial.mainTexture = green;
 			shieldRenderer.material.mainTexture = shieldGreen;
-			shieldCooldownBar.color = Color.green;
+			shieldCooldownBar.color = greenColor;
 			playerColor = "Green";
 			_playerColor = Color.green;
-            laser.Color = Color.green;
+			laser.Color = greenColor;
+			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = greenColor;
             break;
 		case 4:
 			renderer.sharedMaterial.mainTexture = yellow;
-            laser.Color = Color.white;
+			laser.Color = whiteColor;
 			shieldRenderer.material.mainTexture = shieldYellow;
-			shieldCooldownBar.color = Color.white;
+			shieldCooldownBar.color = whiteColor;
 			playerColor = "White";
 			_playerColor = Color.white;
+			arrow.transform.GetChild (0).GetComponent <SpriteRenderer> ().color = whiteColor;
 			break;
 		}
 	}
@@ -251,7 +268,7 @@ public class PlayerController : MonoBehaviour {
 
 	void Shoot ()
 	{
-		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || parrying)
+		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || parrying || Physics.CheckSphere (gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, 0.1f))
 			return;
 
         foreach (Light light in lights)
@@ -266,9 +283,8 @@ public class PlayerController : MonoBehaviour {
 
 		if (curAmmo == Modifiers.clipSize)
 			curCooldown = 0.0f;
+		
 		curAmmo--;
-
-		print ("Player " + name + " Shoots");
 	}
 
     IEnumerator LightEffect(Light light)
@@ -297,8 +313,18 @@ public class PlayerController : MonoBehaviour {
 		bodyAnim.speed = 1;
 	}
 
-	public void ReflectBullet (float curSpeed)
+	public void ReflectBullet (float curSpeed, Transform _bullet)
 	{
+		if (lastBullet != null)
+		{
+			if (_bullet == lastBullet)
+				return;
+			else
+				lastBullet = _bullet;
+		}
+		else
+			lastBullet = _bullet;
+			
 		GameObject shieldParticle = Instantiate (parryParticle, shield);
 		shieldParticle.transform.localPosition = new Vector3 (-1.16f, -1.42f, -0.92f);
 		shieldParticle.transform.localRotation = Quaternion.Euler (new Vector3 (-19.0f, -2.1f, -68.0f));
@@ -309,7 +335,7 @@ public class PlayerController : MonoBehaviour {
 
 		float speedMultiplier = 2;
 
-		Vector3 gunPos = new Vector3 (aim.position.x, gun.position.y + 0.35f, aim.position.z) + aim.forward;
+		Vector3 gunPos = new Vector3 (aim.position.x, gun.position.y + 0.35f, aim.position.z) + aim.forward * 4;
 
 		if (settings.GetBool (Setting.multiplyingBulletsOnBlock))
 		{

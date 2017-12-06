@@ -68,11 +68,30 @@ public class LobbyController : SubMenu {
 		if (controlsCanvas.activeInHierarchy)
 		{
 			if (InputHandler.GetButtonDown (Players.Player.P1, Players.Button.Cancel))
+			{
 				controlsCanvas.SetActive (false);
+				ActivateBlur (false);
+			}
 		}
 
 		if (activateMainCanvas)
 			ActivateMainCanvas ();
+	}
+
+	public void ActivateBlur (bool status)
+	{
+		if (ppController == null)
+			return;
+		
+		if (status)
+			ppController.ChangePP (PPController.PP.blur);
+		else
+			ppController.ChangePP (PPController.PP.menu);
+	}
+
+	public void DeactivateBlurInSettings ()
+	{
+		ppController.ChangePP (PPController.PP.game);
 	}
 
 	void DisableThis ()
@@ -178,7 +197,7 @@ public class LobbyController : SubMenu {
 		PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 		playerController.playerNumber = player;
 		playerController.AssignColor ();
-		playerController.enabled = false;
+		playerController.inLobby = true;
 
 		SetPlayersPosition ();
 	}
@@ -245,7 +264,10 @@ public class LobbyController : SubMenu {
 			PlayerController playerController = players.GetChild (i).GetComponent <PlayerController> ();
 			
 			playerController.AssignColor ();
+			playerController.inLobby = false;
 			playerController.anim.SetBool ("Moving", false);
+			playerController.anim.speed = 8;
+			playerController.enabled = false;
 		}
 
 		yield return new WaitForSeconds (1.0f);
@@ -254,22 +276,16 @@ public class LobbyController : SubMenu {
 		{
 			int playerCount = players.childCount;
 
-			print ("PlayerCount: " + playerCount);
-
 			List <int> startPos = new List <int> ();
 
 			for (int j = 0; j < playerCount; j++)
 				startPos.Add (j);
-
-			print ("StartposCount: " + startPos.Count);
 
 			for (int i = 0; i < playerCount; i++)
 			{
 				Transform tempPlayer = players.GetChild (i);
 
 				int randomNumber = Random.Range (0, startPos.Count);
-
-				print ("Random: " + randomNumber);
 
 				if (maps.GetChild (0).gameObject.activeInHierarchy)
 				{
@@ -281,12 +297,18 @@ public class LobbyController : SubMenu {
 					tempPlayer.position = startPositions.GetChild (1).GetChild (startPos [randomNumber]).position;
 					tempPlayer.rotation = startPositions.GetChild (1).GetChild (startPos [randomNumber]).rotation;
 				}
+
+				PlayerController playerController = tempPlayer.GetComponent <PlayerController> ();
+
+				playerController.aim.localRotation = Quaternion.Euler (Vector3.zero);
 				
 				startPos.Remove (startPos [randomNumber]);
 
-				tempPlayer.GetComponent <PlayerController> ().bodyAnim.SetInteger ("playerClip", 0);
+				playerController.bodyAnim.SetInteger ("playerClip", 0);
 
 				tempPlayer.GetChild (1).GetChild (2).gameObject.SetActive (true);
+
+				playerController.arrow.SetActive (true);
 
 				//Not random
 				//tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
@@ -344,8 +366,11 @@ public class LobbyController : SubMenu {
 			PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 			playerController.playerNumber = playerStatus.Keys.ElementAt (i);
 			playerController.AssignColor ();
+			playerController.inLobby = false;
 			playerController.anim.SetBool ("Moving", false);
+			playerController.anim.speed = 8;
 			playerController.enabled = false;
+			playerController.arrow.SetActive (true);
 
 			newPlayer.transform.GetChild (1).GetChild (2).gameObject.SetActive (true);
 		}
@@ -444,6 +469,7 @@ public class LobbyController : SubMenu {
 		ResetLobby (false, false);
 		activateMainCanvas = true;
 		exitConfirmPanel.SetActive (false);
+		ppController.ChangePP (PPController.PP.menu);
 
 		//Fail-safe
 		foreach (UnityEngine.UI.Button button in mainCanvas.GetComponentsInChildren <UnityEngine.UI.Button> ())

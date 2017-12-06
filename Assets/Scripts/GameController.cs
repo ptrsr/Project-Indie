@@ -115,7 +115,7 @@ public class GameController : MonoBehaviour {
 
 		if (gameStarted && settings.GetBool (Setting.graduallySpeedingUp) && Time.timeScale < 50.0f)
 		{
-			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f / (playerAmount / 1.5f));
+			timeScale = 1.0f + (activeBullets.transform.childCount * 0.1f / (playerAmount * 0.75f));
 
 			if (Time.timeScale != 0)
 				Time.timeScale = timeScale;
@@ -142,6 +142,7 @@ public class GameController : MonoBehaviour {
 		if (status)
 		{
 			Time.timeScale = 0;
+			ppController.ChangePP (PPController.PP.blur);
 			pausePanel.SetActive (true);
 			pausePanel.transform.GetChild (1).GetChild (0).GetChild (0).GetComponent <Button> ().Select ();
 
@@ -161,6 +162,7 @@ public class GameController : MonoBehaviour {
 		else
 		{
 			Time.timeScale = 1;
+			ppController.ChangePP (PPController.PP.game);
 			pausePanel.SetActive (false);
 
 			if (canActivatePlayerController)
@@ -197,6 +199,7 @@ public class GameController : MonoBehaviour {
 			{
 				//Destroy the cooldown circles
 				Destroy (players.GetChild (i).GetChild (2).gameObject);
+				players.GetComponent <PlayerController> ().arrow.SetActive (false);
 
 				if (!players.GetChild (i).GetComponent <PlayerController> ().dead)
 					StartCoroutine (Victory (players.GetChild (i)));

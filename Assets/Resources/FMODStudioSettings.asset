@@ -13,9 +13,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HasSourceProject: 1
   HasPlatforms: 1
-  sourceProjectPath: Assets\FMODProjectFile\FMODProjectFile.fspro
-  SourceProjectPathUnformatted: Assets\FMODProjectFile\FMODProjectFile.fspro
-  SourceBankPathUnformatted: Assets\FMODProjectFile\Build
+  sourceProjectPath: Assets\FMODProjectFile\FMODProjectFile\FMODProjectFile.fspro
+  SourceProjectPathUnformatted: Assets\FMODProjectFile\FMODProjectFile\FMODProjectFile.fspro
+  SourceBankPathUnformatted: Assets\FMODProjectFile\FMODProjectFile\Build
   AutomaticEventLoading: 1
   AutomaticSampleLoading: 0
   ImportType: 0

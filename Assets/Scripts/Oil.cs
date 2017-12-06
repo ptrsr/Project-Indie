@@ -17,7 +17,7 @@ public class Oil : MonoBehaviour
 
         Material mat = new Material(_shader);
 
-        print(Screen.width);
+        //print(Screen.width);
         mat.SetVector("_TexelSize", new Vector2(1.0f / Screen.width, 1.0f / Screen.height));
 
         renderer.material = new Material(_shader);
