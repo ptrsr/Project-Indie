@@ -1,31 +1,52 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public enum Setting
 {
     multiplyingBulletsOnBlock,
 	graduallySpeedingUp,
-    Laser
+    Laser,
+    maxBounces
 }
 
 public class Settings : MonoBehaviour
 {
+
     [System.Serializable]
-    struct DefaultBoolSetting
+    class DefaultSetting
     {
         public Setting setting;
+    }
+
+    [System.Serializable]
+    class BoolSetting : DefaultSetting
+    {
         public bool value;
     }
 
-    [SerializeField]
-    private List<DefaultBoolSetting> _defaultBools = new List<DefaultBoolSetting>();
+    [System.Serializable]
+    class IntSetting : DefaultSetting
+    {
+        public int value;
+    }
 
-	[SerializeField]
+    [SerializeField]
+    private List<BoolSetting> _defaultBools = new List<BoolSetting>();
+
+    [SerializeField]
+    private List<IntSetting> _defaultInts = new List<IntSetting>();
+
     private bool[] bools;
+    private int[] ints;
+
 
     private void Awake()
     {
+        bools = new bool[10];
+        ints = new int[10];
+
         ServiceLocator.Provide(this);
         ResetToDefault();
     }
@@ -34,7 +55,7 @@ public class Settings : MonoBehaviour
     {
         bools = new bool[_defaultBools.Count];
 
-        foreach (DefaultBoolSetting setting in _defaultBools)
+        foreach (BoolSetting setting in _defaultBools)
             bools[(int)setting.setting] = setting.value;
     }
 
@@ -46,5 +67,15 @@ public class Settings : MonoBehaviour
     public void SetBool(Setting setting, bool value)
     {
         bools[(int)setting] = value;
+    }
+
+    public int GetInt(Setting setting)
+    {
+        return ints[(int)setting];
+    }
+
+    public void SetInt(Setting setting, int value)
+    {
+        ints[(int)setting] = value;
     }
 }
