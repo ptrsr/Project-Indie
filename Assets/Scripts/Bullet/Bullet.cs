@@ -59,6 +59,10 @@ public class Bullet : MonoBehaviour
             {
                 transform.rotation = Quaternion.Euler(new Vector3(0.0f, player.aim.rotation.eulerAngles.y, 0.0f));
                 player.ReflectBullet(_speed);
+
+                GameObject particle = Instantiate(_particleEffect);
+                particle.transform.position = transform.position;
+                particle.transform.forward = -transform.forward;
             }
             else
             {
@@ -86,6 +90,10 @@ public class Bullet : MonoBehaviour
         RB.velocity = RB.velocity.normalized * _speed;
 
         transform.forward = RB.velocity.normalized;
+
+        GameObject particle = Instantiate(_particleEffect);
+        particle.transform.position = transform.position;
+        particle.transform.forward = -transform.forward;
     }
 
     #if UNITY_EDITOR
