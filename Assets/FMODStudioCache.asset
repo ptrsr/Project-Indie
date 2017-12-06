@@ -23,7 +23,7 @@ MonoBehaviour:
   - {fileID: 114976708374032480}
   MasterBankRef: {fileID: 114840802115622632}
   StringsBankRef: {fileID: 114903153406085894}
-  stringsBankWriteTime: 636481609699855499
+  stringsBankWriteTime: 636481686535519645
   cacheVersion: 2
 --- !u!114 &114024071887818602
 MonoBehaviour:
@@ -309,6 +309,21 @@ MonoBehaviour:
   MinDistance: 1
   MaxDistance: 20
   Length: 2200
+--- !u!114 &114138580699090790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Intro
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114142247410471038
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -321,6 +336,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114143798151790512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: MainTheme
   Min: 0
   Max: 1
   Default: 0
@@ -480,6 +510,21 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114203649894839056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  Min: -100
+  Max: 100
+  Default: 0
 --- !u!114 &114205654966562578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -529,13 +574,13 @@ MonoBehaviour:
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114152150928378842}
-  - {fileID: 114051769873930028}
-  - {fileID: 114566875625971424}
-  - {fileID: 114265422486653584}
-  - {fileID: 114739251393845384}
-  - {fileID: 114164064861074694}
-  - {fileID: 114216887417351722}
+  - {fileID: 114871574435144124}
+  - {fileID: 114552957814308030}
+  - {fileID: 114437844580601874}
+  - {fileID: 114673054795954750}
+  - {fileID: 114143798151790512}
+  - {fileID: 114138580699090790}
+  - {fileID: 114712707438147326}
   MinDistance: 0
   MaxDistance: 0
   Length: 114489
@@ -760,7 +805,7 @@ MonoBehaviour:
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114723462470969094}
+  - {fileID: 114203649894839056}
   MinDistance: 0
   MaxDistance: 0
   Length: 398769
@@ -776,6 +821,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: MainTheme
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114437844580601874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel3
   Min: 0
   Max: 1
   Default: 0
@@ -930,6 +990,21 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114552957814308030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel2
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114564874289759716
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1065,7 +1140,37 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114673054795954750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114710230689088146
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel1
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114712707438147326
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1328,7 +1433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Path: D:\Game Development\GitHub\Assets\FMODProjectFile\FMODProjectFile\Build\Desktop\Master
     Bank.bank
-  lastModified: 636481609699840455
+  lastModified: 636481686535494669
   LoadResult: 0
   FileSizes:
   - Name: Desktop
@@ -1382,6 +1487,21 @@ MonoBehaviour:
   - Name: Desktop
     Value: 676
   Exists: 1
+--- !u!114 &114871574435144124
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114882898651220060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1454,7 +1574,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: Assets\FMODProjectFile\FMODProjectFile\Build\Desktop\Master Bank.strings.bank
-  lastModified: 636481609699855499
+  lastModified: 636481686535519645
   LoadResult: 0
   FileSizes:
   - Name: Desktop
