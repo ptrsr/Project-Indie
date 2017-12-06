@@ -17,6 +17,7 @@ Shader "custom/oil_fx"
     struct appdata
     {
         float4 vertex   : POSITION;
+		float2 uv		: TEXCOORD0;
     };
  
     struct v2f
@@ -24,6 +25,7 @@ Shader "custom/oil_fx"
         float4 vertex   : SV_POSITION;
 		float4 worldPos : TEXCOORD0;
         float4  grabPos	: TEXCOORD1;
+		float2 uv		: TEXCOORD2;
     };
  
     v2f vert(appdata i)
@@ -32,6 +34,7 @@ Shader "custom/oil_fx"
 		o.worldPos = mul(unity_ObjectToWorld, i.vertex);
         o.vertex = UnityObjectToClipPos(i.vertex);
         o.grabPos = ComputeGrabScreenPos(o.vertex);
+		o.uv = i.uv;
 
         return o;
     }
@@ -46,15 +49,13 @@ Shader "custom/oil_fx"
     fixed4 frag(v2f i) : SV_Target
     {
 		float3 normal = CalcNormal(i.grabPos);
+		float raw = snoise(i.worldPos.xz / 4);
 
-		float4 color = float4(snoise(i.worldPos.xz / 3 + float2(1000, 1000)), snoise(i.worldPos.xz / 3 + float2(2000, 2000)), snoise(i.worldPos.xz / 3 + float2(3000, 3000)), snoise(i.worldPos.xz / 100 + float2(5000, 5000)));
-
-		float lit = pow(max(0, dot(normal, _WorldSpaceLightPos0)), 10);
-		return float4(lit, lit, lit, (1 + snoise(i.worldPos.xz / 2)) / 2);
-		//float4 bgcolor = tex2Dproj(_BackgroundTexture, grabPos);// *float4(normal, 1);
+		float noise = min(1, max(0, pow(1.5f + raw, 2))) * tex2D(_MainTex, i.uv).a;
+		float lit = pow(max(0, dot(normal, _WorldSpaceLightPos0))  * noise, 40);
 
 
-		return float4(normal, 1);
+		return float4(lit, lit, lit, noise);
     }
 
 	float calcLit(float4 grabPos, float2 offset)
@@ -73,8 +74,8 @@ Shader "custom/oil_fx"
 		float b = calcLit(grabPos, float2(0, texel.y));
 
 
-		float d1 = 0.5f + (l - r) * 100;
-		float d2 = 0.5f + (t - b) * 100;
+		float d1 = 0.5f + (l - r) * 5000;
+		float d2 = 0.5f + (t - b) * 5000;
 
 		float2 test = float2(d1, d2);
 		float3 normal = normalize(float3(test.x, 1, test.y));

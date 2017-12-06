@@ -14,7 +14,8 @@ public class Laser : MonoBehaviour
         _timeMulti = 1,
         _darken = 1,
         _maxDistance,
-        _scalar = 1;
+        _scalar = 1,
+        _alpha = 0.2f;
 
     [SerializeField]
     private int
@@ -121,6 +122,8 @@ public class Laser : MonoBehaviour
 
     private void SetUniforms(Material mat)
     {
+        _color.a = _alpha;
+
         mat.SetColor("_color", _color);
         mat.SetFloat("_effectMulti", _effectMulti);
         mat.SetFloat("_darken", _darken);
