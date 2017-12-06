@@ -7,11 +7,13 @@ public class PPController : MonoBehaviour {
 
 	[SerializeField] private PostProcessingProfile menu;
 	[SerializeField] private PostProcessingProfile game;
+	[SerializeField] private PostProcessingProfile blur;
 
 	public enum PP
 	{
 		menu,
-		game
+		game,
+		blur
 	}
 
 	public void ChangePP (PP state)
@@ -23,6 +25,9 @@ public class PPController : MonoBehaviour {
 			break;
 		case PP.game:
 			Camera.main.GetComponent <PostProcessingBehaviour> ().profile = game;
+			break;
+		case PP.blur:
+			Camera.main.GetComponent <PostProcessingBehaviour> ().profile = blur;
 			break;
 		}
 	}

@@ -82,7 +82,7 @@ public class MusicChanger : MonoBehaviour {
 	{
 		//Higher speed = higher pitch (-100 - 100)
 		float pitch = activeBullets.childCount;
-		emitter.SetParameter ("Pitch", pitch * 2 / gameController.playerAmount);
+		emitter.SetParameter ("Pitch", pitch * 2 / (gameController.playerAmount * 0.75f));
 	}
 
 	public void NextTrack ()
@@ -116,8 +116,6 @@ public class MusicChanger : MonoBehaviour {
 
 	void ChangeTrack (int trackNumber)
 	{
-		print ("Change to " + trackNumber);
-
 		emitter.SetParameter ("MainTheme", 0);
 		emitter.SetParameter ("ActionLevel1", 0);
 		emitter.SetParameter ("ActionLevel2", 0);
