@@ -9,9 +9,12 @@ public class LobbyController : SubMenu {
 
 	private enum Status
 	{
+        OnClaw,
 		joined,
 		ready
 	}
+
+
 
 	[HideInInspector] public bool selectingPlayers = false;
 	private bool activateMainCanvas = false;
@@ -32,8 +35,20 @@ public class LobbyController : SubMenu {
 	[SerializeField] private Transform maps;
 	[SerializeField] private GameObject controlsCanvas;
 
+    [SerializeField]
+    private GameObject clawPrefab;
+
+    [SerializeField]
+    private float 
+        _clawSpeed,
+        _clawMulti = 2;
+
 	private GameController gameController;
 	private PPController ppController;
+
+    private bool[]
+        slots = new bool[4],
+        claws = new bool[4];
 
 	void Start ()
 	{
@@ -44,7 +59,13 @@ public class LobbyController : SubMenu {
 
 		#if UNITY_EDITOR
 		Debug ();
-		#endif
+#endif
+
+        for (int i = 0; i < slots.Length; i++)
+        {
+            slots[i] = false;
+            claws[i] = false;
+        }
 	}
 
 	void Update ()
@@ -126,10 +147,12 @@ public class LobbyController : SubMenu {
 	{
 		if (!gameController.gameStarted && selectingPlayers)
 		{
-			if (playerStatus.ContainsKey (player))
+            Status value;
+
+			if (playerStatus.TryGetValue(player, out value) && value == Status.joined)
 				BecomeReady (player);
-			else if (!exitConfirmPanel.activeInHierarchy)
-				JoinLobby (player);
+            else if (!playerStatus.ContainsKey(player))
+                JoinLobby(player);
 		}
 	}
 
@@ -187,12 +210,12 @@ public class LobbyController : SubMenu {
 
 	void JoinLobby (Player player)
 	{
-		if (playerStatus.ContainsKey (player))
-			playerStatus.Remove (player);
+        if (playerStatus.ContainsKey(player))
+            playerStatus[player] = Status.OnClaw;
+        else
+        playerStatus.Add(player, Status.OnClaw);
 
-		playerStatus.Add (player, Status.joined);
-
-		GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+        GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
 		newPlayer.name = ((int) player).ToString ();
 		PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 		playerController.playerNumber = player;
@@ -201,22 +224,78 @@ public class LobbyController : SubMenu {
 
 		gameController.musicManager.GetComponent <MusicChanger> ().PlayLobbySound ();
 
-		SetPlayersPosition ();
+		SetPlayerPosition(newPlayer);
 	}
 
-	void SetPlayersPosition ()
+	void SetPlayerPosition (GameObject player)
 	{
-		for (int i = 0; i < players.childCount; i++)
+		for (int i = 0; i < slots.Length; i++)
 		{
-			Transform newPlayer = players.GetChild (i);
-			newPlayer.position = new Vector3 (77.5f + (i * 6.5f), 4.95f, 2.5f);
-			newPlayer.rotation = Quaternion.Euler (new Vector3 (newPlayer.rotation.x, 90.0f, newPlayer.rotation.z));
+            if (slots[i])
+                continue;
+
+            slots[i] = true;
+
+            PlayerController pc = player.GetComponent<PlayerController>();
+            pc.enabled = false;
+            pc.slot = i;
+            StartCoroutine(PlacePlayer(player, players.transform.position + i * new Vector3(8f, 0, 0)));
+            return;
 		}
-		
-			//players.GetChild (i).position = new Vector3 (10.8f + (i * 5), 0.9f, 14.0f);
 	}
 
-	void BecomeReady (Player player)
+    IEnumerator PlacePlayer(GameObject player, Vector3 worldPos)
+    {
+        float height = 15;
+
+        float playerHeight = 7;
+
+        PlayerController pc = player.GetComponent<PlayerController>();
+
+
+        claws[pc.slot] = true;
+        Vector3 clawStartPos = worldPos + new Vector3(0, height, 0);
+
+        GameObject claw = Instantiate(clawPrefab, clawStartPos, Quaternion.Euler(0, 90, 0));
+        Animator anim = claw.GetComponent<Animator>();
+        anim.speed = 10;
+
+        player.transform.parent = claw.transform;
+        player.transform.localPosition = new Vector3(0, -playerHeight, 0);
+
+        float distance = Vector3.Distance(claw.transform.position, worldPos);
+        float startDist = distance;
+
+        while (distance > 0.1f)
+        {
+            distance = Vector3.Distance(claw.transform.position, worldPos);
+            claw.transform.position = Vector3.Lerp(claw.transform.position, worldPos, Mathf.Max(_clawSpeed, 1 - (distance / startDist)) * Time.deltaTime * _clawMulti);
+            yield return null;
+        }
+
+        anim.speed = 1;
+        anim.SetBool("Open", true);
+        player.transform.parent = players.transform;
+        distance = Vector3.Distance(claw.transform.position, clawStartPos);
+
+        pc.enabled = true;
+
+        playerStatus[pc.playerNumber] = Status.joined;
+
+        yield return new WaitForSeconds(0.6f);
+
+        while (distance > 2f)
+        {
+            distance = Vector3.Distance(claw.transform.position, clawStartPos);
+            claw.transform.position = Vector3.Lerp(claw.transform.position, clawStartPos, Mathf.Max(_clawSpeed, 1 - (distance / startDist)) * Time.deltaTime * _clawMulti);
+            yield return null;
+        }
+
+        claws[pc.slot] = false;
+        Destroy(claw);
+    }
+
+    void BecomeReady (Player player)
 	{
 		playerStatus [player] = Status.ready;
 
@@ -320,6 +399,9 @@ public class LobbyController : SubMenu {
 				//Not random
 				//tempPlayer.position = startPositions.GetChild ((int) tempPlayer.GetComponent <PlayerController> ().playerNumber - 1).position;
 			}
+
+            for (int i = 0; i < slots.Length; i++)
+                slots[i] = false;
 		}
 	}
 
@@ -403,7 +485,10 @@ public class LobbyController : SubMenu {
 				Destroy (players.GetChild (i).gameObject);
 			}
 		}
-	}
+
+        for (int i = 0; i < slots.Length; i++)
+            slots[i] = false;
+    }
 
 	public void FirstInitializeLobby ()
 	{
@@ -414,7 +499,10 @@ public class LobbyController : SubMenu {
 	//True when starting lobby and false when exiting - second bool true when going back to lobby from game, otherwise false
 	public void ResetLobby (bool status, bool backToLobby)
 	{
-		if (status)
+        for (int i = 0; i < slots.Length; i++)
+            slots[i] = false;
+
+        if (status)
 		{
 			if (!backToLobby)
 				playerStatus = new Dictionary <Player, Status> ();
@@ -459,17 +547,65 @@ public class LobbyController : SubMenu {
 					playerController.bodyAnim.SetInteger ("playerClip", 0);
 					playerStatus [player] = Status.joined;
 				}
-				else
-				{
-					playerStatus.Remove (player);
-					Destroy (playerController.gameObject);
-					Invoke ("SetPlayersPosition", 0.01f);
-				}
+				else if (playerStatus[player] != Status.OnClaw && !claws[playerController.slot])
+                    StartCoroutine(RemovePlayer(playerController));
 
 				break;
 			}
 		}
 	}
+
+    IEnumerator RemovePlayer(PlayerController player)
+    {
+        float height = 15;
+        float playerHeight = 7;
+
+        playerStatus[player.playerNumber] = Status.OnClaw;
+
+        player.enabled = false;
+        Vector3 clawStartPos = player.transform.position + new Vector3(0, height, 0);
+
+        claws[player.slot] = true;
+        GameObject claw = Instantiate(clawPrefab, clawStartPos, Quaternion.Euler(0, 90, 0));
+        Animator anim = claw.GetComponent<Animator>();
+
+        anim.speed = 10;
+        anim.SetBool("Open", true);
+
+        float distance = Vector3.Distance(claw.transform.position, player.transform.position + new Vector3(0, playerHeight, 0));
+        float startDist = distance;
+
+        while (distance > 0.1f)
+        {
+            print(true);
+
+            distance = Vector3.Distance(claw.transform.position, player.transform.position + new Vector3(0, playerHeight, 0));
+            claw.transform.position = Vector3.Lerp(claw.transform.position, player.transform.position + new Vector3(0, playerHeight, 0), Mathf.Max(_clawSpeed, 1 - (distance / startDist)) * Time.deltaTime * _clawMulti);
+            yield return null;
+        }
+
+        player.transform.parent = claw.transform;
+        anim.speed = 2;
+        anim.SetBool("Open", false);
+
+        distance = Vector3.Distance(claw.transform.position, clawStartPos);
+
+        yield return new WaitForSeconds(0.6f);
+
+        clawStartPos += new Vector3(0, playerHeight, 0);
+
+        while (distance > 2f)
+        {
+            distance = Vector3.Distance(claw.transform.position, clawStartPos);
+            claw.transform.position = Vector3.Lerp(claw.transform.position, clawStartPos, Mathf.Max(_clawSpeed, 1 - (distance / startDist)) * Time.deltaTime * _clawMulti);
+            yield return null;
+        }
+
+        playerStatus.Remove(player.playerNumber);
+        slots[player.slot] = false;
+        claws[player.slot] = false;
+        Destroy(claw);
+    }
 
 	void DeactivateLobbyCanvas ()
 	{

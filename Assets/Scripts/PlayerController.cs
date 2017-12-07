@@ -8,6 +8,9 @@ public class PlayerController : MonoBehaviour {
 
 	[HideInInspector] public Player playerNumber;
 
+
+    public int slot = -1;
+
 	private Rigidbody rb;
 	[HideInInspector] public Transform aim;
 	private Transform activeBullets;

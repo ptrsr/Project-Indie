@@ -49,6 +49,12 @@ public class InputHandler : StandaloneInputModule
 
     private Player[] _players = new Player[4];
 
+    private float[]
+        _triggers;
+
+    private int[]
+        _triggerActive;
+
     protected override void Awake()
     {
         base.Awake();
@@ -62,6 +68,15 @@ public class InputHandler : StandaloneInputModule
         _instance = this;
 
         ServiceLocator.Provide(this);
+
+        _triggers = new float[5];
+        _triggerActive = new int[5];
+
+        for (int i = 0; i < _triggers.Length; i++)
+        {
+            _triggers[i] = 0;
+            _triggerActive[i] = 0;
+        }
     }
 
     protected override void Start()
@@ -76,6 +91,28 @@ public class InputHandler : StandaloneInputModule
     {
         RegisterPlayers();
         CheckReadyUp();
+        CheckTriggers();
+    }
+
+    private void CheckTriggers()
+    {
+        for (int i = 1; i < 6; i++)
+        {
+            string player = ((Player)i).ToString();
+
+            float lastValue = _triggers[i - 1];
+            float value = Input.GetAxis(player + "Triggers");
+            _triggers[i - 1] = value;
+
+            if (lastValue <= 0 && value > 0)
+                _triggerActive[i - 1] = 1;
+            else if (lastValue >= 0 && value < 0)
+                _triggerActive[i - 1] = -1;
+            else if (lastValue != 0 && value == 0)
+                _triggerActive[i - 1] = -2;
+            else
+                _triggerActive[i - 1] = 0;
+        }
     }
 
     public PointerEventData GetLastPointerEventDataPublic()
@@ -166,7 +203,7 @@ public class InputHandler : StandaloneInputModule
 
     static public bool GetButton(Player player, Button button)
     {
-		Player controller = _instance._players[(int)(player - 1)];
+        Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
         {
@@ -174,7 +211,15 @@ public class InputHandler : StandaloneInputModule
             return false;
         }
 
-        return Input.GetButton(controller.ToString() + button.ToString());
+        if (Input.GetButton(controller.ToString() + button.ToString()) == true || (button != Button.Parry && button != Button.Fire))
+            return Input.GetButton(controller.ToString() + button.ToString());
+
+        float input = Input.GetAxis(controller + "Triggers");
+
+        if ((button == Button.Parry && input > 0) || button == Button.Fire && input < 0)
+            return true;
+
+        return false;
     }
 
     static public bool GetButtonDown(Player player, Button button)
@@ -182,12 +227,14 @@ public class InputHandler : StandaloneInputModule
 		Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
-        {
-            //Debug.LogWarning("Trying to get button from unregistered player!");
             return false;
-        }
 
-        return Input.GetButtonDown(controller.ToString() + button.ToString());
+        if (Input.GetButton(controller.ToString() + button.ToString()) == true || (button != Button.Parry && button != Button.Fire))
+            return Input.GetButtonDown(controller.ToString() + button.ToString());
+
+        int desired = button == Button.Parry ? 1 : -1;
+
+        return ServiceLocator.Locate<InputHandler>()._triggerActive[(int)player - 1] == desired;
     }
 
     static public bool GetButtonUp(Player player, Button button)
@@ -195,12 +242,12 @@ public class InputHandler : StandaloneInputModule
 		Player controller = _instance._players[(int)(player - 1)];
 
         if (controller == Player.none)
-        {
-            Debug.LogWarning("Trying to get button from unregistered player!");
             return false;
-        }
 
-        return Input.GetButtonUp(controller.ToString() + button.ToString());
+        if (Input.GetButton(controller.ToString() + button.ToString()) == true || (button != Button.Parry && button != Button.Fire))
+            return Input.GetButtonUp(controller.ToString() + button.ToString());
+
+        return ServiceLocator.Locate<InputHandler>()._triggerActive[(int)player - 1] == -2;
     }
 
     public void SetPlayer(Player player)
