@@ -13,14 +13,32 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   EditorBanks:
   - {fileID: 114903153406085894}
-  - {fileID: 114481741086262548}
+  - {fileID: 114014289850009512}
   EditorEvents:
   - {fileID: 114264513011759036}
   - {fileID: 114426762492984926}
-  MasterBankRef: {fileID: 114481741086262548}
+  MasterBankRef: {fileID: 114014289850009512}
   StringsBankRef: {fileID: 114903153406085894}
-  stringsBankWriteTime: 636479997747924869
+  stringsBankWriteTime: 636480682367478426
   cacheVersion: 2
+--- !u!114 &114014289850009512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c18180ecb35941f4682ae60107b85b7c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Path: E:\Dokumenti\Indie\Assets\FMODProjectFile\Build\Desktop\Master Bank.bank
+  lastModified: 636480682367428393
+  LoadResult: 0
+  FileSizes:
+  - Name: Desktop
+    Value: 10103968
+  Exists: 1
 --- !u!114 &114024071887818602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -405,18 +423,18 @@ MonoBehaviour:
   Path: event:/AdaptiveMusic
   guid: 1270bc600b23f34ab16b2b3daed8a0ab
   Banks:
-  - {fileID: 114481741086262548}
+  - {fileID: 114014289850009512}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114865808002681058}
-  - {fileID: 114111376365103366}
-  - {fileID: 114065858049110824}
-  - {fileID: 114672758488275362}
-  - {fileID: 114983996349839950}
-  - {fileID: 114638658996203254}
-  - {fileID: 114716366902714494}
+  - {fileID: 114410680126246132}
+  - {fileID: 114495551598152240}
+  - {fileID: 114405850354788432}
+  - {fileID: 114479066065947696}
+  - {fileID: 114938520600231846}
+  - {fileID: 114839248378520190}
+  - {fileID: 114750023266099198}
   MinDistance: 0
   MaxDistance: 0
   Length: 114489
@@ -540,6 +558,36 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114405850354788432
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel3
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114410680126246132
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114415359411786158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,12 +632,12 @@ MonoBehaviour:
   Path: event:/SpeedUpMusic
   guid: 86ba88fb43f1c542a48c49bd56ad2077
   Banks:
-  - {fileID: 114481741086262548}
+  - {fileID: 114014289850009512}
   IsStream: 1
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114446684114021756}
+  - {fileID: 114763441672031868}
   MinDistance: 0
   MaxDistance: 0
   Length: 125509
@@ -683,6 +731,21 @@ MonoBehaviour:
   Min: -100
   Max: 100
   Default: 0
+--- !u!114 &114479066065947696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114481741086262548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -702,6 +765,21 @@ MonoBehaviour:
   - Name: Desktop
     Value: 10103968
   Exists: 1
+--- !u!114 &114495551598152240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel2
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114528769903475808
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -912,6 +990,36 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114750023266099198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel1
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114763441672031868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  Min: -100
+  Max: 100
+  Default: 0
 --- !u!114 &114808927483120988
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -984,6 +1092,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114839248378520190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Intro
   Min: 0
   Max: 1
   Default: 0
@@ -1107,13 +1230,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: Assets\FMODProjectFile\Build\Desktop\Master Bank.strings.bank
-  lastModified: 636479997747924869
+  lastModified: 636480682367478426
   LoadResult: 0
   FileSizes:
   - Name: Desktop
     Value: 730
   Exists: 1
 --- !u!114 &114910490146245750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: MainTheme
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114938520600231846
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
