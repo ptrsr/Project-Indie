@@ -23,10 +23,26 @@ MonoBehaviour:
   - {fileID: 114328176764762716}
   - {fileID: 114942976917242724}
   - {fileID: 114977060547337610}
+  - {fileID: 114437512842235510}
   MasterBankRef: {fileID: 114250462041354330}
   StringsBankRef: {fileID: 114045635425097764}
-  stringsBankWriteTime: 636481916113656561
+  stringsBankWriteTime: 636482417353191566
   cacheVersion: 2
+--- !u!114 &114004707522363592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Intro
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114012310989929324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46,10 +62,25 @@ MonoBehaviour:
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114043502542291926}
+  - {fileID: 114496959418692134}
   MinDistance: 0
   MaxDistance: 0
   Length: 398769
+--- !u!114 &114014900241802608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel2
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114043502542291926
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,12 +108,57 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Path: Assets\FMODProjectFile\FMODProjectFile\Build\Desktop\Master Bank.strings.bank
-  lastModified: 636481916113656561
+  lastModified: 636482417353191566
   LoadResult: 0
   FileSizes:
   - Name: Desktop
-    Value: 1016
+    Value: 1060
   Exists: 1
+--- !u!114 &114061015961064712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel2
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114061252027661496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel1
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114068858380444510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel1
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114162467006689936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,6 +196,21 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 2200
+--- !u!114 &114172702555284112
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Intro
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114186262325479052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,11 +299,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Path: D:\Game Development\GitHub\Assets\FMODProjectFile\FMODProjectFile\Build\Desktop\Master
     Bank.bank
-  lastModified: 636481916113646436
+  lastModified: 636482417353176522
   LoadResult: 0
   FileSizes:
   - Name: Desktop
-    Value: 35694912
+    Value: 35785664
   Exists: 1
 --- !u!114 &114266797040173176
 MonoBehaviour:
@@ -226,6 +317,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Intro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114267891768444818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel1
   Min: 0
   Max: 1
   Default: 0
@@ -248,13 +354,13 @@ MonoBehaviour:
   Is3D: 0
   IsOneShot: 0
   Parameters:
-  - {fileID: 114890461441814284}
-  - {fileID: 114646802738759406}
-  - {fileID: 114667419795639330}
-  - {fileID: 114532424017380640}
-  - {fileID: 114974369873933700}
-  - {fileID: 114454451406514610}
-  - {fileID: 114723786968169086}
+  - {fileID: 114883353353517332}
+  - {fileID: 114061015961064712}
+  - {fileID: 114514566239712776}
+  - {fileID: 114801534402518064}
+  - {fileID: 114785838723176850}
+  - {fileID: 114172702555284112}
+  - {fileID: 114068858380444510}
   MinDistance: 0
   MaxDistance: 0
   Length: 114489
@@ -310,6 +416,43 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 350
+--- !u!114 &114343544745143136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114437512842235510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Path: event:/BulletHitSound
+  guid: baa0470dce63d848bca7a2e85f160560
+  Banks:
+  - {fileID: 114250462041354330}
+  IsStream: 0
+  Is3D: 0
+  IsOneShot: 1
+  Parameters: []
+  MinDistance: 0
+  MaxDistance: 0
+  Length: 500
 --- !u!114 &114446441574595632
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +480,51 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Intro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114466457173541136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114496959418692134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  Min: -100
+  Max: 100
+  Default: 0
+--- !u!114 &114514566239712776
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel3
   Min: 0
   Max: 1
   Default: 0
@@ -377,6 +565,21 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114539748470368698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114563652613788422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -389,6 +592,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114572345959875182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: MainTheme
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114589115743980844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel3
   Min: 0
   Max: 1
   Default: 0
@@ -527,6 +760,21 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114711151755868460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  Min: -100
+  Max: 100
+  Default: 0
 --- !u!114 &114712153978935728
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -617,6 +865,21 @@ MonoBehaviour:
   Min: -100
   Max: 100
   Default: 0
+--- !u!114 &114761055613477556
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel3
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114764956523039566
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -629,6 +892,36 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: ActionLevel3
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114785838723176850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: MainTheme
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114787801162631892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Intro
   Min: 0
   Max: 1
   Default: 0
@@ -659,6 +952,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114801534402518064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Outro
   Min: 0
   Max: 1
   Default: 0
@@ -759,6 +1067,66 @@ MonoBehaviour:
   Min: 0
   Max: 1
   Default: 0
+--- !u!114 &114879392243217492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: MainTheme
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114880556723334014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Outro
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114883353353517332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Build Up
+  Min: 0
+  Max: 1
+  Default: 0
+--- !u!114 &114884283736122466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: ActionLevel2
+  Min: 0
+  Max: 1
+  Default: 0
 --- !u!114 &114890461441814284
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,6 +1141,21 @@ MonoBehaviour:
   Name: Build Up
   Min: 0
   Max: 1
+  Default: 0
+--- !u!114 &114919433009862754
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: Pitch
+  Min: -100
+  Max: 100
   Default: 0
 --- !u!114 &114942976917242724
 MonoBehaviour:

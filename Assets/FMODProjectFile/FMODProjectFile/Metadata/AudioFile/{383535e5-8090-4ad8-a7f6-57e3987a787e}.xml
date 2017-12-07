@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.10.00">
+    <object class="AudioFile" id="{383535e5-8090-4ad8-a7f6-57e3987a787e}">
+        <property name="assetPath">
+            <value>bullet_impact_concrete_brick_01.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>96</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>0.34591666666666665</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{a04f1a87-c961-4b9f-a10e-bb511d45d39f}</destination>
+        </relationship>
+    </object>
+</objects>

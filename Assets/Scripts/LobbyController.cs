@@ -37,6 +37,8 @@ public class LobbyController : SubMenu {
 
 	void Start ()
 	{
+		Cursor.visible = false;
+
 		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
 		ppController = gameController.ppController;
 		DeactivateLobbyCanvas ();

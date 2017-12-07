@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour {
 
 	private Dictionary <string, int> victories;
 
-	private Settings settings;
+	[HideInInspector] public Settings settings;
 
 	void Start ()
 	{
@@ -80,6 +80,8 @@ public class GameController : MonoBehaviour {
 	IEnumerator StartCountdown (float waitTime)
 	{
 		yield return new WaitForSeconds (waitTime);
+
+		GameObject.FindGameObjectWithTag ("Workers").GetComponent <WorkerBehaviour> ().ActivateWorkers (true);
 
 		for (int i = 3; i > 0; i--)
 		{
@@ -222,6 +224,9 @@ public class GameController : MonoBehaviour {
 
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
+
+		foreach (GameObject pickUp in GameObject.FindGameObjectsWithTag ("PickUp"))
+			Destroy (pickUp);
 
 		PlayerController playerController = player.GetComponent <PlayerController> ();
 		playerController.enabled = false;
@@ -372,6 +377,9 @@ public class GameController : MonoBehaviour {
 	{
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
+
+		foreach (GameObject pickUp in GameObject.FindGameObjectsWithTag ("PickUp"))
+			Destroy (pickUp);
 		
 		victories = null;
 
@@ -391,6 +399,8 @@ public class GameController : MonoBehaviour {
 
 		for (int i = 0; i < 4; i++)
 			scorePanel.GetChild (i).gameObject.SetActive (false);
+
+		GameObject.FindGameObjectWithTag ("Workers").GetComponent <WorkerBehaviour> ().ActivateWorkers (false);
 	}
 
 	public void BackToLobby ()

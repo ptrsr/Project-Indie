@@ -7,7 +7,6 @@ public class Oil : MonoBehaviour
     [SerializeField]
     private Shader _shader;
 
-
 	[SerializeField] private Sprite [] oilSprites;
 
 	void Start ()
@@ -18,10 +17,10 @@ public class Oil : MonoBehaviour
         Material mat = new Material(_shader);
 
         //print(Screen.width);
-        mat.SetVector("_TexelSize", new Vector2(1.0f / Screen.width, 1.0f / Screen.height));
+        mat.SetVector ("_TexelSize", new Vector2(1.0f / Screen.width, 1.0f / Screen.height));
 
-        renderer.material = new Material(_shader);
+        renderer.material = new Material (_shader);
 
-		Destroy (gameObject, 5);
+		Destroy (gameObject, 5.5f);
 	}
 }

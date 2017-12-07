@@ -39,8 +39,9 @@ public class PlayerController : MonoBehaviour {
 	private float curCooldown;
 	private int clipSize;
 	private int curAmmo;
-
+	private float originalMoveSpeed;
 	private float curShieldDuration;
+	private float speedingUp = 0.0f;
 
 	private Settings settings;
 	private GameController gameController;
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour {
 	private bool fallingThroughFloor = false;
     private bool multiplyingBullets = false;
 	[HideInInspector] public bool inLobby;
+	private bool bSpeedingUp = false;
 
 	[HideInInspector] public bool dead = false;
 
@@ -65,6 +67,7 @@ public class PlayerController : MonoBehaviour {
 	[SerializeField] private GameObject oil;
 	[SerializeField] private GameObject parryParticle;
 	[SerializeField] private GameObject deathParticle;
+	[SerializeField] private GameObject shieldPowerUp;
 
 	[Header ("Textures/Materials")]
 	[SerializeField] private Texture blue;
@@ -95,6 +98,8 @@ public class PlayerController : MonoBehaviour {
 
 	void Start ()
 	{
+		originalMoveSpeed = moveSpeed;
+
 		settings = ServiceLocator.Locate <Settings> ();
 		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
 		soundManager = GetComponent <SoundManager> ();
@@ -287,11 +292,14 @@ public class PlayerController : MonoBehaviour {
 			StopParry ();
 
 		UpdateCooldown ();
+
+		if (bSpeedingUp)
+			UpdateSpeedPowerUp ();
 	}
 
 	void Shoot ()
 	{
-		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || parrying || Physics.CheckSphere (gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, 0.1f))
+		if (curAmmo == 0 || curGlobalCooldown < globalCooldown || parrying || Physics.CheckSphere (gun.position + new Vector3 (0.0f, 0.35f, 0.0f) + aim.forward, 0.1f) || GetComponentInChildren <BigShield> () != null)
 			return;
 
 		soundManager.PlayShootingSound ();
@@ -510,7 +518,7 @@ public class PlayerController : MonoBehaviour {
 
 		if (GetComponentInChildren <Laser> () != null)
 			GetComponentInChildren <Laser> ().gameObject.SetActive (false);
-
+		
 		Instantiate (oil, new Vector3 (transform.position.x, 0.1f, transform.position.z), Quaternion.Euler (new Vector3 (90.0f, 0.0f, 0.0f)));
 
         foreach (Collider col in GetComponentsInChildren<Collider>())
@@ -533,5 +541,39 @@ public class PlayerController : MonoBehaviour {
 	{
 		if (soundManager != null)
 			soundManager.StopAllSounds ();
+	}
+
+	public void LaserPowerUp ()
+	{
+		GetComponentInChildren <Laser> ().enabled = true;
+	}
+
+	public void SpeedPowerUp ()
+	{
+		bSpeedingUp = true;
+		moveSpeed = originalMoveSpeed * 2;
+		speedingUp += 5;
+	}
+
+	public void ShieldPowerUp ()
+	{
+		Instantiate (shieldPowerUp, transform);
+	}
+
+	public void AmmoPowerUp ()
+	{
+		curAmmo = clipSize;
+		curCooldown = cooldown;
+	}
+
+	void UpdateSpeedPowerUp ()
+	{
+		if (speedingUp > 0)
+			speedingUp -= Time.deltaTime;
+		else
+		{
+			bSpeedingUp = false;
+			moveSpeed = originalMoveSpeed;
+		}
 	}
 }

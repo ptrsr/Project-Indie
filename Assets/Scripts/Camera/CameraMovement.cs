@@ -47,10 +47,7 @@ public class CameraMovement : MonoBehaviour
         StateMachine.change += CameraChange;
         StateMachine.change += TrackPlayers;
 
-        Vector3 desiredCenterPos = _points.gamePoint.transform.position;
-        _ray = _points.gamePoint.transform.rotation * Vector3.forward;
-        _ray *= _points.gamePoint.transform.position.z / _ray.z;
-        _centerOfLevel = desiredCenterPos - _ray;
+
     }
 
     private void OnEnable()
@@ -138,6 +135,11 @@ public class CameraMovement : MonoBehaviour
             _players.Clear();
             return;
         }
+
+		Vector3 desiredCenterPos = _points.settingsPoint.transform.position;
+		_ray = _points.settingsPoint.transform.rotation * Vector3.forward;
+		_ray *= _points.settingsPoint.transform.position.z / _ray.z;
+		_centerOfLevel = desiredCenterPos - _ray;
 
         _tracking = true;
     }

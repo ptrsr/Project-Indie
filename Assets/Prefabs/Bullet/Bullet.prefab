@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 135339855196053334}
   - component: {fileID: 114094497954701504}
   - component: {fileID: 54183240427325798}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Bullet
   m_TagString: Bullet
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   - component: {fileID: 4698370414373120}
   - component: {fileID: 198923685122555812}
   - component: {fileID: 199892014908974432}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Burn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 4008026934793010}
   - component: {fileID: 198060686036552582}
   - component: {fileID: 199214010799046288}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Rings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 4884754994002188}
   - component: {fileID: 33227305676645090}
   - component: {fileID: 23281297654512730}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -202,10 +202,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4070304192cd4794b9d975be193546ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 20
   _particleEffect: {fileID: 1769679608455530, guid: 3bab02e8c2d1e2949b26de885d885f47,
     type: 2}
-  curSpeed: 0
+  _startSpeed: 20
+  _speed: 20
 --- !u!135 &135339855196053334
 SphereCollider:
   m_ObjectHideFlags: 1

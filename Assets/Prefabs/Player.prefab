@@ -5471,6 +5471,7 @@ MonoBehaviour:
   anim: {fileID: 0}
   bodyAnim: {fileID: 0}
   playerColor: '*'
+  textColor: {r: 0, g: 0, b: 0, a: 0}
   moveSpeed: 800
   rotationSpeed: 10
   cooldown: 2
@@ -5491,6 +5492,8 @@ MonoBehaviour:
   parryParticle: {fileID: 1401334335663536, guid: 1517bf12d545cb345b74097283c91798,
     type: 2}
   deathParticle: {fileID: 1294576157289622, guid: 361be60bd91ed834d9d188ace89c0268,
+    type: 2}
+  shieldPowerUp: {fileID: 1652507719715906, guid: 670adea20613c4d45b4e03a8d8251749,
     type: 2}
   blue: {fileID: 2800000, guid: bd1c9a1bf25953249bf21d0ea6c81815, type: 3}
   red: {fileID: 2800000, guid: a628c31420ef2644380b6fab2c22e766, type: 3}
@@ -5557,6 +5560,7 @@ MonoBehaviour:
   _darken: -3
   _maxDistance: 40
   _scalar: 2.8
+  _alpha: 0.2
   _maxBounces: 6
   _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &114645728668578758
