@@ -55,7 +55,7 @@ Shader "custom/oil_fx"
 		float lit = pow(max(0, dot(normal, _WorldSpaceLightPos0))  * noise, 40);
 
 
-		return float4(lit, lit, lit, noise);
+		return min(1, float4(lit, lit, lit, noise));
     }
 
 	float calcLit(float4 grabPos, float2 offset)

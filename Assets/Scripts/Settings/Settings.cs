@@ -8,9 +8,11 @@ public enum Setting
     multiplyingBulletsOnBlock,
 	graduallySpeedingUp,
     Laser,
+	powerUps,
     maxBounces,
 	roundsToWin,
-	clipSize
+	clipSize,
+	bulletSpeed
 }
 
 public class Settings : MonoBehaviour

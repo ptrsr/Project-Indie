@@ -5467,10 +5467,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerNumber: 0
+  slot: -1
   aim: {fileID: 0}
   anim: {fileID: 0}
   bodyAnim: {fileID: 0}
   playerColor: '*'
+  textColor: {r: 0, g: 0, b: 0, a: 0}
   moveSpeed: 800
   rotationSpeed: 10
   cooldown: 2
@@ -5486,11 +5488,14 @@ MonoBehaviour:
   shield: {fileID: 4155212319730524}
   leftArm: {fileID: 4716299307295918}
   arrow: {fileID: 1802285840888000}
+  laserHolder: {fileID: 4056232622601368}
   bullet: {fileID: 1060196065007666, guid: b04151479d6041b4eadbabab83bd5248, type: 2}
   oil: {fileID: 1836384586873024, guid: a04c7ff88e9caa84c84cb2f2253ddbff, type: 2}
   parryParticle: {fileID: 1401334335663536, guid: 1517bf12d545cb345b74097283c91798,
     type: 2}
   deathParticle: {fileID: 1294576157289622, guid: 361be60bd91ed834d9d188ace89c0268,
+    type: 2}
+  shieldPowerUp: {fileID: 1882965638606276, guid: dc99a6ce4317ade459aab8cc7ca1af12,
     type: 2}
   blue: {fileID: 2800000, guid: bd1c9a1bf25953249bf21d0ea6c81815, type: 3}
   red: {fileID: 2800000, guid: a628c31420ef2644380b6fab2c22e766, type: 3}
@@ -5557,6 +5562,7 @@ MonoBehaviour:
   _darken: -3
   _maxDistance: 40
   _scalar: 2.8
+  _alpha: 0.2
   _maxBounces: 6
   _color: {r: 0, g: 0, b: 0, a: 0}
 --- !u!114 &114645728668578758

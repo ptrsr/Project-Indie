@@ -211,15 +211,7 @@ public class InputHandler : StandaloneInputModule
             return false;
         }
 
-        if (Input.GetButton(controller.ToString() + button.ToString()) == true || (button != Button.Parry && button != Button.Fire))
             return Input.GetButton(controller.ToString() + button.ToString());
-
-        float input = Input.GetAxis(controller + "Triggers");
-
-        if ((button == Button.Parry && input > 0) || button == Button.Fire && input < 0)
-            return true;
-
-        return false;
     }
 
     static public bool GetButtonDown(Player player, Button button)
@@ -229,12 +221,7 @@ public class InputHandler : StandaloneInputModule
         if (controller == Player.none)
             return false;
 
-        if (Input.GetButton(controller.ToString() + button.ToString()) == true || (button != Button.Parry && button != Button.Fire))
             return Input.GetButtonDown(controller.ToString() + button.ToString());
-
-        int desired = button == Button.Parry ? 1 : -1;
-
-        return ServiceLocator.Locate<InputHandler>()._triggerActive[(int)player - 1] == desired;
     }
 
     static public bool GetButtonUp(Player player, Button button)
@@ -244,10 +231,7 @@ public class InputHandler : StandaloneInputModule
         if (controller == Player.none)
             return false;
 
-        if (Input.GetButton(controller.ToString() + button.ToString()) == true || (button != Button.Parry && button != Button.Fire))
             return Input.GetButtonUp(controller.ToString() + button.ToString());
-
-        return ServiceLocator.Locate<InputHandler>()._triggerActive[(int)player - 1] == -2;
     }
 
     public void SetPlayer(Player player)

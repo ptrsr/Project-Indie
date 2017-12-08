@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour {
 
 	private Dictionary <string, int> victories;
 
-	private Settings settings;
+	[HideInInspector] public Settings settings;
 
 	void Start ()
 	{
@@ -75,6 +75,7 @@ public class GameController : MonoBehaviour {
 		timeScale = 1.0f;
 		StartCoroutine (StartCountdown (waitTime));
 		ppController.ChangePP (PPController.PP.game);
+		GameObject.FindGameObjectWithTag ("Workers").GetComponent <WorkerBehaviour> ().ActivateWorkers (true);
 	}
 
 	IEnumerator StartCountdown (float waitTime)
@@ -182,9 +183,6 @@ public class GameController : MonoBehaviour {
 
 	void CheckForVictory ()
 	{
-		if (playerAmount == 1)
-			return;
-
 		int alivePlayers = 0;
 		for (int i = 0; i < activePlayers.Length; i++)
 		{
@@ -195,7 +193,7 @@ public class GameController : MonoBehaviour {
 			}
 		}
 
-		if (alivePlayers == 1)
+		if (alivePlayers == 1 && playerAmount != 1)
 		{
 			foreach (GameObject player in GameObject.FindGameObjectsWithTag ("Player"))
 				player.transform.parent = players;
@@ -210,6 +208,43 @@ public class GameController : MonoBehaviour {
 					StartCoroutine (Victory (players.GetChild (i)));
 			}
 		}
+		else if (alivePlayers == 0)
+			StartCoroutine (NobodyWins ());
+	}
+
+	IEnumerator NobodyWins ()
+	{
+		gameStarted = false;
+
+		Time.timeScale = 1;
+
+		int bulletAmount = activeBullets.transform.childCount;
+
+		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
+			Destroy (bullet);
+
+		foreach (GameObject pickUp in GameObject.FindGameObjectsWithTag ("PickUp"))
+			Destroy (pickUp);
+
+		musicManager.GetComponent <MusicChanger> ().NextTrack ();
+
+		playerStreak = null;
+
+		playerStreakNumber = 1;
+
+		yield return new WaitForSeconds (1.5f);
+
+		if (playerAmount == 1)
+			winText.text = "Stop playing with yourself!";
+		else
+			winText.text = "You all suck! Nobody wins!";
+		
+		winText.color = Color.magenta;
+		winText.gameObject.SetActive (true);
+		lobbyController.NewRound ();
+
+		if (firstRound)
+			firstRound = false;
 	}
 
 	IEnumerator Victory (Transform player)
@@ -222,6 +257,11 @@ public class GameController : MonoBehaviour {
 
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
+
+		foreach (GameObject pickUp in GameObject.FindGameObjectsWithTag ("PickUp"))
+			Destroy (pickUp);
+
+		GameObject.FindGameObjectWithTag ("Workers").GetComponent <WorkerBehaviour> ().ActivateWorkers (false);
 
 		PlayerController playerController = player.GetComponent <PlayerController> ();
 		playerController.enabled = false;
@@ -372,6 +412,9 @@ public class GameController : MonoBehaviour {
 	{
 		foreach (GameObject bullet in GameObject.FindGameObjectsWithTag ("Bullet"))
 			Destroy (bullet);
+
+		foreach (GameObject pickUp in GameObject.FindGameObjectsWithTag ("PickUp"))
+			Destroy (pickUp);
 		
 		victories = null;
 

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class InfoBoxController : MonoBehaviour {
 
     public Text Header, InfoText;
+
 	public void UpdateInfo()
     {
         Header.text = transform.GetChild(0).GetComponent<Text>().text;

@@ -52,6 +52,8 @@ public class LobbyController : SubMenu {
 
 	void Start ()
 	{
+		Cursor.visible = false;
+
 		gameController = GameObject.FindGameObjectWithTag ("GameController").GetComponent <GameController> ();
 		ppController = gameController.ppController;
 		DeactivateLobbyCanvas ();
@@ -59,7 +61,7 @@ public class LobbyController : SubMenu {
 
 		#if UNITY_EDITOR
 		Debug ();
-#endif
+		#endif
 
         for (int i = 0; i < slots.Length; i++)
         {
@@ -97,6 +99,20 @@ public class LobbyController : SubMenu {
 
 		if (activateMainCanvas)
 			ActivateMainCanvas ();
+
+		if (selectingPlayers)
+		{
+			for (int i = 0; i < players.childCount; i++)
+			{
+				Transform laserHolder = players.GetChild (i).GetComponent <PlayerController> ().laserHolder;
+
+				if (laserHolder.childCount != 0)
+				{
+					for (int j = 0; j < laserHolder.childCount; j++)
+						Destroy (laserHolder.GetChild (j).gameObject);
+				}
+			}
+		}
 	}
 
 	public void ActivateBlur (bool status)
@@ -149,10 +165,15 @@ public class LobbyController : SubMenu {
 		{
             Status value;
 
-			if (playerStatus.TryGetValue(player, out value) && value == Status.joined)
+			if (playerStatus.TryGetValue (player, out value) && value == Status.joined)
 				BecomeReady (player);
-            else if (!playerStatus.ContainsKey(player))
-                JoinLobby(player);
+			else if (!playerStatus.ContainsKey (player))
+			{
+				if (player == Player.P1 && exitConfirmPanel.activeInHierarchy)
+					return;
+				else
+					JoinLobby (player);
+			}
 		}
 	}
 
@@ -215,7 +236,7 @@ public class LobbyController : SubMenu {
         else
         playerStatus.Add(player, Status.OnClaw);
 
-        GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 180.0f, 0.0f)), players);
+        GameObject newPlayer = Instantiate (playerPrefab, Vector3.zero, Quaternion.Euler (new Vector3 (0.0f, 90.0f, 0.0f)), players);
 		newPlayer.name = ((int) player).ToString ();
 		PlayerController playerController = newPlayer.GetComponent <PlayerController> ();
 		playerController.playerNumber = player;
@@ -577,8 +598,6 @@ public class LobbyController : SubMenu {
 
         while (distance > 0.1f)
         {
-            print(true);
-
             distance = Vector3.Distance(claw.transform.position, player.transform.position + new Vector3(0, playerHeight, 0));
             claw.transform.position = Vector3.Lerp(claw.transform.position, player.transform.position + new Vector3(0, playerHeight, 0), Mathf.Max(_clawSpeed, 1 - (distance / startDist)) * Time.deltaTime * _clawMulti);
             yield return null;
@@ -605,6 +624,9 @@ public class LobbyController : SubMenu {
         slots[player.slot] = false;
         claws[player.slot] = false;
         Destroy(claw);
+
+		if (ReadyCheck () && selectingPlayers)
+			StartCoroutine (StartGame ());
     }
 
 	void DeactivateLobbyCanvas ()

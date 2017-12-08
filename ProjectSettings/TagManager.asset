@@ -13,6 +13,9 @@ TagManager:
   - PlayerPart
   - BodyPart
   - Head
+  - Floor
+  - Workers
+  - PickUp
   layers:
   - Default
   - TransparentFX

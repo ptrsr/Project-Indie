@@ -55,4 +55,9 @@ public class Shield : MonoBehaviour
         _mat.SetFloat("_noiseMulti", _noiseMulti);
         _mat.SetFloat("_noisePow", _noisePow);
     }
+
+	public Color color
+	{
+		set {_color = value; OnValidate ();}
+	}
 }

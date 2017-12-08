@@ -16,19 +16,42 @@ public class Bullet : MonoBehaviour
     private Vector3
         _velocity;
 
+	private int bounceAmount;
+
+	private Settings settings;
+
     #if UNITY_EDITOR
     private List<Vector3> _bounces;
     #endif
 
 	void Awake ()
 	{
+		settings = ServiceLocator.Locate <Settings> ();
+
+		switch (settings.GetInt (Setting.bulletSpeed))
+			{
+		case 1:
+			_startSpeed = _startSpeed / 2;
+			break;
+		case 2:
+			_startSpeed = _startSpeed / 1.5f;
+			break;
+		case 3:
+			_startSpeed = _startSpeed;
+			break;
+		case 4:
+			_startSpeed = _startSpeed * 1.5f;
+			break;
+		case 5:
+			_startSpeed = _startSpeed * 2;
+			break;
+		}
+
 		_speed = _startSpeed;
 	}
 
     void Start ()
     {
-		//_speed = _startSpeed;
-		
         RB.velocity = transform.forward * _speed;
         RB.useGravity = false;
         RB.constraints = RigidbodyConstraints.FreezePositionY;
@@ -58,6 +81,8 @@ public class Bullet : MonoBehaviour
     {
 		if (collision.transform.GetComponent <PlayerController> () != null)
 		{
+			Instantiate (_particleEffect, transform.position, Quaternion.Euler (transform.forward));
+
 			Destroy (gameObject);
 
 			PlayerController player = collision.transform.GetComponent<PlayerController> ();
@@ -70,6 +95,10 @@ public class Bullet : MonoBehaviour
 				return;
 			}
 		}
+		else
+		{
+			Hit ();
+		}
 
         #if UNITY_EDITOR
         // track bounce
@@ -78,6 +107,20 @@ public class Bullet : MonoBehaviour
 
         StartCoroutine(bounce());
     }
+
+	public void Hit ()
+	{
+		FMOD.Studio.EventInstance hitSound;
+		hitSound = FMODUnity.RuntimeManager.CreateInstance ("event:/BulletHitSound");
+		hitSound.start ();
+
+		Instantiate (_particleEffect, transform.position, Quaternion.Euler (transform.forward));
+
+		if (bounceAmount == settings.GetInt (Setting.maxBounces))
+			Destroy (gameObject);
+
+		bounceAmount++;
+	}
 
     IEnumerator bounce()
     {
@@ -88,6 +131,9 @@ public class Bullet : MonoBehaviour
         RB.velocity = RB.velocity.normalized * _speed;
 
         transform.forward = RB.velocity.normalized;
+
+		Instantiate (_particleEffect, transform.position, Quaternion.Euler (transform.forward));
+
     }
 
     #if UNITY_EDITOR

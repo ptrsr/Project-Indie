@@ -22,7 +22,9 @@ GameObject:
   - component: {fileID: 33375289109573624}
   - component: {fileID: 23744787816339196}
   - component: {fileID: 114548130066673518}
-  m_Layer: 0
+  - component: {fileID: 64386547925675438}
+  - component: {fileID: 114819146014493950}
+  m_Layer: 2
   m_Name: ForceShield
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,6 +85,20 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1882965638606276}
   m_Mesh: {fileID: 4300000, guid: 28939aa270168e24c9ff888124e867eb, type: 3}
+--- !u!64 &64386547925675438
+MeshCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1882965638606276}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Convex: 1
+  m_InflateMesh: 0
+  m_SkinWidth: 0.01
+  m_Mesh: {fileID: 4300000, guid: 28939aa270168e24c9ff888124e867eb, type: 3}
 --- !u!114 &114548130066673518
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -103,3 +119,14 @@ MonoBehaviour:
   _timeMulti: 0.4
   _noiseMulti: 2.59
   _noisePow: 4.13
+--- !u!114 &114819146014493950
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1882965638606276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 080380d0df6ede249bac82bc98e132ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

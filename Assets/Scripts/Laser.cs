@@ -49,8 +49,11 @@ public class Laser : MonoBehaviour
 
     private void CheckEnabled(State state)
     {
-        if (state != State.Game)
-            return;
+		if (state != State.Game)
+		{
+			enabled = false;
+			return;
+		}
 
         enabled = ServiceLocator.Locate<Settings>().GetBool(Setting.Laser);
     }
